@@ -1,5 +1,9 @@
+"""This module will contain several utility functions that are used
+by other modules in Project Porygon.
+"""
 import json
 import pokebase as pb
+
 
 """A function that determines the legality of a Pokémon team.
 
@@ -13,9 +17,9 @@ def verify(pathToTeam):
 
                     # make sure the pokemon exists
                     try:
-                        pokemon = pb.pokemon(member['name'])
+                        pokemon = pb.pokemon(member['species'])
                     except ValueError:
-                        print(member['name'] + ' is not a real Pokémon!')
+                        print(member['species'] + ' is not a real Pokémon!')
                         return False
 
                     # make sure the nature exists

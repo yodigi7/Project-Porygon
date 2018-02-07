@@ -1,0 +1,61 @@
+{
+    "players": [
+        {
+            "account_name": "bug catcher steve",
+            "team_id": 1,
+            "active_pokemon": {
+                "name": "slayer",
+                "species": "caterpie",
+                "poke_id": 3,
+                "hp_percent": 100,
+                "used_moves": [],
+                "status_condition": "none",
+                "confused": 0,
+                "perish_song_turn_count": 0,
+                "stat_modifiers": [
+                    {
+                        "atk": 0,
+                        "def": 0,
+                        "satk": 0,
+                        "sdef": 0,
+                        "spe": 0
+                    }
+                ]
+            },
+            "backup_pokemon": [
+                {
+                    "name": "killer",
+                    "species": "metapod",
+                    "poke_id": 4,
+                    "hp_percent": 100,
+                    "used_moves": [],
+                    "status_condition": "none"
+                }
+            ]
+        },
+        {
+            "account_name": "bug catcher cindy",
+            "team_id": 2,
+            "active_pokemon": {
+                "name": "",
+                "species": "caterpie",
+                "poke_id": 5,
+                "hp_percent": 100,
+                "used_moves": [],
+                "status_condition": "none",
+                "confused": 0,
+                "perish_song_turn_count": 0,
+                "stat_modifiers": [
+                    {
+                        "atk": 0,
+                        "def": 0,
+                        "satk": 0,
+                        "sdef": 0,
+                        "spe": 0
+                    }
+                ]
+            },
+            "backup_pokemon": []
+        }
+    ]
+}

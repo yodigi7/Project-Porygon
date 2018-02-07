@@ -1,0 +1,28 @@
+{
+    "pokemon": [
+        {
+            "name": "cutie",
+            "species": "caterpie",
+            "poke_id": 5,
+            "nature": "bold",
+            "ability": "shield-dust",
+            "item": "eviolite",
+            "ivalues": [
+                0,
+                17,
+                25,
+                31,
+                31,
+                28
+            ],
+            "evalues": {
+                "hp": 252,
+                "def": 128,
+                "sdef": 128
+            },
+            "moves": [
+                "tackle"
+            ]
+        }
+    ]
+}

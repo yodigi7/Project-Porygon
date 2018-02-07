@@ -1,9 +1,11 @@
 {
     "pokemon": [
         {
-            "name": "porygon",
+            "name": "slayer",
+            "species": "caterpie",
+            "poke_id": 3,
             "nature": "bold",
-            "ability": "download",
+            "ability": "shield-dust",
             "item": "eviolite",
             "ivalues": [
                 0,
@@ -19,16 +21,15 @@
                 "sdef": 128
             },
             "moves": [
-                "recover",
-                "zap-cannon",
-                "lock-on",
-                "tri-attack"
+                "tackle"
             ]
         },
         {
-            "name": "porygon2",
+            "name": "killer",
+            "species": "metapod",
+            "poke_id": 4,
             "nature": "bold",
-            "ability": "download",
+            "ability": "shed-skin",
             "item": "chesto-berry",
             "ivalues": [
                 31,
@@ -44,10 +45,7 @@
                 "sdef": 128
             },
             "moves": [
-                "recover",
-                "zap-cannon",
-                "lock-on",
-                "protect"
+                "harden"
             ]
         }
     ]
