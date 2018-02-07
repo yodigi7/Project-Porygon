@@ -3,7 +3,7 @@
         {
             "name": "slayer",
             "species": "caterpie",
-            "poke_id": 3,
+            "poke_id": "325cff49-3e69-4c23-9a63-b0552e2f4a87",
             "nature": "bold",
             "ability": "shield-dust",
             "item": "eviolite",
@@ -27,7 +27,7 @@
         {
             "name": "killer",
             "species": "metapod",
-            "poke_id": 4,
+            "poke_id": "ed4120ed-97a1-4f7d-9ba1-574a546ea7c1",
             "nature": "bold",
             "ability": "shed-skin",
             "item": "chesto-berry",
