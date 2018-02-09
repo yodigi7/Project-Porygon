@@ -29,43 +29,27 @@ currently active
 import json
 import random
 import pokebase as pb
+import pokeutils as pk
 
 
 """Performs an attack using the stats of the passed Pokémon.
 
-For now, we only need to care about attacks that deal damage.
-Don't worry about status effects, effect chances, etc.
-
-General outline:
-Given the UUID of the Pokémon, find the UUID of the team it belongs 
-to, then load the appropriate team JSON, find the corresponding 
-attack name, look up the attack data with Pokébase as well as the 
-attacking/defending Pokémon data and then calculate damage dealt. 
-Don't forget to take accuracy into account, don't forget to 
-convert the HP to a percentage and don't forget to add the used 
-move to the 'used_moves' list in the JSON file. Phew.
-
 Parameters:
+battle_JSON -- the filepath to a Pokémon battle
 atk_index -- a number from 0 to 3 that indicates the selected move
-poke_id -- a UUID representing the attacking Pokémon
+poke_id -- a stringified UUID representing the attacking Pokémon
 """
-def attack(atk_index, poke_id):
+def attack(battle_JSON, atk_index, poke_id):
     pass
 
 
-"""Switches a Pokémon into the active slot for a team.
-
-General outline:
-This one should be easy; just swap the values between the 
-designated backup Pokémon and the current active Pokémon.
-Remember that a freshly swapped-in Pokémon is not confused, 
-does not have any Perish Song counts, and has no stat modifiers.
-
-This one should return an error if the Pokémon with the corresponding 
-poke_id is already active.
+"""Switches a Pokémon into the active slot for a team. It returns an error
+if the Pokémon is already active.
 
 Parameters:
-team_id, poke_id -- strings representing UUIDs used to identify teams/Pokémon
+battle_JSON -- the filepath to a Pokémon battle
+team_id -- a stringified UUID representing a Pokémon team
+poke_id -- a stringified UUID representing the switch-in
 """
-def switch(team_id, poke_id):
+def switch(battle_JSON, team_id, poke_id):
     pass

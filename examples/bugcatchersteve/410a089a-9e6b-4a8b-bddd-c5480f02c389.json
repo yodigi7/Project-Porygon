@@ -7,18 +7,18 @@
             "nature": "bold",
             "ability": "shield-dust",
             "item": "eviolite",
-            "ivalues": [
-                0,
-                17,
-                25,
-                31,
-                31,
-                28
-            ],
+            "ivalues": {
+                "hp": 0,
+                "attack": 17,
+                "defense": 25,
+                "special-attack": 31,
+                "special-defense": 31,
+                "speed": 28
+            },
             "evalues": {
                 "hp": 252,
-                "def": 128,
-                "sdef": 128
+                "defense": 128,
+                "special-defense": 128
             },
             "moves": [
                 "tackle"
@@ -31,18 +31,18 @@
             "nature": "bold",
             "ability": "shed-skin",
             "item": "chesto-berry",
-            "ivalues": [
-                31,
-                31,
-                31,
-                0,
-                31,
-                31
-            ],
+            "ivalues": {
+                "hp": 0,
+                "attack": 17,
+                "defense": 25,
+                "special-attack": 31,
+                "special-defense": 31,
+                "speed": 28
+            },
             "evalues": {
                 "hp": 252,
-                "def": 128,
-                "sdef": 128
+                "defense": 128,
+                "special-defense": 128
             },
             "moves": [
                 "harden"
