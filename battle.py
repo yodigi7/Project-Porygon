@@ -32,6 +32,28 @@ import pokebase as pb
 import pokeutils as pk
 
 
+"""Updates the Battle JSON file
+
+Parameters:
+battle_JSON -- the filepath to a Pokémon battle
+updated_JSON -- the updated python dictionary representing the json battle
+"""
+def update_battle(battle_JSON, updated_JSON):
+    with open(battle_JSON, 'w') as f:
+        f.write(json.dumps(updated_JSON))
+
+
+"""Loads the Battle JSON file into a python dictionary and then returns the dict
+
+Parameters:
+battle_JSON -- the filepath to a Pokémon battle
+"""
+def load_battle(battle_JSON):
+    with open(battle_JSON) as json_data:
+        battle_dict = json.load(json_data)
+    return battle_dict
+
+
 """Performs an attack using the stats of the passed Pokémon.
 
 Parameters:
