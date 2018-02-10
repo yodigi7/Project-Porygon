@@ -52,4 +52,52 @@ team_id -- a stringified UUID representing a Pokémon team
 poke_id -- a stringified UUID representing the switch-in
 """
 def switch(battle_JSON, team_id, poke_id):
-    pass
+    battle_dict = load_battle(battle_JSON)
+    
+    # Determine which team is swapping
+    if battle_dict["players"][0]["team_id"] == team_id:
+        team_num = 0
+    elif battle_dict["players"][1]["team_id"] == team_id:
+        team_num = 1
+    # Invalid team ID
+    else:
+        raise Exception("No team with team ID: {}".format(team_id))
+    
+    # Check if pokemon is in backup list
+    valid = False
+    # The place in the list the pokemon is
+    place_list = 0
+    for pokemon in battle_dict["players"][team_num]["backup_pokemon"]:
+        if pokemon["poke_id"] == poke_id:
+            valid = True
+            break
+        place_list += 1
+    # Pokemon not in backup list
+    if valid == False:
+        raise Exception("No such pokemon in backup list")
+    
+    # Pokemon is already active
+    if battle_dict["players"][team_num]["active_pokemon"]["poke_id"] == poke_id:
+        raise Exception("Pokemon is already active")
+    
+    active_pokemon = battle_dict["players"][team_num]["active_pokemon"]
+    # Delete unused attributes for inactive pokemon
+    del active_pokemon["confused"]
+    del active_pokemon["perish_song_turn_count"]
+    del active_pokemon["stat_modifiers"]
+    
+    backup_pokemon = battle_dict["players"][team_num]["backup_pokemon"][place_list]
+    # Set default attributes for new pokemon
+    backup_pokemon["confused"] = 0
+    backup_pokemon["perish_song_turn_count"] = 0
+    backup_pokemon["stat_modifiers"] = [{
+                        "attack": 0,
+                        "defense": 0,
+                        "special-attack": 0,
+                        "special-defense": 0,
+                        "speed": 0}]
+    # Do the swap
+    battle_dict["players"][team_num]["active_pokemon"] = backup_pokemon
+    battle_dict["players"][team_num]["backup_pokemon"][place_list] = active_pokemon
+    
+    update_battle(battle_JSON, battle_dict)
