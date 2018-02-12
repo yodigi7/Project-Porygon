@@ -7,6 +7,7 @@
             "nature": "bold",
             "ability": "shield-dust",
             "item": "eviolite",
+            "level": 50,
             "ivalues": {
                 "hp": 0,
                 "attack": 17,
@@ -31,6 +32,7 @@
             "nature": "bold",
             "ability": "shed-skin",
             "item": "chesto-berry",
+            "level": 50,
             "ivalues": {
                 "hp": 0,
                 "attack": 17,

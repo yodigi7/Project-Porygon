@@ -2,37 +2,14 @@
 for a Pokémon battle. In particular, it requires a strict adherence 
 to a predefined JSON format. The entries in that JSON are as follows:
 
-players -- a list of players involved in the battle
-
-account_name -- the name of the corresponding player's account
-team_id -- a UUID that corresponds to the player's current team
-active_pokemon -- a dictionary containing battle information for the 
-currently active Pokémon
-
-name -- the nickname of the Pokémon
-species -- the species of the Pokémon
-poke_id -- a UUID that represents a Pokémon; used mostly to look up 
-the ivalues/evalues/nature/moveset of the Pokémon for calculations
-hp_percent -- the percentage of the Pokémon's remaining HP
-used_moves -- a list of moves that have been used by the Pokémon 
-in the current battle
-status_condition -- the Pokémon's status condition
-confused -- a boolean that represents confusion
-perish_song_turn_count -- a count that represents how many turns 
-the Pokémon has been under Perish Song. When it reaches 3, the 
-Pokémon faints.
-stat_modifiers -- a list of stat modifiers (HP is excluded)
-
-backup_Pokémon -- a list of the Pokémon on a team that are not 
-currently active
+At the moment, Project Porygon only supports 2-player single battles.
 """
 import json
-import random
 import pokebase as pb
 import pokeutils as pk
 
 
-"""Updates the Battle JSON file
+"""Updates the Battle JSON file.
 
 Parameters:
 battle_JSON -- the filepath to a Pokémon battle
@@ -43,17 +20,6 @@ def update_battle(battle_JSON, updated_JSON):
         f.write(json.dumps(updated_JSON))
 
 
-"""Loads the Battle JSON file into a python dictionary and then returns the dict
-
-Parameters:
-battle_JSON -- the filepath to a Pokémon battle
-"""
-def load_battle(battle_JSON):
-    with open(battle_JSON) as json_data:
-        battle_dict = json.load(json_data)
-    return battle_dict
-
-
 """Performs an attack using the stats of the passed Pokémon.
 
 Parameters:
@@ -62,7 +28,68 @@ atk_index -- a number from 0 to 3 that indicates the selected move
 poke_id -- a stringified UUID representing the attacking Pokémon
 """
 def attack(battle_JSON, atk_index, poke_id):
-    pass
+    battle_dict = pk.load_data(battle_JSON)
+
+    #  Find the attacking and defending pokémon
+    #  Currently, this only supports 2 player single battles
+    if battle_dict['players'][0]['active_pokemon']['poke_id'] == poke_id:
+        atk_player = battle_dict['players'][0]
+        def_player = battle_dict['players'][1]
+        atk_in, def_in = 0, 1
+    else:
+        atk_player = battle_dict['players'][1]
+        def_player = battle_dict['players'][0]
+        atk_in, def_in = 1, 0
+
+    atk_team_path = pk.team_path(
+    atk_player['account_name'],atk_player['team_id'])
+
+    atk_stat_mods = atk_player['active_pokemon']['stat_modifiers']
+    atk_hp_pct = atk_player['active_pokemon']['hp_percent']
+    def_team_path = pk.team_path(
+    def_player['account_name'],def_player['team_id'])
+
+    def_poke_id = def_player['active_pokemon']['poke_id']
+    def_stat_mods = def_player['active_pokemon']['stat_modifiers']
+    def_hp_pct = def_player['active_pokemon']['hp_percent']
+
+    #  Load the attacking Pokémon and calculate stats
+    atk_team = pk.load_data(atk_team_path)
+    for pokemon in atk_team['pokemon']:
+        if pokemon['poke_id'] == poke_id:
+            atk_stats = pk.calcStats(pokemon)
+
+            #  Load the attack data
+            attack = pb.move(pokemon['moves'][atk_index])
+
+            #  The attacker's level is used in damage calcs
+            atk_level = pokemon['level']
+
+    #  Load the defending Pokémon and calculate stats
+    def_team = pk.load_data(def_team_path)
+    for pokemon in def_team['pokemon']:
+        if pokemon['poke_id'] == def_poke_id:
+            def_stats = pk.calcStats(pokemon)
+
+    #  Apply stat modifiers (HP doesn't have a modifier)
+    for key, value in atk_stats.items():
+        if key != 'hp':
+            atk_stats[key] = value*atk_stat_mods[key]
+    for key, value in def_stats.items():
+        if key != 'hp':
+            def_stats[key] = value*def_stat_mods[key]
+
+    #  Calculate the raw damage dealt
+    raw_damage = pk.calcDamage(atk_level, atk_stats, def_stats, attack)
+
+    #  Convert from an HP percentage to an HP amount and back again
+    def_hp = int((def_hp_pct/100)*def_stats['hp'])
+    def_hp -= raw_damage
+    def_hp_pct -= (def_hp/def_stats['hp']*100)
+
+    #  Write the new HP percentage to the dictionary
+    battle_dict['players'][def_in]['active_pokemon']['hp_percent'] = def_hp_pct
+    update_battle(battle_JSON, battle_dict)
 
 
 """Switches a Pokémon into the active slot for a team. It returns an error
@@ -74,8 +101,8 @@ team_id -- a stringified UUID representing a Pokémon team
 poke_id -- a stringified UUID representing the switch-in
 """
 def switch(battle_JSON, team_id, poke_id):
-    battle_dict = load_battle(battle_JSON)
-    
+    battle_dict = pk.load_data(battle_JSON)
+
     # Determine which team is swapping
     if battle_dict["players"][0]["team_id"] == team_id:
         team_num = 0
@@ -84,7 +111,7 @@ def switch(battle_JSON, team_id, poke_id):
     # Invalid team ID
     else:
         raise Exception("No team with team ID: {}".format(team_id))
-    
+
     # Check if pokemon is in backup list
     valid = False
     # The place in the list the pokemon is
@@ -97,27 +124,27 @@ def switch(battle_JSON, team_id, poke_id):
     # Pokemon not in backup list
     if valid == False:
         raise Exception("No such pokemon in backup list")
-    
+
     # Pokemon is already active
     if battle_dict["players"][team_num]["active_pokemon"]["poke_id"] == poke_id:
         raise Exception("Pokemon is already active")
-    
+
     active_pokemon = battle_dict["players"][team_num]["active_pokemon"]
     # Delete unused attributes for inactive pokemon
     del active_pokemon["confused"]
     del active_pokemon["perish_song_turn_count"]
     del active_pokemon["stat_modifiers"]
-    
+ 
     backup_pokemon = battle_dict["players"][team_num]["backup_pokemon"][place_list]
     # Set default attributes for new pokemon
     backup_pokemon["confused"] = 0
     backup_pokemon["perish_song_turn_count"] = 0
-    backup_pokemon["stat_modifiers"] = [{
-                        "attack": 0,
-                        "defense": 0,
-                        "special-attack": 0,
-                        "special-defense": 0,
-                        "speed": 0}]
+    backup_pokemon["stat_modifiers"] = {
+                        "attack": 1,
+                        "defense": 1,
+                        "special-attack": 1,
+                        "special-defense": 1,
+                        "speed": 1 }
     # Do the swap
     battle_dict["players"][team_num]["active_pokemon"] = backup_pokemon
     battle_dict["players"][team_num]["backup_pokemon"][place_list] = active_pokemon
