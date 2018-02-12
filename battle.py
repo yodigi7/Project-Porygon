@@ -85,7 +85,7 @@ def attack(battle_JSON, atk_index, poke_id):
     #  Convert from an HP percentage to an HP amount and back again
     def_hp = int((def_hp_pct/100)*def_stats['hp'])
     def_hp -= raw_damage
-    def_hp_pct -= (def_hp/def_stats['hp']*100)
+    def_hp_pct = int(def_hp/def_stats['hp']*100)
 
     #  Write the new HP percentage to the dictionary
     battle_dict['players'][def_in]['active_pokemon']['hp_percent'] = def_hp_pct
