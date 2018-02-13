@@ -108,7 +108,7 @@ def calcDamage(atk_level, atk_stats, def_stats, attack):
     #
     #  The modifier consists of a ton of variables, like weather, STAB,
     #  type effectiveness, damage rolls, etc.
-    #  For now, we'll keep it at 1, but it definitely needs attention later
+    #  Some of it has been implemented, but it still needs more attention later
     #  The weather boosts the power of the move if it is fire type and sunny by 1.5x,
     #  It boosts the power of the move if it is water type and rainy by 1.5x,
     #  It reduces the power of the move if it is fire type and rainy by 0.5x,
