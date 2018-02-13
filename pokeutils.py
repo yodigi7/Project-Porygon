@@ -194,6 +194,9 @@ def verify(pathToTeam):
                     if value > 252:
                         print(str(value) + ' is too high of an EV!')
                         return False
+                    if value < 0:
+                        print(str(value) + ' is too low of an EV!')
+                        return False
                     sumEV += value
                     if sumEV > 510:
                         print(member['name'] + ' has too many EVs!')
