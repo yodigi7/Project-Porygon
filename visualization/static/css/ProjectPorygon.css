@@ -8,8 +8,8 @@ body
 
 header
 {
-  background-color: #DFB887;
-  height: 35px;
+  background-color: #2d47af;
+  height: 75px;
   width: 100%;
   opacity: .9;
   margin-bottom: 10px;
@@ -19,7 +19,7 @@ header h1.logo
 {
   margin: 0;
   font-size: 1.7em;
-  color: #fff;
+  color: #f6ff05;
   text-transform: uppercase;
   float: center;
 }
