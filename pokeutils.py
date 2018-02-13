@@ -108,8 +108,46 @@ def calcDamage(atk_level, atk_stats, def_stats, attack):
     #
     #  The modifier consists of a ton of variables, like weather, STAB,
     #  type effectiveness, damage rolls, etc.
-    #  For now, we'll keep it at 1, but it definitely needs attention later.
-    modifier = 1
+    #  Some of it has been implemented, but it still needs more attention later
+    #  The weather boosts the power of the move if it is fire type and sunny by 1.5x,
+    #  It boosts the power of the move if it is water type and rainy by 1.5x,
+    #  It reduces the power of the move if it is fire type and rainy by 0.5x,
+    #  It reduces the power of the move if it is water type and sunny by 0.5x,
+    #  And it is 1 otherwise. Until weather is implemented, it will remain 1.
+    weather_modifier = 1
+    
+    # Each move has a chance to be a critical hit and deal 1.5x damage.
+    # Most moves have a 4.17% chance to be a critical hit, but some have higher odds.
+    # For now, each move will have a 4.17% chance to be a critical hit.
+    critical = 1
+    crit_chance = random.randrange(0, 10000)
+    if crit_chance < 417:
+        critical = 1.5
+    
+    # Each attack has a random range multiplier from  0.85 to 1.00
+    random_mult = random.randrange(85, 101) / 100
+    
+    # An attack gets a boost if the Pokémon using the attack shares a type with it.
+    # The boost is 1.5x normally, but is increased to 2x if the user has the ability Adaptability.
+    # Currently, the function does not include the type of the attack user, so it is
+    # set to 1 for now.
+    stab = 1
+    
+    # Attacks do a different amount of damage based on type matchups. Currently, the types
+    # of the defending Pokémon are not implemented, so this modifier is set to 1.
+    type_effective = 1
+    
+    # The power of an attack is halved if the attacker is burned, the attack is physical,
+    # the attack is not Facade, and the attacker's ability is not guts.
+    # Currently, status and abilities are not implemented, so this value is set to 1.
+    burn_modifier = 1
+    
+    # There is an other modifier that varies based on other factors, which are yet to be
+    # implemented. This modifier will be 1 for now.
+    other_modifier = 1
+    
+    # The overall modifier
+    modifier = weather_modifier * critical * random_mult * stab * type_effective * burn_modifier * other_modifier
 
     #  useful variables that correspond to any given attack
     atk_dam_type = attack.damage_class.name
