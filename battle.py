@@ -1,6 +1,6 @@
 """This module contains several functions that emulate the logic 
 for a Pokémon battle. In particular, it requires a strict adherence 
-to a predefined JSON format. The entries in that JSON are as follows:
+to a predefined JSON format. See the examples folder for details.
 
 At the moment, Project Porygon only supports 2-player single battles.
 """
@@ -9,11 +9,11 @@ import pokebase as pb
 import pokeutils as pk
 
 
-"""Updates the Battle JSON file.
+"""Updates the battle JSON file.
 
 Parameters:
-battle_JSON -- the filepath to a Pokémon battle
-updated_JSON -- the updated python dictionary representing the json battle
+battle_JSON -- the filepath to a Pokémon battle JSON
+updated_JSON -- the updated python dictionary representing the battle
 """
 def update_battle(battle_JSON, updated_JSON):
     with open(battle_JSON, 'w') as f:
@@ -30,8 +30,8 @@ poke_id -- a stringified UUID representing the attacking Pokémon
 def attack(battle_JSON, atk_index, poke_id):
     battle_dict = pk.load_data(battle_JSON)
 
-    #  Find the attacking and defending pokémon
-    #  Currently, this only supports 2 player single battles
+    #  determine the attacking and defending pokémon
+    #  currently, this only supports 2 player single battles
     if battle_dict['players'][0]['active_pokemon']['poke_id'] == poke_id:
         atk_player = battle_dict['players'][0]
         def_player = battle_dict['players'][1]
@@ -41,55 +41,92 @@ def attack(battle_JSON, atk_index, poke_id):
         def_player = battle_dict['players'][0]
         atk_in, def_in = 1, 0
 
-    atk_team_path = pk.team_path(
-    atk_player['account_name'],atk_player['team_id'])
+    #  grab the ID for the defending pokémon
+    def_poke_id = def_player['active_pokemon']['poke_id']
 
-    atk_stat_mods = atk_player['active_pokemon']['stat_modifiers']
-    atk_hp_pct = atk_player['active_pokemon']['hp_percent']
-    def_team_path = pk.team_path(
+    #  get the path to each player's team
+    atk_team_path = pk.get_team_path(
+    atk_player['account_name'],atk_player['team_id'])
+    def_team_path = pk.get_team_path(
     def_player['account_name'],def_player['team_id'])
 
-    def_poke_id = def_player['active_pokemon']['poke_id']
+    #  load stat modifiers and HP percentages
+    atk_stat_mods = atk_player['active_pokemon']['stat_modifiers']
+    atk_hp_pct = atk_player['active_pokemon']['hp_percent']
     def_stat_mods = def_player['active_pokemon']['stat_modifiers']
     def_hp_pct = def_player['active_pokemon']['hp_percent']
+    effective_stats = {}
 
-    #  Load the attacking Pokémon and calculate stats
+    #  Load the attacking Pokémon and calculate effective stats
     atk_team = pk.load_data(atk_team_path)
     for pokemon in atk_team['pokemon']:
         if pokemon['poke_id'] == poke_id:
+
+            #  calculate stats and apply modifiers, then store in a dict
             atk_stats = pk.calcStats(pokemon)
+            for key, value in atk_stats.items():
+                if key != 'hp':
+                    atk_stats[key] = value*atk_stat_mods[key]
+            effective_stats['atk_stats'] = atk_stats
 
             #  Load the attack data
             attack = pb.move(pokemon['moves'][atk_index])
 
-            #  The attacker's level is used in damage calcs
-            atk_level = pokemon['level']
+            #  store the pokemon, pass it to functions later
+            atk_poke = pokemon
 
-    #  Load the defending Pokémon and calculate stats
+    #  Load the defending Pokémon and calculate effective stats
     def_team = pk.load_data(def_team_path)
     for pokemon in def_team['pokemon']:
         if pokemon['poke_id'] == def_poke_id:
+
+            #  calculate stats and apply modifiers, then store in a dict
             def_stats = pk.calcStats(pokemon)
+            for key, value in def_stats.items():
+                if key != 'hp':
+                    def_stats[key] = value*def_stat_mods[key]
+            effective_stats['def_stats'] = def_stats
 
-    #  Apply stat modifiers (HP doesn't have a modifier)
-    for key, value in atk_stats.items():
-        if key != 'hp':
-            atk_stats[key] = value*atk_stat_mods[key]
-    for key, value in def_stats.items():
-        if key != 'hp':
-            def_stats[key] = value*def_stat_mods[key]
+            #  store the pokemon, pass it to functions later
+            def_poke = pokemon
 
-    #  Calculate the raw damage dealt
-    raw_damage = pk.calcDamage(atk_level, atk_stats, def_stats, attack)
 
-    #  Convert from an HP percentage to an HP amount and back again
-    def_hp = int((def_hp_pct/100)*def_stats['hp'])
-    def_hp -= raw_damage
-    def_hp_pct = int(def_hp/def_stats['hp']*100)
+    """The meat of the attack function. This is where the attack is actually
+    performed and the results are written to the battle dictionary.
+    """
+    atk_category = attack.meta.category.name
+    if 'damage' in atk_category:
+        raw_damage = pk.calcDamage(atk_poke, def_poke, effective_stats, attack)
 
-    #  Write the new HP percentage to the dictionary
-    battle_dict['players'][def_in]['active_pokemon']['hp_percent'] = def_hp_pct
-    update_battle(battle_JSON, battle_dict)
+        #  Convert from an HP percentage to an HP amount and back again
+        def_hp = int((def_hp_pct/100)*def_stats['hp'])
+        def_hp -= raw_damage
+        def_hp_pct = int(def_hp/def_stats['hp']*100)
+
+        #  Write the new HP percentage to the dictionary
+        battle_dict['players'][def_in]['active_pokemon']['hp_percent'] = def_hp_pct
+
+    #  if the attack inflicts an ailment, try to inflict the ailment
+    def_poke_status = def_player['active_pokemon']['status_condition']
+    def_poke_confused = def_player['active_pokemon']['confused']
+    if 'ailment' in atk_category:
+        status = pk.applyStatus(atk_poke, def_poke, attack)
+
+        #  confusion is separate from status conditions
+        #  we'll have to make an exception for 'curse' too
+        #  and leech seed, oh god there's so many
+        if status == 'confusion' and def_poke_confused == 0:
+            battle_dict['players'][def_in]['active_pokemon']['confused'] = 1
+        elif def_poke_status == 'none':
+            battle_dict['players'][def_in]['active_pokemon']['status_condition'] = status
+
+    #  if the attack tries to change stats, try to change stats
+    if 'stats' in atk_category:
+        atk_stat_mods, def_stat_mods = pk.changeStats(atk_stat_mods, def_stat_mods, attack)
+        battle_dict['players'][atk_in]['active_pokemon']['stat_modifiers'] = atk_stat_mods
+        battle_dict['players'][def_in]['active_pokemon']['stat_modifiers'] = def_stat_mods
+
+    return battle_dict
 
 
 """Switches a Pokémon into the active slot for a team. It returns an error

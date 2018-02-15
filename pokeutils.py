@@ -31,7 +31,7 @@ Parameters:
 name -- the account name of the team owner
 team_id -- the UUID of the team
 """
-def team_path(name, team_id):
+def get_team_path(name, team_id):
 
     #  convert to lowercase and remove spaces
     name = name.lower()
@@ -52,10 +52,7 @@ def calcStats(pokemon):
     bad_stat = nature.decreased_stat.name
     good_stat = nature.increased_stat.name
 
-    try:
-        level = pokemon['level']
-    except KeyError:
-        level = DEFAULT_LEVEL
+    level = pokemon['level']
 
     for current_stat in POKEMON_STATS:
         iv = pokemon['ivalues'][current_stat]
@@ -93,15 +90,15 @@ def calcStats(pokemon):
     return stats
 
 
-"""A function that calculates and returns the raw damage of a Pokémon attack
+"""A function that calculates and returns the raw damage of a Pokémon attack.
 
 Parameters:
-atk_level -- the level of the attacking Pokémon
-atk_stats -- the stats of an attacking Pokémon as a dict
-def_stats -- the stats of a defending Pokémon as a dict
-attack -- the raw data for a Pokémon move
+atk_poke -- the attacking pokemon as a dict
+def_poke -- the defending pokemon as a dict
+effective_stats -- a dict containing the current, in-battle stats of each poke
+attack -- the raw data for a pokemon attack
 """
-def calcDamage(atk_level, atk_stats, def_stats, attack):
+def calcDamage(atk_poke, def_poke, effective_stats, attack):
 
     #  Calculate damage
     #  I used Bulbapedia for the math. Hopefully it's correct!
@@ -154,6 +151,13 @@ def calcDamage(atk_level, atk_stats, def_stats, attack):
     atk_power = attack.power
     atk_acc = attack.accuracy
 
+    #  the level of the attacker is used in damage calcs
+    atk_level = atk_poke['level']
+
+    #  get relevant dictionaries out of effective_stats
+    atk_stats = effective_stats['atk_stats']
+    def_stats = effective_stats['def_stats']
+
     #  get accuracy out of the way
     miss_chance = random.randrange(0,100)
     if miss_chance > atk_acc:
@@ -169,11 +173,45 @@ def calcDamage(atk_level, atk_stats, def_stats, attack):
             (((((2*atk_level)/5)+2)*atk_power
             *(atk_stats['special_attck']/def_stats['special_defense']))
             /50)+2)*modifier
-    else:
 
-        #  status moves will be implemented later
-        damage = 0
     return int(damage)
+
+
+"""A function that attempts to apply a status ailment to a Pokemon.
+
+This function should determine what status ailment should be applied,
+then determine if it could be applied (taking percent chances and
+accuracy into account), then return a string representing the ailment
+('poison' for poison, 'burn' for burn, and so on). We'll need to keep track
+of 'toxic' as a separate ailment from 'poison.'
+
+Parameters:
+atk_poke -- the attacking pokemon as a dict
+def_poke -- the defending pokemon as a dict
+attack -- the raw data for a pokemon attack
+
+Returns a string corresponding to the ailment inflicted
+('poison', 'confusion', 'paralysis', etc).
+"""
+def applyStatus(atk_poke, def_poke, attack):
+    pass
+
+
+"""A function that attempts to change the stats of a Pokemon.
+
+This function should return two dictionaries representing the stats of each
+battling Pokemon. If the attack only affects the user's stats, you don't need
+to bother changing the def_stat_mods, and vice-versa. Return them in attacker,
+defender order. Remember that no stat modifier can go below -6 or above +6.
+
+Parameters:
+atk_stat_mods -- the attacker's stat modifiers as a dict
+def_stat_mods -- the defender's stat modifiers as a dict
+attack -- the raw data for a pokemon attack
+"""
+def changeStats(atk_stat_mods, def_stat_mods, attack):
+    pass
+
 
 """A function that determines the legality of a Pokémon team.
 

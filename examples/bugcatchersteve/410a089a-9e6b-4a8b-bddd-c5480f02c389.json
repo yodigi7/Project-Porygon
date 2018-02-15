@@ -2,10 +2,10 @@
     "pokemon": [
         {
             "name": "slayer",
-            "species": "caterpie",
+            "species": "spinarak",
             "poke_id": "325cff49-3e69-4c23-9a63-b0552e2f4a87",
             "nature": "bold",
-            "ability": "shield-dust",
+            "ability": "swarm",
             "item": "eviolite",
             "level": 50,
             "ivalues": {
@@ -22,7 +22,9 @@
                 "special-defense": 128
             },
             "moves": [
-                "tackle"
+                "poison-sting",
+                "string-shot",
+                "agility"
             ]
         },
         {
