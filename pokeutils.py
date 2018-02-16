@@ -137,6 +137,8 @@ def calcDamage(atk_poke, def_poke, effective_stats, attack):
     for atk_type in pb.pokemon(atk_poke('species')).types:
         if atk_type == attack.type.name:
             stab = 1.5
+            if atk_poke('ability') == 'adaptability':
+                stab = 2
     
     # Attacks do a different amount of damage based on type matchups. Currently, the types
     # of the defending Pokémon are not implemented, so this modifier is set to 1.
