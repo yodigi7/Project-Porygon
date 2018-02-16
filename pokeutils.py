@@ -134,7 +134,7 @@ def calcDamage(atk_poke, def_poke, effective_stats, attack):
     # Currently, the function does not include the type of the attack user, so it is
     # set to 1 for now.
     stab = 1
-    for atk_type in pb.pokemon(atk_poke('name')).types:
+    for atk_type in pb.pokemon(atk_poke('species')).types:
         if atk_type == attack.type.name:
             stab = 1.5
     
