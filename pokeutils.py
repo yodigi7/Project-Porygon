@@ -103,10 +103,12 @@ def calcDamage(atk_poke, def_poke, effective_stats, attack):
     #  Calculate damage
     #  I used Bulbapedia for the math. Hopefully it's correct!
     
-    #  get accuracy out of the way
-    miss_chance = random.randrange(0,100)
-    if miss_chance > atk_acc:
-        return 0
+    #  get accuracy out of the way unless one of the Pokémon has No Guard,
+    #  in which case it will always hit
+    if atk_poke('ability') != 'no-guard' and def_poke('ability') != 'no-guard':
+        miss_chance = random.randrange(0,100)
+        if miss_chance > atk_acc:
+            return 0
     
     #  The modifier consists of a ton of variables, like weather, STAB,
     #  type effectiveness, damage rolls, etc.
@@ -230,6 +232,43 @@ def applyStatus(atk_poke, def_poke, attack):
             # attacks have interal ids of 92 and 305 in the API
             if attack.id == 92 or attack.id == 305:
                 status_inflicted = 'toxic'
+            # proceed to check if the status can be inflicted on the defending Pokémon
+            
+            # Poison and steel types cannot be poisoned, nor can Pokémon with the ability Immunity
+            if status_inflicted == 'poison' or status_inflicted == 'toxic':
+                for type_name in pb.pokemon(def_poke('species')).types:
+                    if type_name == 'poison' or type_name == steel:
+                        status_inflicted = 'none'
+                if def_poke('ability') == 'immunity':
+                    status_inflicted = 'none'
+            # Fire types cannot be burned, nor can Pokémon with the ability Water Veil
+            if status_inflicted == 'burn':
+                for type_name in pb.pokemon(def_poke('species')).types:
+                    if type_name == 'fire':
+                        status_inflicted = 'none'
+                if def_poke('ability') == 'water-veil':
+                    status_inflicted = 'none'
+            # Electric types cannot be paralyzed, nor can Pokémon with the ability Limber
+            if status_inflicted == 'paralysis':
+                for type_name in pb.pokemon(def_poke('species')).types:
+                    if type_name == 'electric':
+                        status_inflicted = 'none'
+                if def_poke('ability') == 'limber':
+                    status_inflicted = 'none'
+            # Ice types cannot be frozen, nor can Pokémon with the ability Magma Armor
+            if status_inflicted == 'freeze':
+                for type_name in pb.pokemon(def_poke('species')).types:
+                    if type_name == 'ice':
+                        status_inflicted = 'none'
+                if def_poke('ability') == 'magma-armor':
+                    status_inflicted = 'none'
+            # Pokémon with the abilities Insomnia and Vital Spirit cannot be put to sleep
+            if status_inflicted == 'sleep':
+                if def_poke('ability') == 'insomnia' or def_poke('ability') == 'vital-spirit':
+                    status_inflicted = 'none'
+            # Pokémon with the ability Own Tempo cannot be confused
+            if status_inflicted == 'confusion' and def_poke('ability') == 'own-tempo':
+                status_inflicted = 'none'
     return status_inflicted
 
 
