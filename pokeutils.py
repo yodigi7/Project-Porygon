@@ -194,7 +194,38 @@ Returns a string corresponding to the ailment inflicted
 ('poison', 'confusion', 'paralysis', etc).
 """
 def applyStatus(atk_poke, def_poke, attack):
-    pass
+    # check what status the attack can inflict
+    atk_status = attack.ailment.name
+    
+    # the status to be inflicted, which is set to none in case no status is inflicted
+    status_inflicted = 'none'
+    
+    # if the attack can inflict a status, check to see if it will inflict a status
+    if atk_status != 'none':
+        # chance that the attack can leave a status condition
+        status_prob = attack.ailment_chance
+        # check if status is inflicted, it will be inflicted if a random number generated is less than
+        # the percent chance to inflict that status
+        status_chance = random.randrange(0,100)
+        if status_chance < status_prob:
+            status_inflicted = atk_status
+            # case for Tri Attack inflicting a status, as it has a 20% to inflict either
+            # paralysis, burn, or freeze with equal probability of ~6.67%, registered in
+            # API as 'unknown'
+            if status_inflicted == 'unknown':
+                status_id = random.randrange(0,3)
+                if status_id == 0:
+                    status_inflicted = 'burn'
+                elif status_id == 1:
+                    status_inflicted = 'paralysis'
+                else:
+                    status_inflicted = 'freeze'
+            # The attacks Toxic and Poison Fang inflict Bad Poison rather than regular poison,
+            # but the API does not distinguish between bad poison and regular poison, these
+            # attacks have interal ids of 92 and 305 in the API
+            if attack.id == 92 or attack.id == 305:
+                status_inflicted = 'toxic'
+    return status_inflicted
 
 
 """A function that attempts to change the stats of a Pokemon.
