@@ -102,7 +102,12 @@ def calcDamage(atk_poke, def_poke, effective_stats, attack):
 
     #  Calculate damage
     #  I used Bulbapedia for the math. Hopefully it's correct!
-    #
+    
+    #  get accuracy out of the way
+    miss_chance = random.randrange(0,100)
+    if miss_chance > atk_acc:
+        return 0
+    
     #  The modifier consists of a ton of variables, like weather, STAB,
     #  type effectiveness, damage rolls, etc.
     #  Some of it has been implemented, but it still needs more attention later
@@ -157,11 +162,6 @@ def calcDamage(atk_poke, def_poke, effective_stats, attack):
     #  get relevant dictionaries out of effective_stats
     atk_stats = effective_stats['atk_stats']
     def_stats = effective_stats['def_stats']
-
-    #  get accuracy out of the way
-    miss_chance = random.randrange(0,100)
-    if miss_chance > atk_acc:
-        return 0
 
     #  calcs vary based on physical versus special attacks
     if atk_dam_type == 'physical':
