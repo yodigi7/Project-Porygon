@@ -1,0 +1,57 @@
+{
+    "players": [
+        {
+            "account_name": "bug catcher steve",
+            "team_id": "410a089a-9e6b-4a8b-bddd-c5480f02c389",
+            "active_pokemon": {
+                "name": "slayer",
+                "species": "spinarak",
+                "poke_id": "325cff49-3e69-4c23-9a63-b0552e2f4a87",
+                "hp_percent": 100,
+                "used_moves": [],
+                "status_condition": "none",
+                "confused": 0,
+                "perish_song_turn_count": 0,
+                "stat_modifiers": {
+                    "attack": 1,
+                    "defense": 1,
+                    "special-attack": 1,
+                    "special-defense": 1,
+                    "speed": 1
+                }
+            },
+            "backup_pokemon": [
+                {
+                    "name": "killer",
+                    "species": "metapod",
+                    "poke_id": "ed4120ed-97a1-4f7d-9ba1-574a546ea7c1",
+                    "hp_percent": 100,
+                    "used_moves": [],
+                    "status_condition": "none"
+                }
+            ]
+        },
+        {
+            "account_name": "bug catcher cindy",
+            "team_id": "87759413-5681-40eb-8546-9cc7f5874e88",
+            "active_pokemon": {
+                "name": "cutie",
+                "species": "caterpie",
+                "poke_id": "a1c33278-c5f8-4c6a-b992-a162fd329b40",
+                "hp_percent": 100,
+                "used_moves": [],
+                "status_condition": "none",
+                "confused": 0,
+                "perish_song_turn_count": 0,
+                "stat_modifiers": {
+                    "attack": 1,
+                    "defense": 1,
+                    "special-attack": 1,
+                    "special-defense": 1,
+                    "speed": 1
+                }
+            },
+            "backup_pokemon": []
+        }
+    ]
+}

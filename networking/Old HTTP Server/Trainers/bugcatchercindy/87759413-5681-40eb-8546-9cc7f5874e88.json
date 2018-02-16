@@ -1,0 +1,28 @@
+{
+  "pokemon": [
+    {
+      "name": "cutie",
+      "species": "caterpie",
+      "poke_id": "a1c33278-c5f8-4c6a-b992-a162fd329b40",
+      "nature": "bold",
+      "ability": "shield-dust",
+      "item": "eviolite",
+      "ivalues": {
+        "hp": 0,
+        "attack": 17,
+        "defense": 25,
+        "special-attack": 31,
+        "special-defense": 31,
+        "speed": 28
+      },
+      "evalues": {
+        "hp": 252,
+        "defense": 128,
+        "special-defense": 128
+      },
+      "moves": [
+        "tackle"
+      ]
+    }
+  ]
+}
