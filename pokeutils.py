@@ -210,9 +210,8 @@ def applyStatus(atk_poke, def_poke, attack):
         if status_chance < status_prob:
             status_inflicted = atk_status
             # case for Tri Attack inflicting a status, as it has a 20% to inflict either
-            # paralysis, burn, or freeze with equal probability of ~6.67%, registered in
-            # API as 'unknown'
-            if status_inflicted == 'unknown':
+            # paralysis, burn, or freeze with equal probability of ~6.67%.
+            if attack.id == 161:
                 status_id = random.randrange(0,3)
                 if status_id == 0:
                     status_inflicted = 'burn'
