@@ -1,11 +1,24 @@
 from flask import Flask, request, render_template, session, abort, url_for, redirect, flash
 from functools import wraps
 import os
+import json
 
 app = Flask(__name__)
 app.secret_key = "This isn't very secret"
+users_file = 'users.json'
 
-users = {}
+
+def save_users(u):
+	with open(users_file, 'w') as f:
+		json.dump(u, f)
+
+
+def load_users():
+	if os.path.isfile(users_file):
+		with open(users_file) as f:
+			u = json.load(f)
+		return u
+	return {}
 
 
 # Decorator to redirect to login page if not logged in.
@@ -69,8 +82,10 @@ def signup():
 			flash("That username is already in use.")
 			return render_template('signup.html')
 		users[request.form['username']] = request.form['password']
+		save_users(users)
 		session['username'] = request.form['username']
 		return redirect(url_for('home'))
 
 if __name__ == '__main__':
+	users = load_users()
 	app.run(debug = True)
