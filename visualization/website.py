@@ -1,4 +1,5 @@
 from flask import Flask, request, render_template, session, abort, url_for, redirect, flash
+from functools import wraps
 import os
 
 app = Flask(__name__)
@@ -9,11 +10,12 @@ users = {}
 
 # Decorator to redirect to login page if not logged in.
 def require_login(func):
-	def closure(*args, **kwargs):
+	@wraps(func)
+	def f(*args, **kwargs):
 		if 'username' not in session:
 			return redirect(url_for('login'))
 		return func(*args, **kwargs)
-	return closure
+	return f
 
 
 def user_exists(username):
@@ -25,7 +27,6 @@ def valid_login(username, password):
 
 
 @app.route('/')
-@require_login
 def home():
 	return render_template('home.html')
 
@@ -37,7 +38,6 @@ def leaderboard():
 
 
 @app.route('/battle/')
-@require_login
 def battle():
 	return render_template('battle.html')
 
@@ -56,6 +56,8 @@ def login():
 		if not valid_login(request.form['username'], request.form['password']):
 			flash("Invalid username or password.")
 			return render_template('login.html')
+		session['username'] = request.form['username']
+		return redirect(url_for('home'))
 
 
 @app.route('/signup/')
