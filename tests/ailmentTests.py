@@ -110,6 +110,10 @@ def testFreeze(atk_poke, def_poke):
 
     #  make sure it connects
     attack.accuracy = 100
+    
+    #  make sure it freezes
+    attack.meta.ailment_chance = 0
+    
     ailment = pk.applyStatus(atk_poke, def_poke, attack)
 
     #  if applyStatus did not return 'paralysis,' something's wrong
@@ -124,6 +128,8 @@ def testFreezeFail(atk_poke, def_poke):
 
     #  make sure it connects
     attack.accuracy = 100
+    #  make sure it tries to freeze
+    attack.meta.ailment_chance = 0
     ailment = pk.applyStatus(atk_poke, def_poke, attack)
 
     #  if applyStatus did not return 'poison,' something's wrong
@@ -155,7 +161,7 @@ def testConfusion(atk_poke, def_poke):
     ailment = pk.applyStatus(atk_poke, def_poke, attack)
 
     #  if applyStatus did not return 'paralysis,' something's wrong
-    if ailment != 'sleep':
+    if ailment != 'confusion':
         raise ValueError('applyStatus didn\'t apply sleep!')
 
 
@@ -231,6 +237,7 @@ if __name__ == '__main__':
     testPoisonFail(atk_poke, def_poke)
 
     #  test infliction of toxic
+    def_poke['species'] = 'eevee'
     atk_poke['moves'][0] = 'toxic'
     testToxic(atk_poke, def_poke)
 
