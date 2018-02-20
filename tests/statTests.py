@@ -1,6 +1,9 @@
 """Some unit tests to make sure stat modifiers are updating correctly.
 Again, I should probably look into pytest.
 """
+import sys
+sys.path.append('../')
+
 import pokebase as pb
 import pokeutils as pk
 
@@ -19,14 +22,14 @@ def testRaiseStats():
     def_mods = {}
 
     attack = pb.move('work-up')
-    atk_mods, def_mods = changeStats(atk_mods, def_mods, attack)
+    atk_mods, def_mods = pk.changeStats(atk_mods, def_mods, attack)
 
     #  make sure stat modifiers are updated appropriately
     if atk_mods['attack'] != 1.5 or atk_mods['special-attack'] != 1.5:
         raise ValueError('stats weren\'t raised correctly!')
 
     attack = pb.move('swords-dance')
-    atk_mods, def_mods = changeStats(atk_mods, def_mods, attack)
+    atk_mods, def_mods = pk.changeStats(atk_mods, def_mods, attack)
 
     #  make sure stat modifiers are updated appropriately
     if atk_mods['attack'] != 2.5 or atk_mods['special-attack'] != 1.5:
@@ -47,7 +50,7 @@ def testRaiseStatsFail():
     def_mods = {}
 
     attack = pb.move('work-up')
-    atk_mods, def_mods = changeStats(atk_mods, def_mods, attack)
+    atk_mods, def_mods = pk.changeStats(atk_mods, def_mods, attack)
 
     #  make sure stat modifiers do not go beyond 4x
     if atk_mods['attack'] != 4 or atk_mods['special-attack'] != 4:
@@ -68,17 +71,17 @@ def testLowerStats():
     atk_mods = {}
 
     attack = pb.move('tail-whip')
-    atk_mods, def_mods = changeStats(atk_mods, def_mods, attack)
+    atk_mods, def_mods = pk.changeStats(atk_mods, def_mods, attack)
 
     #  make sure stat modifiers are updated appropriately
-    if def_mods['defense'] != 0.67
+    if def_mods['defense'] != 0.67:
         raise ValueError('stats weren\'t lowered correctly!')
 
     attack = pb.move('screech')
-    atk_mods, def_mods = changeStats(atk_mods, def_mods, attack)
+    atk_mods, def_mods = pk.changeStats(atk_mods, def_mods, attack)
 
     #  make sure stat modifiers are updated appropriately
-    if def_mods['defense'] != 0.4
+    if def_mods['defense'] != 0.4:
         raise ValueError('stats weren\'t lowered correctly!')
 
 
@@ -96,7 +99,7 @@ def testLowerStatsFail():
     atk_mods = {}
 
     attack = pb.move('tail-whip')
-    atk_mods, def_mods = changeStats(atk_mods, def_mods, attack)
+    atk_mods, def_mods = pk.changeStats(atk_mods, def_mods, attack)
 
     #  make sure stat modifiers do not go beyond 4x
     if def_mods['defense'] != 0.25:
