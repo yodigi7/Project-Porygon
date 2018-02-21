@@ -207,6 +207,15 @@ def applyStatus(atk_poke, def_poke, attack):
     # the status to be inflicted, which is set to none in case no status is inflicted
     status_inflicted = 'none'
     
+    # Case for curse, as status is listed as 'none' in PokéAPI
+    # Curse applies a curse effect if the user is ghost type, curse has internal id of 174
+    # No Pokémon is innately immune to curse
+    if attack.id == 174:
+        for type_name in pb.pokemon(atk_poke['species']).types:
+            if type_name.type.name == 'ghost':
+                status_inflicted = 'curse'
+                return status_inflicted
+    
     # if the attack can inflict a status, check to see if it will inflict a status
     if atk_status != 'none':
 
