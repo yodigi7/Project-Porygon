@@ -277,6 +277,22 @@ def applyStatus(atk_poke, def_poke, attack):
             # Pokémon with the ability Own Tempo cannot be confused
             if status_inflicted == 'confusion' and def_poke['ability'] == 'own-tempo':
                 status_inflicted = 'none'
+            
+            # Grass types cannot be affected by Leech Seed
+            if status_inflicted == 'leech-seed':
+                for type_name in pb.pokemon(def_poke['species']).types:
+                    if type_name.type.name == 'grass':
+                        status_inflicted = 'none'
+            
+            # Grass types cannot be affected by powder moves, nor can Pokémon with the ability Overcoat
+            # Powder moves that inflict status are Stun Spore, Spore, Sleep Powder, and Poison Powder
+            # These attacks have ids of 78, 147, 79, and 77
+            if attack.id == 77 or attack.id == 78 or attack.id == 79 or attack.id == 147:
+                for type_name in pb.pokemon(def_poke['species']).types:
+                    if type_name.type.name == 'grass':
+                        status_inflicted = 'none'
+                if def_poke['ability'] == 'overcoat':
+                    status_inflicted = 'none'
     return status_inflicted
 
 
