@@ -229,11 +229,10 @@ def applyStatus(atk_poke, def_poke, attack):
                     status_inflicted = 'paralysis'
                 else:
                     status_inflicted = 'freeze'
-
             # The attacks Toxic and Poison Fang inflict Bad Poison rather than regular poison,
             # but the API does not distinguish between bad poison and regular poison; these
             # attacks have internal ids of 92 and 305 in the API
-            if attack.id == 92 or attack.id == 305:
+            elif attack.id == 92 or attack.id == 305:
                 status_inflicted = 'toxic'
 
             # proceed to check if the status can be inflicted on the defending Pokémon
@@ -244,50 +243,43 @@ def applyStatus(atk_poke, def_poke, attack):
                         status_inflicted = 'none'
                 if def_poke['ability'] == 'immunity':
                     status_inflicted = 'none'
-
             # Fire types cannot be burned, nor can Pokémon with the ability Water Veil
-            if status_inflicted == 'burn':
+            elif status_inflicted == 'burn':
                 for type_name in pb.pokemon(def_poke['species']).types:
                     if type_name.type.name == 'fire':
                         status_inflicted = 'none'
                 if def_poke['ability'] == 'water-veil':
                     status_inflicted = 'none'
-
             # Electric types cannot be paralyzed, nor can Pokémon with the ability Limber
-            if status_inflicted == 'paralysis':
+            elif status_inflicted == 'paralysis':
                 for type_name in pb.pokemon(def_poke['species']).types:
                     if type_name.type.name == 'electric':
                         status_inflicted = 'none'
                 if def_poke['ability'] == 'limber':
                     status_inflicted = 'none'
-
             # Ice types cannot be frozen, nor can Pokémon with the ability Magma Armor
-            if status_inflicted == 'freeze':
+            elif status_inflicted == 'freeze':
                 for type_name in pb.pokemon(def_poke['species']).types:
                     if type_name.type.name == 'ice':
                         status_inflicted = 'none'
                 if def_poke['ability'] == 'magma-armor':
                     status_inflicted = 'none'
-
             # Pokémon with the abilities Insomnia and Vital Spirit cannot be put to sleep
-            if status_inflicted == 'sleep':
+            elif status_inflicted == 'sleep':
                 if def_poke['ability'] == 'insomnia' or def_poke['ability'] == 'vital-spirit':
                     status_inflicted = 'none'
-
             # Pokémon with the ability Own Tempo cannot be confused
-            if status_inflicted == 'confusion' and def_poke['ability'] == 'own-tempo':
+            elif status_inflicted == 'confusion' and def_poke['ability'] == 'own-tempo':
                 status_inflicted = 'none'
-            
             # Grass types cannot be affected by Leech Seed
-            if status_inflicted == 'leech-seed':
+            elif status_inflicted == 'leech-seed':
                 for type_name in pb.pokemon(def_poke['species']).types:
                     if type_name.type.name == 'grass':
                         status_inflicted = 'none'
-            
             # Grass types cannot be affected by powder moves, nor can Pokémon with the ability Overcoat
             # Powder moves that inflict status are Stun Spore, Spore, Sleep Powder, and Poison Powder
             # These attacks have ids of 78, 147, 79, and 77
-            if attack.id == 77 or attack.id == 78 or attack.id == 79 or attack.id == 147:
+            elif attack.id == 77 or attack.id == 78 or attack.id == 79 or attack.id == 147:
                 for type_name in pb.pokemon(def_poke['species']).types:
                     if type_name.type.name == 'grass':
                         status_inflicted = 'none'
@@ -300,7 +292,6 @@ def applyStatus(atk_poke, def_poke, attack):
         for type_name in pb.pokemon(atk_poke['species']).types:
             if type_name.type.name == 'ghost':
                 status_inflicted = 'curse'
-                return status_inflicted
     # Case for taunt, as status is listed as 'none' in API
     # Pokémon with the ability Oblivious are immune to the effects of taunt
     # Taunt has an id of 269
