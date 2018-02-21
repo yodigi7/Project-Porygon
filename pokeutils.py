@@ -93,12 +93,14 @@ def calcStats(pokemon):
 """A function that calculates and returns the raw damage of a Pokémon attack.
 
 Parameters:
-atk_poke -- the attacking pokemon as a dict
-def_poke -- the defending pokemon as a dict
-effective_stats -- a dict containing the current, in-battle stats of each poke
+combatants -- a dict containing the current pokemon in battle
+raw_stats -- a dict containing the unmodified stats of each poke
+modded_stats -- a dict containing the modified stats of each poke
 attack -- the raw data for a pokemon attack
 """
-def calcDamage(atk_poke, def_poke, effective_stats, attack):
+def calcDamage(combatants, raw_stats, modded_stats, attack):
+    atk_poke = combatants['atk_poke']
+    def_poke = combatants['def_poke']
 
     #  Calculate damage
     #  I used Bulbapedia for the math. Hopefully it's correct!
@@ -123,10 +125,12 @@ def calcDamage(atk_poke, def_poke, effective_stats, attack):
     # Each move has a chance to be a critical hit and deal 1.5x damage.
     # Most moves have a 4.17% chance to be a critical hit, but some have higher odds.
     # For now, each move will have a 4.17% chance to be a critical hit.
-    critical = 1
+    crit = False
+    crit_mod = 1
     crit_chance = random.randrange(0, 10000)
     if crit_chance < 417:
-        critical = 1.5
+        crit = True
+        crit_mod = 1.5
     
     # Each attack has a random range multiplier from  0.85 to 1.00
     random_mult = random.randrange(85, 101) / 100
@@ -156,7 +160,7 @@ def calcDamage(atk_poke, def_poke, effective_stats, attack):
     other_modifier = 1
     
     # The overall modifier
-    modifier = weather_modifier * critical * random_mult * stab * type_effective * burn_modifier * other_modifier
+    modifier = weather_modifier * crit_mod * random_mult * stab * type_effective * burn_modifier * other_modifier
 
     #  useful variables that correspond to any given attack
     atk_dam_type = attack.damage_class.name
@@ -166,9 +170,13 @@ def calcDamage(atk_poke, def_poke, effective_stats, attack):
     #  the level of the attacker is used in damage calcs
     atk_level = atk_poke['level']
 
-    #  get relevant dictionaries out of effective_stats
-    atk_stats = effective_stats['atk_stats']
-    def_stats = effective_stats['def_stats']
+    #  get relevant stat dictionaries
+    #  in the case of a crit, we use the defender's unmodified stats
+    atk_stats = modded_stats['atk_stats']
+    if crit:
+        def_stats = raw_stats['def_stats']
+    else:
+        def_stats = modded_stats['def_stats']
 
     #  calcs vary based on physical versus special attacks
     if atk_dam_type == 'physical':

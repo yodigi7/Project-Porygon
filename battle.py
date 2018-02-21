@@ -55,7 +55,11 @@ def attack(battle_JSON, atk_index, poke_id):
     atk_hp_pct = atk_player['active_pokemon']['hp_percent']
     def_stat_mods = def_player['active_pokemon']['stat_modifiers']
     def_hp_pct = def_player['active_pokemon']['hp_percent']
-    effective_stats = {}
+
+    #  dictionaries to keep utils parameters organized
+    raw_stats = {}
+    modified_stats = {}
+    combatants = {}
 
     #  Load the attacking Pokémon and calculate effective stats
     atk_team = pk.load_data(atk_team_path)
@@ -63,17 +67,16 @@ def attack(battle_JSON, atk_index, poke_id):
         if pokemon['poke_id'] == poke_id:
 
             #  calculate stats and apply modifiers, then store in a dict
-            atk_stats = pk.calcStats(pokemon)
-            for key, value in atk_stats.items():
+            raw_stats['atk_stats'] = pk.calcStats(pokemon)
+            for key, value in raw_stats['atk_stats'].items():
                 if key != 'hp':
-                    atk_stats[key] = value*atk_stat_mods[key]
-            effective_stats['atk_stats'] = atk_stats
+                    modded_stats['atk_stats'][key] = value*atk_stat_mods[key]
 
             #  Load the attack data
             attack = pb.move(pokemon['moves'][atk_index])
 
             #  store the pokemon, pass it to functions later
-            atk_poke = pokemon
+            combatants['atk_poke'] = pokemon
 
     #  Load the defending Pokémon and calculate effective stats
     def_team = pk.load_data(def_team_path)
@@ -81,14 +84,13 @@ def attack(battle_JSON, atk_index, poke_id):
         if pokemon['poke_id'] == def_poke_id:
 
             #  calculate stats and apply modifiers, then store in a dict
-            def_stats = pk.calcStats(pokemon)
-            for key, value in def_stats.items():
+            raw_stats['def_stats'] = pk.calcStats(pokemon)
+            for key, value in raw_stats['def_stats'].items():
                 if key != 'hp':
-                    def_stats[key] = value*def_stat_mods[key]
-            effective_stats['def_stats'] = def_stats
+                    modded_stats['atk_stats'][key] = value*atk_stat_mods[key]
 
             #  store the pokemon, pass it to functions later
-            def_poke = pokemon
+            combatants['def_poke'] = pokemon
 
 
     """The meat of the attack function. This is where the attack is actually
@@ -96,7 +98,7 @@ def attack(battle_JSON, atk_index, poke_id):
     """
     atk_category = attack.meta.category.name
     if 'damage' in atk_category:
-        raw_damage = pk.calcDamage(atk_poke, def_poke, effective_stats, attack)
+        raw_damage = pk.calcDamage(combatants, raw_stats, modded_stats, attack)
 
         #  Convert from an HP percentage to an HP amount and back again
         def_hp = int((def_hp_pct/100)*def_stats['hp'])
@@ -110,7 +112,7 @@ def attack(battle_JSON, atk_index, poke_id):
     def_poke_status = def_player['active_pokemon']['status_condition']
     def_poke_confused = def_player['active_pokemon']['confused']
     if 'ailment' in atk_category:
-        status = pk.applyStatus(atk_poke, def_poke, attack)
+        status = pk.applyStatus(combatants, attack)
 
         #  confusion is separate from status conditions
         #  we'll have to make an exception for 'curse' too
