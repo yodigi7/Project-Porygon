@@ -51,6 +51,7 @@ def leaderboard():
 
 
 @app.route('/battle/')
+@require_login
 def battle():
 	return render_template('battle.html')
 

@@ -1,6 +1,9 @@
 """Some simple unit tests. I should probably be using pytest for this,
 but doing it this way means no additional installs.
 """
+import sys
+sys.path.append('../')
+
 import pokebase as pb
 import pokeutils as pk
 
@@ -42,7 +45,7 @@ def testPoisonFail(atk_poke, def_poke):
     attack.accuracy = 100
     ailment = pk.applyStatus(atk_poke, def_poke, attack)
 
-    #  if applyStatus did not return 'poison,' something's wrong
+    #  if applyStatus returned anything, something's wrong
     if ailment != 'none':
         raise ValueError('applyStatus applies poison when it shouldn\'t!')
 
@@ -70,7 +73,7 @@ def testParalysisFail(atk_poke, def_poke):
     attack.accuracy = 100
     ailment = pk.applyStatus(atk_poke, def_poke, attack)
 
-    #  if applyStatus did not return 'poison,' something's wrong
+    #  if applyStatus returned anything, something's wrong
     if ailment != 'none':
         raise ValueError('applyStatus applies paralysis when it shouldn\'t!')
 
@@ -84,7 +87,7 @@ def testBurn(atk_poke, def_poke):
     attack.accuracy = 100
     ailment = pk.applyStatus(atk_poke, def_poke, attack)
 
-    #  if applyStatus did not return 'paralysis,' something's wrong
+    #  if applyStatus did not return 'burn,' something's wrong
     if ailment != 'burn':
         raise ValueError('applyStatus didn\'t apply burn!')
 
@@ -98,7 +101,7 @@ def testBurnFail(atk_poke, def_poke):
     attack.accuracy = 100
     ailment = pk.applyStatus(atk_poke, def_poke, attack)
 
-    #  if applyStatus did not return 'poison,' something's wrong
+    #  if applyStatus returned anything, something's wrong
     if ailment != 'none':
         raise ValueError('applyStatus applies burn when it shouldn\'t!')
 
@@ -112,11 +115,10 @@ def testFreeze(atk_poke, def_poke):
     attack.accuracy = 100
     
     #  make sure it freezes
-    attack.meta.ailment_chance = 0
-    
+    attack.meta.ailment_chance = 100
     ailment = pk.applyStatus(atk_poke, def_poke, attack)
 
-    #  if applyStatus did not return 'paralysis,' something's wrong
+    #  if applyStatus did not return 'freeze,' something's wrong
     if ailment != 'freeze':
         raise ValueError('applyStatus didn\'t apply freeze!')
 
@@ -128,11 +130,12 @@ def testFreezeFail(atk_poke, def_poke):
 
     #  make sure it connects
     attack.accuracy = 100
+
     #  make sure it tries to freeze
-    attack.meta.ailment_chance = 0
+    attack.meta.ailment_chance = 100
     ailment = pk.applyStatus(atk_poke, def_poke, attack)
 
-    #  if applyStatus did not return 'poison,' something's wrong
+    #  if applyStatus returned anything, something's wrong
     if ailment != 'none':
         raise ValueError('applyStatus applies freeze when it shouldn\'t!')
 
@@ -146,7 +149,7 @@ def testSleep(atk_poke, def_poke):
     attack.accuracy = 100
     ailment = pk.applyStatus(atk_poke, def_poke, attack)
 
-    #  if applyStatus did not return 'paralysis,' something's wrong
+    #  if applyStatus didn't return 'sleep,' something's wrong
     if ailment != 'sleep':
         raise ValueError('applyStatus didn\'t apply sleep!')
 
@@ -160,9 +163,9 @@ def testConfusion(atk_poke, def_poke):
     attack.accuracy = 100
     ailment = pk.applyStatus(atk_poke, def_poke, attack)
 
-    #  if applyStatus did not return 'paralysis,' something's wrong
+    #  if applyStatus did not return 'confusion,' something's wrong
     if ailment != 'confusion':
-        raise ValueError('applyStatus didn\'t apply sleep!')
+        raise ValueError('applyStatus didn\'t apply confusion!')
 
 
 """Run as a program to execute tests. This file will test the capabilities
