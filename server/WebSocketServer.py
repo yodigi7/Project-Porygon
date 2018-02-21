@@ -24,6 +24,12 @@ def load_from_file(filepath):
         return u
     return {}
 
+def user_exists(username):
+    return username in users
+
+def valid_login(username, password):
+    return username in users and users[username] == password
+
 
 # Decorator to redirect to login page if not logged in.
 def require_login(func):
@@ -43,12 +49,6 @@ def require_logged_out(func):
             return redirect(url_for('home'))
         return func(*args, **kwargs)
     return f
-
-def user_exists(username):
-    return username in users
-
-def valid_login(username, password):
-    return username in users and users[username] == password
 
 # ************** #
 # WEBSITE ROUTES #
