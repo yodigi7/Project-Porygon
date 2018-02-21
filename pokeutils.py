@@ -207,15 +207,6 @@ def applyStatus(atk_poke, def_poke, attack):
     # the status to be inflicted, which is set to none in case no status is inflicted
     status_inflicted = 'none'
     
-    # Case for curse, as status is listed as 'none' in PokéAPI
-    # Curse applies a curse effect if the user is ghost type, curse has internal id of 174
-    # No Pokémon is innately immune to curse
-    if attack.id == 174:
-        for type_name in pb.pokemon(atk_poke['species']).types:
-            if type_name.type.name == 'ghost':
-                status_inflicted = 'curse'
-                return status_inflicted
-    
     # if the attack can inflict a status, check to see if it will inflict a status
     if atk_status != 'none':
 
@@ -302,6 +293,19 @@ def applyStatus(atk_poke, def_poke, attack):
                         status_inflicted = 'none'
                 if def_poke['ability'] == 'overcoat':
                     status_inflicted = 'none'
+    # Case for curse, as status is listed as 'none' in PokéAPI
+    # Curse applies a curse effect if the user is ghost type, curse has internal id of 174
+    # No Pokémon is innately immune to curse
+    elif attack.id == 174:
+        for type_name in pb.pokemon(atk_poke['species']).types:
+            if type_name.type.name == 'ghost':
+                status_inflicted = 'curse'
+                return status_inflicted
+    # Case for taunt, as status is listed as 'none' in API
+    # Pokémon with the ability Oblivious are immune to the effects of taunt
+    # Taunt has an id of 269
+    elif attack.id == 269 and def_poke['ability'] != 'oblivious':
+        status_inflicted = 'taunt'
     return status_inflicted
 
 
