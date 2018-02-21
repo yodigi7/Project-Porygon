@@ -6,7 +6,7 @@ $(document).ready(function() {
 
         socket.send('User has connected!'); //send to socketio.on('message')
 
-        $.getJSON('TemporaryReusedExamples/exampleBattle.json', function(data){
+        $.getJSON('examples/exampleBattle.json', function(data){
             var jsonData1 = {
                 jsondata: data,
                 filename: 'battleFile.txt'
@@ -15,7 +15,7 @@ $(document).ready(function() {
         });
         console.log("Example Battle Sent");
 
-        $.getJSON('TemporaryReusedExamples/bugcatchercindy/87759413-5681-40eb-8546-9cc7f5874e88.json', function(data){
+        $.getJSON('examples/bugcatchercindy/87759413-5681-40eb-8546-9cc7f5874e88.json', function(data){
             var jsonData2 = {
                 jsondata: data,
                 filename: '87759413-5681-40eb-8546-9cc7f5874e88.json',
@@ -25,7 +25,7 @@ $(document).ready(function() {
         });
         console.log("Bug Catcher Cindy Sent");
 
-        $.getJSON('TemporaryReusedExamples/bugcatchersteve/410a089a-9e6b-4a8b-bddd-c5480f02c389.json', function(data){
+        $.getJSON('examples/bugcatchersteve/410a089a-9e6b-4a8b-bddd-c5480f02c389.json', function(data){
             var jsonData3 = {
                 jsondata: data,
                 filename: '410a089a-9e6b-4a8b-bddd-c5480f02c389.json',
@@ -35,7 +35,7 @@ $(document).ready(function() {
         });
         console.log("Bug Catcher Steve Sent");
 
-        $.get('TemporaryReusedExamples/exampleTextFile.txt', function(data){
+        $.get('examples/exampleTextFile.txt', function(data){
             var txtData1 = {
                 txtdata: data,
                 filename: 'TxtFile4Battle.txt',
