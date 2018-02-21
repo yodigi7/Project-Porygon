@@ -47,8 +47,8 @@ $(document).ready(function() {
         console.log("Finished!")
     });
 
-    /*socket.on('message', function(msg) {
-        $("#messages").append('<li>'+msg+'</li>');
-        console.log('Received message');
-    });*/
+    socket.on('message', function(msg) {
+        // $("#messages").append('<li>'+msg+'</li>');
+        console.log('Received message: ' + msg);
+    });
 });
