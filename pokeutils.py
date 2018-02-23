@@ -220,6 +220,10 @@ def applyStatus(atk_poke, def_poke, attack):
 
         # chance that the attack can leave a status condition
         status_prob = attack.meta.ailment_chance
+        
+        # if the attacking Pokémon has the ability Serene Grace, the chance to implement a status is doubled
+        if atk_poke['ability'] == 'serene-grace':
+            status_prob = status_prob * 2
 
         # check if status is inflicted, it will be inflicted if a random number generated is less than
         # the percent chance to inflict that status
