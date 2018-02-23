@@ -321,7 +321,133 @@ def_stat_mods -- the defender's stat modifiers as a dict
 attack -- the raw data for a pokemon attack
 """
 def changeStats(atk_stat_mods, def_stat_mods, attack):
-    pass
+    stage_to_mod = {-6: 0.25, -5: 0.29, -4: 0.33, -3: 0.4, -2: 0.5, -1: 0.67, 0: 1, 1: 1.5, 2: 2, 3: 2.5, 4: 3, 5: 3.5, 6: 4}
+    mod_to_stage = {0.25: -6, 0.29: -5, 0.33: -4, 0.4: -3, 0.5: -2, 0.67: -1, 1: 0, 1.5: 1, 2: 2, 2.5: 3, 3: 4, 3.5: 5, 4: 6}
+    stat_chance = attack.meta.stat_chance
+    stat_changed_prob = random.randrange(0,100)
+    if stat_changed_prob < stat_chance or stat_chance == 0:
+        # Figure out which Pokémon's stats will be changed
+        poke_effected = ''
+        if attack.meta.category.name == 'damage+lower' or attack.meta.category.name == 'swagger':
+            poke_effected = 'def_poke'
+        elif attack.meta.category.name == 'damage+raise':
+            poke_effected = 'atk_poke'
+        elif attack.meta.category.name == 'net-good-stats':
+            if attack.stat_changes[0].change > 0:
+                poke_effected = 'atk_poke'
+            else:
+                poke_effected = 'def_poke'
+        # check each stat that will be changed and try to change it
+        for stat in attack.stat_changes:
+            stat_changed = stat.stat.name
+            change = stat.change
+            if poke_effected == 'atk_poke':
+                if stat_changed == 'attack':
+                    stat_stage = mod_to_stage[atk_stat_mods['attack']]
+                    stat_stage = stat_stage + change
+                    if stat_stage > 6:
+                        stat_stage = 6
+                    elif stat_stage < -6:
+                        stat_stage = -6
+                    atk_stat_mods['attack'] = stage_to_mod[stat_stage]
+                if stat_changed == 'defense':
+                    stat_stage = mod_to_stage[atk_stat_mods['defense']]
+                    stat_stage = stat_stage + change
+                    if stat_stage > 6:
+                        stat_stage = 6
+                    elif stat_stage < -6:
+                        stat_stage = -6
+                    atk_stat_mods['defense'] = stage_to_mod[stat_stage]
+                if stat_changed == 'special-attack':
+                    stat_stage = mod_to_stage[atk_stat_mods['special-attack']]
+                    stat_stage = stat_stage + change
+                    if stat_stage > 6:
+                        stat_stage = 6
+                    elif stat_stage < -6:
+                        stat_stage = -6
+                    atk_stat_mods['special-attack'] = stage_to_mod[stat_stage]
+                if stat_changed == 'special-defense':
+                    stat_stage = mod_to_stage[atk_stat_mods['special-defense']]
+                    stat_stage = stat_stage + change
+                    if stat_stage > 6:
+                        stat_stage = 6
+                    elif stat_stage < -6:
+                        stat_stage = -6
+                    atk_stat_mods['special-defense'] = stage_to_mod[stat_stage]
+                if stat_changed == 'speed':
+                    stat_stage = mod_to_stage[atk_stat_mods['speed']]
+                    stat_stage = stat_stage + change
+                    if stat_stage > 6:
+                        stat_stage = 6
+                    elif stat_stage < -6:
+                        stat_stage = -6
+                    atk_stat_mods['speed'] = stage_to_mod[stat_stage]
+                if stat_changed == 'accuracy':
+                    atk_stat_mods['accuracy'] = atk_stat_mods['accuracy'] + change
+                    if atk_stat_mods['accuracy'] > 6:
+                        atk_stat_mods['accuracy'] = 6
+                    elif atk_stat_mods['accuracy'] < -6:
+                        atk_stat_mods['accuracy'] = -6
+                if stat_changed == 'evasion':
+                    atk_stat_mods['evasion'] = atk_stat_mods['evasion'] + change
+                    if atk_stat_mods['evasion'] > 6:
+                        atk_stat_mods['evasion'] = 6
+                    elif atk_stat_mods['evasion'] < -6:
+                        atk_stat_mods['evasion'] = -6
+            else:
+                if stat_changed == 'attack':
+                    stat_stage = mod_to_stage[def_stat_mods['attack']]
+                    stat_stage = stat_stage + change
+                    if stat_stage > 6:
+                        stat_stage = 6
+                    elif stat_stage < -6:
+                        stat_stage = -6
+                    def_stat_mods['attack'] = stage_to_mod[stat_stage]
+                if stat_changed == 'defense':
+                    stat_stage = mod_to_stage[def_stat_mods['defense']]
+                    stat_stage = stat_stage + change
+                    if stat_stage > 6:
+                        stat_stage = 6
+                    elif stat_stage < -6:
+                        stat_stage = -6
+                    def_stat_mods['defense'] = stage_to_mod[stat_stage]
+                if stat_changed == 'special-attack':
+                    stat_stage = mod_to_stage[def_stat_mods['special-attack']]
+                    stat_stage = stat_stage + change
+                    if stat_stage > 6:
+                        stat_stage = 6
+                    elif stat_stage < -6:
+                        stat_stage = -6
+                    def_stat_mods['special-attack'] = stage_to_mod[stat_stage]
+                if stat_changed == 'special-defense':
+                    stat_stage = mod_to_stage[def_stat_mods['special-defense']]
+                    stat_stage = stat_stage + change
+                    if stat_stage > 6:
+                        stat_stage = 6
+                    elif stat_stage < -6:
+                        stat_stage = -6
+                    def_stat_mods['special-defense'] = stage_to_mod[stat_stage]
+                if stat_changed == 'speed':
+                    stat_stage = mod_to_stage[def_stat_mods['speed']]
+                    stat_stage = stat_stage + change
+                    if stat_stage > 6:
+                        stat_stage = 6
+                    elif stat_stage < -6:
+                        stat_stage = -6
+                    def_stat_mods['speed'] = stage_to_mod[stat_stage]
+                if stat_changed == 'accuracy':
+                    def_stat_mods['accuracy'] = def_stat_mods['accuracy'] + change
+                    if def_stat_mods['accuracy'] > 6:
+                        def_stat_mods['accuracy'] = 6
+                    elif def_stat_mods['accuracy'] < -6:
+                        def_stat_mods['accuracy'] = -6
+                if stat_changed == 'evasion':
+                    def_stat_mods['evasion'] = def_stat_mods['evasion'] + change
+                    if def_stat_mods['evasion'] > 6:
+                        def_stat_mods['evasion'] = 6
+                    elif def_stat_mods['evasion'] < -6:
+                        def_stat_mods['evasion'] = -6
+    return [atk_stat_mods, def_stat_mods]
 
 
 """A function that determines the legality of a Pokémon team.
