@@ -412,6 +412,15 @@ def changeStats(atk_poke, def_poke, atk_stat_mods, def_stat_mods, attack):
                     else:
                         stat_stage = mod_to_stage[def_stat_mods['attack']]
                         stat_stage = stat_stage + change
+                        if change < 0 and def_poke['ability'] == 'defiant':
+                            # If the attack stat was lowered, raise it by 2 stages if the defending mon has defiant
+                            stat_stage = stat_stage + 2
+                        elif change < 0 and def_poke['ability'] == 'competitive':
+                            # If a stat was lowered and the defending mon has competitive, increase special attack by 2 stages
+                            sp_atk_stage = mod_to_stage[def_stat_mods['special-attack']] + 2
+                            if sp_atk_stage > 6:
+                                sp_atk_stage = 6
+                            def_stat_mods['special-attack'] = stage_to_mod[sp_atk_stage]
                         if stat_stage > 6:
                             stat_stage = 6
                         elif stat_stage < -6:
@@ -425,6 +434,18 @@ def changeStats(atk_poke, def_poke, atk_stat_mods, def_stat_mods, attack):
                     else:
                         stat_stage = mod_to_stage[def_stat_mods['defense']]
                         stat_stage = stat_stage + change
+                        if change < 0 and def_poke['ability'] == 'defiant':
+                            # If a stat was lowered and the defending mon has defiant, increase attack by 2 stages
+                            atk_stage = mod_to_stage[def_stat_mods['attack']] + 2
+                            if atk_stage > 6:
+                                atk_stage = 6
+                            def_stat_mods['attack'] = stage_to_mod[atk_stage]
+                        elif change < 0 and def_poke['ability'] == 'competitive':
+                            # If a stat was lowered and the defending mon has competitive, increase special attack by 2 stages
+                            sp_atk_stage = mod_to_stage[def_stat_mods['special-attack']] + 2
+                            if sp_atk_stage > 6:
+                                sp_atk_stage = 6
+                            def_stat_mods['special-attack'] = stage_to_mod[sp_atk_stage]
                         if stat_stage > 6:
                             stat_stage = 6
                         elif stat_stage < -6:
@@ -438,6 +459,18 @@ def changeStats(atk_poke, def_poke, atk_stat_mods, def_stat_mods, attack):
                     else:
                         stat_stage = mod_to_stage[def_stat_mods['special-attack']]
                         stat_stage = stat_stage + change
+                        if change < 0 and def_poke['ability'] == 'defiant':
+                            # If a stat was lowered and the defending mon has defiant, increase attack by 2 stages
+                            atk_stage = mod_to_stage[def_stat_mods['attack']] + 2
+                            if atk_stage > 6:
+                                atk_stage = 6
+                            def_stat_mods['attack'] = stage_to_mod[atk_stage]
+                        elif change < 0 and def_poke['ability'] == 'competitive':
+                            # If a stat was lowered and the defending mon has competitive, increase special attack by 2 stages
+                            sp_atk_stage = mod_to_stage[def_stat_mods['special-attack']] + 2
+                            if sp_atk_stage > 6:
+                                sp_atk_stage = 6
+                            def_stat_mods['special-attack'] = stage_to_mod[sp_atk_stage]
                         if stat_stage > 6:
                             stat_stage = 6
                         elif stat_stage < -6:
@@ -451,6 +484,18 @@ def changeStats(atk_poke, def_poke, atk_stat_mods, def_stat_mods, attack):
                     else:
                         stat_stage = mod_to_stage[def_stat_mods['special-defense']]
                         stat_stage = stat_stage + change
+                        if change < 0 and def_poke['ability'] == 'defiant':
+                            # If a stat was lowered and the defending mon has defiant, increase attack by 2 stages
+                            atk_stage = mod_to_stage[def_stat_mods['attack']] + 2
+                            if atk_stage > 6:
+                                atk_stage = 6
+                            def_stat_mods['attack'] = stage_to_mod[atk_stage]
+                        elif change < 0 and def_poke['ability'] == 'competitive':
+                            # If a stat was lowered and the defending mon has competitive, increase special attack by 2 stages
+                            sp_atk_stage = mod_to_stage[def_stat_mods['special-attack']] + 2
+                            if sp_atk_stage > 6:
+                                sp_atk_stage = 6
+                            def_stat_mods['special-attack'] = stage_to_mod[sp_atk_stage]
                         if stat_stage > 6:
                             stat_stage = 6
                         elif stat_stage < -6:
@@ -464,6 +509,18 @@ def changeStats(atk_poke, def_poke, atk_stat_mods, def_stat_mods, attack):
                     else:
                         stat_stage = mod_to_stage[def_stat_mods['speed']]
                         stat_stage = stat_stage + change
+                        if change < 0 and def_poke['ability'] == 'defiant':
+                            # If a stat was lowered and the defending mon has defiant, increase attack by 2 stages
+                            atk_stage = mod_to_stage[def_stat_mods['attack']] + 2
+                            if atk_stage > 6:
+                                atk_stage = 6
+                            def_stat_mods['attack'] = stage_to_mod[atk_stage]
+                        elif change < 0 and def_poke['ability'] == 'competitive':
+                            # If a stat was lowered and the defending mon has competitive, increase special attack by 2 stages
+                            sp_atk_stage = mod_to_stage[def_stat_mods['special-attack']] + 2
+                            if sp_atk_stage > 6:
+                                sp_atk_stage = 6
+                            def_stat_mods['special-attack'] = stage_to_mod[sp_atk_stage]
                         if stat_stage > 6:
                             stat_stage = 6
                         elif stat_stage < -6:
@@ -476,6 +533,18 @@ def changeStats(atk_poke, def_poke, atk_stat_mods, def_stat_mods, attack):
                         pass
                     else:
                         def_stat_mods['accuracy'] = def_stat_mods['accuracy'] + change
+                        if change < 0 and def_poke['ability'] == 'defiant':
+                            # If a stat was lowered and the defending mon has defiant, increase attack by 2 stages
+                            atk_stage = mod_to_stage[def_stat_mods['attack']] + 2
+                            if atk_stage > 6:
+                                atk_stage = 6
+                            def_stat_mods['attack'] = stage_to_mod[atk_stage]
+                        elif change < 0 and def_poke['ability'] == 'competitive':
+                            # If a stat was lowered and the defending mon has competitive, increase special attack by 2 stages
+                            sp_atk_stage = mod_to_stage[def_stat_mods['special-attack']] + 2
+                            if sp_atk_stage > 6:
+                                sp_atk_stage = 6
+                            def_stat_mods['special-attack'] = stage_to_mod[sp_atk_stage]
                         if def_stat_mods['accuracy'] > 6:
                             def_stat_mods['accuracy'] = 6
                         elif def_stat_mods['accuracy'] < -6:
@@ -487,6 +556,18 @@ def changeStats(atk_poke, def_poke, atk_stat_mods, def_stat_mods, attack):
                         pass
                     else:
                         def_stat_mods['evasion'] = def_stat_mods['evasion'] + change
+                        if change < 0 and def_poke['ability'] == 'defiant':
+                            # If a stat was lowered and the defending mon has defiant, increase attack by 2 stages
+                            atk_stage = mod_to_stage[def_stat_mods['attack']] + 2
+                            if atk_stage > 6:
+                                atk_stage = 6
+                            def_stat_mods['attack'] = stage_to_mod[atk_stage]
+                        elif change < 0 and def_poke['ability'] == 'competitive':
+                            # If a stat was lowered and the defending mon has competitive, increase special attack by 2 stages
+                            sp_atk_stage = mod_to_stage[def_stat_mods['special-attack']] + 2
+                            if sp_atk_stage > 6:
+                                sp_atk_stage = 6
+                            def_stat_mods['special-attack'] = stage_to_mod[sp_atk_stage]
                         if def_stat_mods['evasion'] > 6:
                             def_stat_mods['evasion'] = 6
                         elif def_stat_mods['evasion'] < -6:
