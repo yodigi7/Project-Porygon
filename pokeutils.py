@@ -321,11 +321,11 @@ def_stat_mods -- the defender's stat modifiers as a dict
 attack -- the raw data for a pokemon attack
 """
 def changeStats(atk_stat_mods, def_stat_mods, attack):
-    stage_to_mod = {-6: 0.25, -5: 0.286, -4: 0.333, -3: 0.4, -2: 0.5, -1: 0.667, 0: 1, 1: 1.5, 2: 2, 3: 2.5, 4: 3, 5: 3.5, 6: 4}
-    mod_to_stage = {0.25: -6, 0.286: -5, 0.333: -4, 0.4: -3, 0.5: -2, 0.667: -1, 1: 0, 1.5: 1, 2: 2, 2.5: 3, 3: 4, 3.5: 5, 4: 6}
+    stage_to_mod = {-6: 0.25, -5: 0.29, -4: 0.33, -3: 0.4, -2: 0.5, -1: 0.67, 0: 1, 1: 1.5, 2: 2, 3: 2.5, 4: 3, 5: 3.5, 6: 4}
+    mod_to_stage = {0.25: -6, 0.29: -5, 0.33: -4, 0.4: -3, 0.5: -2, 0.67: -1, 1: 0, 1.5: 1, 2: 2, 2.5: 3, 3: 4, 3.5: 5, 4: 6}
     stat_chance = attack.meta.stat_chance
     stat_changed_prob = random.randrange(0,100)
-    if stat_changed_prob < stat_chance:
+    if stat_changed_prob < stat_chance or stat_chance == 0:
         # Figure out which Pokémon's stats will be changed
         poke_effected = ''
         if attack.meta.category.name == 'damage+lower' or attack.meta.category.name == 'swagger':
