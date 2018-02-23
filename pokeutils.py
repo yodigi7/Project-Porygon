@@ -321,6 +321,8 @@ def_stat_mods -- the defender's stat modifiers as a dict
 attack -- the raw data for a pokemon attack
 """
 def changeStats(atk_stat_mods, def_stat_mods, attack):
+    stage_to_mod = {-6: 0.25, -5: 0.286, -4: 0.333, -3: 0.4, -2: 0.5, -1: 0.667, 0: 1, 1: 1.5, 2: 2, 3: 2.5, 4: 3, 5: 3.5, 6: 4}
+    mod_to_stage = {0.25: -6, 0.286: -5, 0.333: -4, 0.4: -3, 0.5: -2, 0.667: -1, 1: 0, 1.5: 1, 2: 2, 2.5: 3, 3: 4, 3.5: 5, 4: 6}
     stat_chance = attack.meta.stat_chance
     stat_changed_prob = random.randrange(0,100)
     if stat_changed_prob < stat_chance:
@@ -341,35 +343,45 @@ def changeStats(atk_stat_mods, def_stat_mods, attack):
             change = stat.change
             if poke_effected == 'atk_poke':
                 if stat_changed == 'attack':
-                    atk_stat_mods['attack'] = atk_stat_mods['attack'] + change
-                    if atk_stat_mods['attack'] > 6:
-                        atk_stat_mods['attack'] = 6
-                    elif atk_stat_mods['attack'] < -6:
-                        atk_stat_mods['attack'] = -6
+                    stat_stage = mod_to_stage[atk_stat_mods['attack']]
+                    stat_stage = stat_stage + change
+                    if stat_stage > 6:
+                        stat_stage = 6
+                    elif stat_stage < -6:
+                        stat_stage = -6
+                    atk_stat_mods['attack'] = stage_to_mod[stat_stage]
                 if stat_changed == 'defense':
-                    atk_stat_mods['defense'] = atk_stat_mods['defense'] + change
-                    if atk_stat_mods['defense'] > 6:
-                        atk_stat_mods['defense'] = 6
-                    elif atk_stat_mods['defense'] < -6:
-                        atk_stat_mods['defense'] = -6
+                    stat_stage = mod_to_stage[atk_stat_mods['defense']]
+                    stat_stage = stat_stage + change
+                    if stat_stage > 6:
+                        stat_stage = 6
+                    elif stat_stage < -6:
+                        stat_stage = -6
+                    atk_stat_mods['defense'] = stage_to_mod[stat_stage]
                 if stat_changed == 'special-attack':
-                    atk_stat_mods['special-attack'] = atk_stat_mods['special-attack'] + change
-                    if atk_stat_mods['special-attack'] > 6:
-                        atk_stat_mods['special-attack'] = 6
-                    elif atk_stat_mods['special-attack'] < -6:
-                        atk_stat_mods['special-attack'] = -6
+                    stat_stage = mod_to_stage[atk_stat_mods['special-attack']]
+                    stat_stage = stat_stage + change
+                    if stat_stage > 6:
+                        stat_stage = 6
+                    elif stat_stage < -6:
+                        stat_stage = -6
+                    atk_stat_mods['special-attack'] = stage_to_mod[stat_stage]
                 if stat_changed == 'special-defense':
-                    atk_stat_mods['special-defense'] = atk_stat_mods['special-defense'] + change
-                    if atk_stat_mods['special-defense'] > 6:
-                        atk_stat_mods['special-defense'] = 6
-                    elif atk_stat_mods['special-defense'] < -6:
-                        atk_stat_mods['special-defense'] = -6
+                    stat_stage = mod_to_stage[atk_stat_mods['special-defense']]
+                    stat_stage = stat_stage + change
+                    if stat_stage > 6:
+                        stat_stage = 6
+                    elif stat_stage < -6:
+                        stat_stage = -6
+                    atk_stat_mods['special-defense'] = stage_to_mod[stat_stage]
                 if stat_changed == 'speed':
-                    atk_stat_mods['speed'] = atk_stat_mods['speed'] + change
-                    if atk_stat_mods['speed'] > 6:
-                        atk_stat_mods['speed'] = 6
-                    elif atk_stat_mods['speed'] < -6:
-                        atk_stat_mods['speed'] = -6
+                    stat_stage = mod_to_stage[atk_stat_mods['speed']]
+                    stat_stage = stat_stage + change
+                    if stat_stage > 6:
+                        stat_stage = 6
+                    elif stat_stage < -6:
+                        stat_stage = -6
+                    atk_stat_mods['speed'] = stage_to_mod[stat_stage]
                 if stat_changed == 'accuracy':
                     atk_stat_mods['accuracy'] = atk_stat_mods['accuracy'] + change
                     if atk_stat_mods['accuracy'] > 6:
@@ -384,35 +396,45 @@ def changeStats(atk_stat_mods, def_stat_mods, attack):
                         atk_stat_mods['evasion'] = -6
             else:
                 if stat_changed == 'attack':
-                    def_stat_mods['attack'] = def_stat_mods['attack'] + change
-                    if def_stat_mods['attack'] > 6:
-                        def_stat_mods['attack'] = 6
-                    elif def_stat_mods['attack'] < -6:
-                        def_stat_mods['attack'] = -6
+                    stat_stage = mod_to_stage[def_stat_mods['attack']]
+                    stat_stage = stat_stage + change
+                    if stat_stage > 6:
+                        stat_stage = 6
+                    elif stat_stage < -6:
+                        stat_stage = -6
+                    def_stat_mods['attack'] = stage_to_mod[stat_stage]
                 if stat_changed == 'defense':
-                    def_stat_mods['defense'] = def_stat_mods['defense'] + change
-                    if def_stat_mods['defense'] > 6:
-                        def_stat_mods['defense'] = 6
-                    elif def_stat_mods['defense'] < -6:
-                        def_stat_mods['defense'] = -6
+                    stat_stage = mod_to_stage[def_stat_mods['defense']]
+                    stat_stage = stat_stage + change
+                    if stat_stage > 6:
+                        stat_stage = 6
+                    elif stat_stage < -6:
+                        stat_stage = -6
+                    def_stat_mods['defense'] = stage_to_mod[stat_stage]
                 if stat_changed == 'special-attack':
-                    def_stat_mods['special-attack'] = def_stat_mods['special-attack'] + change
-                    if def_stat_mods['special-attack'] > 6:
-                        def_stat_mods['special-attack'] = 6
-                    elif def_stat_mods['special-attack'] < -6:
-                        def_stat_mods['special-attack'] = -6
+                    stat_stage = mod_to_stage[def_stat_mods['special-attack']]
+                    stat_stage = stat_stage + change
+                    if stat_stage > 6:
+                        stat_stage = 6
+                    elif stat_stage < -6:
+                        stat_stage = -6
+                    def_stat_mods['special-attack'] = stage_to_mod[stat_stage]
                 if stat_changed == 'special-defense':
-                    def_stat_mods['special-defense'] = def_stat_mods['special-defense'] + change
-                    if def_stat_mods['special-defense'] > 6:
-                        def_stat_mods['special-defense'] = 6
-                    elif def_stat_mods['special-defense'] < -6:
-                        def_stat_mods['special-defense'] = -6
+                    stat_stage = mod_to_stage[def_stat_mods['special-defense']]
+                    stat_stage = stat_stage + change
+                    if stat_stage > 6:
+                        stat_stage = 6
+                    elif stat_stage < -6:
+                        stat_stage = -6
+                    def_stat_mods['special-defense'] = stage_to_mod[stat_stage]
                 if stat_changed == 'speed':
-                    def_stat_mods['speed'] = def_stat_mods['speed'] + change
-                    if def_stat_mods['speed'] > 6:
-                        def_stat_mods['speed'] = 6
-                    elif def_stat_mods['speed'] < -6:
-                        def_stat_mods['speed'] = -6
+                    stat_stage = mod_to_stage[def_stat_mods['speed']]
+                    stat_stage = stat_stage + change
+                    if stat_stage > 6:
+                        stat_stage = 6
+                    elif stat_stage < -6:
+                        stat_stage = -6
+                    def_stat_mods['speed'] = stage_to_mod[stat_stage]
                 if stat_changed == 'accuracy':
                     def_stat_mods['accuracy'] = def_stat_mods['accuracy'] + change
                     if def_stat_mods['accuracy'] > 6:
