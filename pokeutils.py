@@ -321,7 +321,54 @@ def_stat_mods -- the defender's stat modifiers as a dict
 attack -- the raw data for a pokemon attack
 """
 def changeStats(atk_stat_mods, def_stat_mods, attack):
-    pass
+    stat_chance = attack.meta.stat_chance
+    stat_changed_prob = random.randrange(0,100)
+    if stat_changed_prob < stat_chance:
+        # Figure out which Pokémon's stats will be changed
+        poke_effected = ''
+        if attack.meta.category.name == 'damage+lower' or attack.meta.category.name == 'swagger':
+            poke_effected = 'def_poke'
+        elif attack.meta.category.name == 'damage+raise':
+            poke_effected = 'atk_poke'
+        elif attack.meta.category.name == 'net-good-stats':
+            if attack.stat_changes[0].change > 0:
+                poke_effected = 'atk_poke'
+            else:
+                poke_effected = 'def_poke'
+        # check each stat that will be changed and try to change it
+        for stat in attack.stat_changes:
+            stat_changed = stat.stat.name
+            change = stat.change
+            if poke_effected == 'atk_poke':
+                if stat_changed == 'attack':
+                    pass
+                if stat_changed == 'defense':
+                    pass
+                if stat_changed == 'special-attack':
+                    pass
+                if stat_changed == 'special-defense':
+                    pass
+                if stat_changed == 'speed':
+                    pass
+                if stat_changed == 'accuracy':
+                    pass
+                if stat_changed == 'evasion':
+                    pass
+            else:
+                if stat_changed == 'attack':
+                    pass
+                if stat_changed == 'defense':
+                    pass
+                if stat_changed == 'special-attack':
+                    pass
+                if stat_changed == 'special-defense':
+                    pass
+                if stat_changed == 'speed':
+                    pass
+                if stat_changed == 'accuracy':
+                    pass
+                if stat_changed == 'evasion':
+                    pass
 
 
 """A function that determines the legality of a Pokémon team.
