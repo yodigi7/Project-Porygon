@@ -341,34 +341,91 @@ def changeStats(atk_stat_mods, def_stat_mods, attack):
             change = stat.change
             if poke_effected == 'atk_poke':
                 if stat_changed == 'attack':
-                    pass
+                    atk_stat_mods['attack'] = atk_stat_mods['attack'] + change
+                    if atk_stat_mods['attack'] > 6:
+                        atk_stat_mods['attack'] = 6
+                    elif atk_stat_mods['attack'] < -6:
+                        atk_stat_mods['attack'] = -6
                 if stat_changed == 'defense':
-                    pass
+                    atk_stat_mods['defense'] = atk_stat_mods['defense'] + change
+                    if atk_stat_mods['defense'] > 6:
+                        atk_stat_mods['defense'] = 6
+                    elif atk_stat_mods['defense'] < -6:
+                        atk_stat_mods['defense'] = -6
                 if stat_changed == 'special-attack':
-                    pass
+                    atk_stat_mods['special-attack'] = atk_stat_mods['special-attack'] + change
+                    if atk_stat_mods['special-attack'] > 6:
+                        atk_stat_mods['special-attack'] = 6
+                    elif atk_stat_mods['special-attack'] < -6:
+                        atk_stat_mods['special-attack'] = -6
                 if stat_changed == 'special-defense':
-                    pass
+                    atk_stat_mods['special-defense'] = atk_stat_mods['special-defense'] + change
+                    if atk_stat_mods['special-defense'] > 6:
+                        atk_stat_mods['special-defense'] = 6
+                    elif atk_stat_mods['special-defense'] < -6:
+                        atk_stat_mods['special-defense'] = -6
                 if stat_changed == 'speed':
-                    pass
+                    atk_stat_mods['speed'] = atk_stat_mods['speed'] + change
+                    if atk_stat_mods['speed'] > 6:
+                        atk_stat_mods['speed'] = 6
+                    elif atk_stat_mods['speed'] < -6:
+                        atk_stat_mods['speed'] = -6
                 if stat_changed == 'accuracy':
-                    pass
+                    atk_stat_mods['accuracy'] = atk_stat_mods['accuracy'] + change
+                    if atk_stat_mods['accuracy'] > 6:
+                        atk_stat_mods['accuracy'] = 6
+                    elif atk_stat_mods['accuracy'] < -6:
+                        atk_stat_mods['accuracy'] = -6
                 if stat_changed == 'evasion':
-                    pass
+                    atk_stat_mods['evasion'] = atk_stat_mods['evasion'] + change
+                    if atk_stat_mods['evasion'] > 6:
+                        atk_stat_mods['evasion'] = 6
+                    elif atk_stat_mods['evasion'] < -6:
+                        atk_stat_mods['evasion'] = -6
             else:
                 if stat_changed == 'attack':
-                    pass
+                    def_stat_mods['attack'] = def_stat_mods['attack'] + change
+                    if def_stat_mods['attack'] > 6:
+                        def_stat_mods['attack'] = 6
+                    elif def_stat_mods['attack'] < -6:
+                        def_stat_mods['attack'] = -6
                 if stat_changed == 'defense':
-                    pass
+                    def_stat_mods['defense'] = def_stat_mods['defense'] + change
+                    if def_stat_mods['defense'] > 6:
+                        def_stat_mods['defense'] = 6
+                    elif def_stat_mods['defense'] < -6:
+                        def_stat_mods['defense'] = -6
                 if stat_changed == 'special-attack':
-                    pass
+                    def_stat_mods['special-attack'] = def_stat_mods['special-attack'] + change
+                    if def_stat_mods['special-attack'] > 6:
+                        def_stat_mods['special-attack'] = 6
+                    elif def_stat_mods['special-attack'] < -6:
+                        def_stat_mods['special-attack'] = -6
                 if stat_changed == 'special-defense':
-                    pass
+                    def_stat_mods['special-defense'] = def_stat_mods['special-defense'] + change
+                    if def_stat_mods['special-defense'] > 6:
+                        def_stat_mods['special-defense'] = 6
+                    elif def_stat_mods['special-defense'] < -6:
+                        def_stat_mods['special-defense'] = -6
                 if stat_changed == 'speed':
-                    pass
+                    def_stat_mods['speed'] = def_stat_mods['speed'] + change
+                    if def_stat_mods['speed'] > 6:
+                        def_stat_mods['speed'] = 6
+                    elif def_stat_mods['speed'] < -6:
+                        def_stat_mods['speed'] = -6
                 if stat_changed == 'accuracy':
-                    pass
+                    def_stat_mods['accuracy'] = def_stat_mods['accuracy'] + change
+                    if def_stat_mods['accuracy'] > 6:
+                        def_stat_mods['accuracy'] = 6
+                    elif def_stat_mods['accuracy'] < -6:
+                        def_stat_mods['accuracy'] = -6
                 if stat_changed == 'evasion':
-                    pass
+                    def_stat_mods['evasion'] = def_stat_mods['evasion'] + change
+                    if def_stat_mods['evasion'] > 6:
+                        def_stat_mods['evasion'] = 6
+                    elif def_stat_mods['evasion'] < -6:
+                        def_stat_mods['evasion'] = -6
+    return [atk_stat_mods, def_stat_mods]
 
 
 """A function that determines the legality of a Pokémon team.
