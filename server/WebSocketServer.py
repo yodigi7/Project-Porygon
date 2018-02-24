@@ -17,6 +17,7 @@ user_settings_file = 'user_settings.json'
 
 
 def user():
+    """ Returns the current user's user-settings dictionary. """
     if session['username'] not in user_settings:
         user_settings[session['username']] = {
             'bots': []
@@ -25,10 +26,12 @@ def user():
     return user_settings[session['username']]
 
 def save_to_file(data, filepath):
+    """ Saves JSON from 'data' to a file at 'filepath'. """
     with open(filepath, 'w') as f:
         json.dump(data, f)
 
 def load_from_file(filepath):
+    """ Returns a JSON structure loaded from 'filepath'. """
     if os.path.isfile(filepath):
         with open(filepath, 'r') as f:
             u = json.load(f)
@@ -36,14 +39,17 @@ def load_from_file(filepath):
     return {}
 
 def user_exists(username):
+    """ Returns true if the 'username' is an existing one. """
     return username in users
 
 def valid_login(username, password):
+    """ Returns true if the username/password combination is a match. """
     return username in users and users[username] == password
 
+# Decorators
 
-# Decorator to redirect to login page if not logged in.
 def require_login(func):
+    """ Decorator to redirect to the login page if not logged in. """
     @wraps(func)
     def f(*args, **kwargs):
         if 'username' not in session:
@@ -52,8 +58,8 @@ def require_login(func):
         return func(*args, **kwargs)
     return f
 
-# Decorator to redirect to home page if logged in.
 def require_logged_out(func):
+    """ Decorator to redirect to home page if already logged in. """
     @wraps(func)
     def f(*args, **kwargs):
         if 'username' in session:
@@ -84,11 +90,11 @@ def battle():
 def account():
     if request.method == 'POST':
         if 'newAI' in request.form:
-            if len(user()['bots'] >= MAX_BOTS):
+            if len(user()['bots']) >= MAX_BOTS:
                 flash("You are at the maximum number of AIs already.")
             else:
                 bot_name = "Bot " + str(len(user()['bots']))
-                bot_key = uuid.uuid4()
+                bot_key = uuid.uuid4().hex
                 user()['bots'].append({'name': bot_name, 'key': bot_key})
                 save_to_file(user_settings, user_settings_file)
         elif 'deleteAI' in request.form:

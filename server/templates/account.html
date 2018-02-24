@@ -1,28 +1,36 @@
 {% extends "layout.html" %}
 {% block content %}
   <div class="account_page">
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <p>{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
     <h1>Account</h1>
     <p>Mangement of an account is done here, will include login at a later date</p>
-
   </div>
   <div>
     <h1>Your AIs</h1>
     <form method="post">
       <button type="submit" name="newAI" value="add">Add New AI</button>
     </form>
-    {% if len(value) == 0 %}
+    {% if bots|length == 0 %}
       <p>No AIs to display.</p>
     {% else %}
     <table>
-      {% for bot in bots %}
         <tr>
           <td>Bot Name</td>
           <td>Login Key</td>
         </tr>
+      {% for bot in bots %}
         <tr>
           <td>{{ bot['name'] }}</td>
           <td>{{ bot['key'] }}</td>
-          <td><form method="post"><button type="submit" name="deleteAI" value="{{ bot['key'] }}">Delete</button></form></td>
+          <td><form method="post"><button type="submit"
+                    name="deleteAI" value="{{ bot['key'] }}"
+                    onclick="return confirm('Are you sure you want to delete this AI?')">Delete</button></form></td>
         </tr>
       {% endfor %}
     </table>
