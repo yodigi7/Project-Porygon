@@ -93,12 +93,14 @@ def calcStats(pokemon):
 """A function that calculates and returns the raw damage of a Pokémon attack.
 
 Parameters:
-atk_poke -- the attacking pokemon as a dict
-def_poke -- the defending pokemon as a dict
-effective_stats -- a dict containing the current, in-battle stats of each poke
+combatants -- a dict containing the current pokemon in battle
+raw_stats -- a dict containing the unmodified stats of each poke
+modded_stats -- a dict containing the modified stats of each poke
 attack -- the raw data for a pokemon attack
 """
-def calcDamage(atk_poke, def_poke, effective_stats, attack):
+def calcDamage(combatants, raw_stats, modded_stats, attack):
+    atk_poke = combatants['atk_poke']
+    def_poke = combatants['def_poke']
 
     #  Calculate damage
     #  I used Bulbapedia for the math. Hopefully it's correct!
@@ -123,10 +125,12 @@ def calcDamage(atk_poke, def_poke, effective_stats, attack):
     # Each move has a chance to be a critical hit and deal 1.5x damage.
     # Most moves have a 4.17% chance to be a critical hit, but some have higher odds.
     # For now, each move will have a 4.17% chance to be a critical hit.
-    critical = 1
+    crit = False
+    crit_mod = 1
     crit_chance = random.randrange(0, 10000)
     if crit_chance < 417:
-        critical = 1.5
+        crit = True
+        crit_mod = 1.5
     
     # Each attack has a random range multiplier from  0.85 to 1.00
     random_mult = random.randrange(85, 101) / 100
@@ -156,7 +160,7 @@ def calcDamage(atk_poke, def_poke, effective_stats, attack):
     other_modifier = 1
     
     # The overall modifier
-    modifier = weather_modifier * critical * random_mult * stab * type_effective * burn_modifier * other_modifier
+    modifier = weather_modifier * crit_mod * random_mult * stab * type_effective * burn_modifier * other_modifier
 
     #  useful variables that correspond to any given attack
     atk_dam_type = attack.damage_class.name
@@ -166,9 +170,13 @@ def calcDamage(atk_poke, def_poke, effective_stats, attack):
     #  the level of the attacker is used in damage calcs
     atk_level = atk_poke['level']
 
-    #  get relevant dictionaries out of effective_stats
-    atk_stats = effective_stats['atk_stats']
-    def_stats = effective_stats['def_stats']
+    #  get relevant stat dictionaries
+    #  in the case of a crit, we use the defender's unmodified stats
+    atk_stats = modded_stats['atk_stats']
+    if crit:
+        def_stats = raw_stats['def_stats']
+    else:
+        def_stats = modded_stats['def_stats']
 
     #  calcs vary based on physical versus special attacks
     if atk_dam_type == 'physical':
@@ -212,6 +220,10 @@ def applyStatus(atk_poke, def_poke, attack):
 
         # chance that the attack can leave a status condition
         status_prob = attack.meta.ailment_chance
+        
+        # if the attacking Pokémon has the ability Serene Grace, the chance to implement a status is doubled
+        if atk_poke['ability'] == 'serene-grace':
+            status_prob = status_prob * 2
 
         # check if status is inflicted, it will be inflicted if a random number generated is less than
         # the percent chance to inflict that status
@@ -229,11 +241,10 @@ def applyStatus(atk_poke, def_poke, attack):
                     status_inflicted = 'paralysis'
                 else:
                     status_inflicted = 'freeze'
-
             # The attacks Toxic and Poison Fang inflict Bad Poison rather than regular poison,
             # but the API does not distinguish between bad poison and regular poison; these
             # attacks have internal ids of 92 and 305 in the API
-            if attack.id == 92 or attack.id == 305:
+            elif attack.id == 92 or attack.id == 305:
                 status_inflicted = 'toxic'
 
             # proceed to check if the status can be inflicted on the defending Pokémon
@@ -244,50 +255,43 @@ def applyStatus(atk_poke, def_poke, attack):
                         status_inflicted = 'none'
                 if def_poke['ability'] == 'immunity':
                     status_inflicted = 'none'
-
             # Fire types cannot be burned, nor can Pokémon with the ability Water Veil
-            if status_inflicted == 'burn':
+            elif status_inflicted == 'burn':
                 for type_name in pb.pokemon(def_poke['species']).types:
                     if type_name.type.name == 'fire':
                         status_inflicted = 'none'
                 if def_poke['ability'] == 'water-veil':
                     status_inflicted = 'none'
-
             # Electric types cannot be paralyzed, nor can Pokémon with the ability Limber
-            if status_inflicted == 'paralysis':
+            elif status_inflicted == 'paralysis':
                 for type_name in pb.pokemon(def_poke['species']).types:
                     if type_name.type.name == 'electric':
                         status_inflicted = 'none'
                 if def_poke['ability'] == 'limber':
                     status_inflicted = 'none'
-
             # Ice types cannot be frozen, nor can Pokémon with the ability Magma Armor
-            if status_inflicted == 'freeze':
+            elif status_inflicted == 'freeze':
                 for type_name in pb.pokemon(def_poke['species']).types:
                     if type_name.type.name == 'ice':
                         status_inflicted = 'none'
                 if def_poke['ability'] == 'magma-armor':
                     status_inflicted = 'none'
-
             # Pokémon with the abilities Insomnia and Vital Spirit cannot be put to sleep
-            if status_inflicted == 'sleep':
+            elif status_inflicted == 'sleep':
                 if def_poke['ability'] == 'insomnia' or def_poke['ability'] == 'vital-spirit':
                     status_inflicted = 'none'
-
             # Pokémon with the ability Own Tempo cannot be confused
-            if status_inflicted == 'confusion' and def_poke['ability'] == 'own-tempo':
+            elif status_inflicted == 'confusion' and def_poke['ability'] == 'own-tempo':
                 status_inflicted = 'none'
-            
             # Grass types cannot be affected by Leech Seed
-            if status_inflicted == 'leech-seed':
+            elif status_inflicted == 'leech-seed':
                 for type_name in pb.pokemon(def_poke['species']).types:
                     if type_name.type.name == 'grass':
                         status_inflicted = 'none'
-            
             # Grass types cannot be affected by powder moves, nor can Pokémon with the ability Overcoat
             # Powder moves that inflict status are Stun Spore, Spore, Sleep Powder, and Poison Powder
             # These attacks have ids of 78, 147, 79, and 77
-            if attack.id == 77 or attack.id == 78 or attack.id == 79 or attack.id == 147:
+            elif attack.id == 77 or attack.id == 78 or attack.id == 79 or attack.id == 147:
                 for type_name in pb.pokemon(def_poke['species']).types:
                     if type_name.type.name == 'grass':
                         status_inflicted = 'none'
@@ -300,7 +304,6 @@ def applyStatus(atk_poke, def_poke, attack):
         for type_name in pb.pokemon(atk_poke['species']).types:
             if type_name.type.name == 'ghost':
                 status_inflicted = 'curse'
-                return status_inflicted
     # Case for taunt, as status is listed as 'none' in API
     # Pokémon with the ability Oblivious are immune to the effects of taunt
     # Taunt has an id of 269
@@ -322,7 +325,133 @@ def_stat_mods -- the defender's stat modifiers as a dict
 attack -- the raw data for a pokemon attack
 """
 def changeStats(atk_stat_mods, def_stat_mods, attack):
-    pass
+    stage_to_mod = {-6: 0.25, -5: 0.29, -4: 0.33, -3: 0.4, -2: 0.5, -1: 0.67, 0: 1, 1: 1.5, 2: 2, 3: 2.5, 4: 3, 5: 3.5, 6: 4}
+    mod_to_stage = {0.25: -6, 0.29: -5, 0.33: -4, 0.4: -3, 0.5: -2, 0.67: -1, 1: 0, 1.5: 1, 2: 2, 2.5: 3, 3: 4, 3.5: 5, 4: 6}
+    stat_chance = attack.meta.stat_chance
+    stat_changed_prob = random.randrange(0,100)
+    if stat_changed_prob < stat_chance or stat_chance == 0:
+        # Figure out which Pokémon's stats will be changed
+        poke_effected = ''
+        if attack.meta.category.name == 'damage+lower' or attack.meta.category.name == 'swagger':
+            poke_effected = 'def_poke'
+        elif attack.meta.category.name == 'damage+raise':
+            poke_effected = 'atk_poke'
+        elif attack.meta.category.name == 'net-good-stats':
+            if attack.stat_changes[0].change > 0:
+                poke_effected = 'atk_poke'
+            else:
+                poke_effected = 'def_poke'
+        # check each stat that will be changed and try to change it
+        for stat in attack.stat_changes:
+            stat_changed = stat.stat.name
+            change = stat.change
+            if poke_effected == 'atk_poke':
+                if stat_changed == 'attack':
+                    stat_stage = mod_to_stage[atk_stat_mods['attack']]
+                    stat_stage = stat_stage + change
+                    if stat_stage > 6:
+                        stat_stage = 6
+                    elif stat_stage < -6:
+                        stat_stage = -6
+                    atk_stat_mods['attack'] = stage_to_mod[stat_stage]
+                if stat_changed == 'defense':
+                    stat_stage = mod_to_stage[atk_stat_mods['defense']]
+                    stat_stage = stat_stage + change
+                    if stat_stage > 6:
+                        stat_stage = 6
+                    elif stat_stage < -6:
+                        stat_stage = -6
+                    atk_stat_mods['defense'] = stage_to_mod[stat_stage]
+                if stat_changed == 'special-attack':
+                    stat_stage = mod_to_stage[atk_stat_mods['special-attack']]
+                    stat_stage = stat_stage + change
+                    if stat_stage > 6:
+                        stat_stage = 6
+                    elif stat_stage < -6:
+                        stat_stage = -6
+                    atk_stat_mods['special-attack'] = stage_to_mod[stat_stage]
+                if stat_changed == 'special-defense':
+                    stat_stage = mod_to_stage[atk_stat_mods['special-defense']]
+                    stat_stage = stat_stage + change
+                    if stat_stage > 6:
+                        stat_stage = 6
+                    elif stat_stage < -6:
+                        stat_stage = -6
+                    atk_stat_mods['special-defense'] = stage_to_mod[stat_stage]
+                if stat_changed == 'speed':
+                    stat_stage = mod_to_stage[atk_stat_mods['speed']]
+                    stat_stage = stat_stage + change
+                    if stat_stage > 6:
+                        stat_stage = 6
+                    elif stat_stage < -6:
+                        stat_stage = -6
+                    atk_stat_mods['speed'] = stage_to_mod[stat_stage]
+                if stat_changed == 'accuracy':
+                    atk_stat_mods['accuracy'] = atk_stat_mods['accuracy'] + change
+                    if atk_stat_mods['accuracy'] > 6:
+                        atk_stat_mods['accuracy'] = 6
+                    elif atk_stat_mods['accuracy'] < -6:
+                        atk_stat_mods['accuracy'] = -6
+                if stat_changed == 'evasion':
+                    atk_stat_mods['evasion'] = atk_stat_mods['evasion'] + change
+                    if atk_stat_mods['evasion'] > 6:
+                        atk_stat_mods['evasion'] = 6
+                    elif atk_stat_mods['evasion'] < -6:
+                        atk_stat_mods['evasion'] = -6
+            else:
+                if stat_changed == 'attack':
+                    stat_stage = mod_to_stage[def_stat_mods['attack']]
+                    stat_stage = stat_stage + change
+                    if stat_stage > 6:
+                        stat_stage = 6
+                    elif stat_stage < -6:
+                        stat_stage = -6
+                    def_stat_mods['attack'] = stage_to_mod[stat_stage]
+                if stat_changed == 'defense':
+                    stat_stage = mod_to_stage[def_stat_mods['defense']]
+                    stat_stage = stat_stage + change
+                    if stat_stage > 6:
+                        stat_stage = 6
+                    elif stat_stage < -6:
+                        stat_stage = -6
+                    def_stat_mods['defense'] = stage_to_mod[stat_stage]
+                if stat_changed == 'special-attack':
+                    stat_stage = mod_to_stage[def_stat_mods['special-attack']]
+                    stat_stage = stat_stage + change
+                    if stat_stage > 6:
+                        stat_stage = 6
+                    elif stat_stage < -6:
+                        stat_stage = -6
+                    def_stat_mods['special-attack'] = stage_to_mod[stat_stage]
+                if stat_changed == 'special-defense':
+                    stat_stage = mod_to_stage[def_stat_mods['special-defense']]
+                    stat_stage = stat_stage + change
+                    if stat_stage > 6:
+                        stat_stage = 6
+                    elif stat_stage < -6:
+                        stat_stage = -6
+                    def_stat_mods['special-defense'] = stage_to_mod[stat_stage]
+                if stat_changed == 'speed':
+                    stat_stage = mod_to_stage[def_stat_mods['speed']]
+                    stat_stage = stat_stage + change
+                    if stat_stage > 6:
+                        stat_stage = 6
+                    elif stat_stage < -6:
+                        stat_stage = -6
+                    def_stat_mods['speed'] = stage_to_mod[stat_stage]
+                if stat_changed == 'accuracy':
+                    def_stat_mods['accuracy'] = def_stat_mods['accuracy'] + change
+                    if def_stat_mods['accuracy'] > 6:
+                        def_stat_mods['accuracy'] = 6
+                    elif def_stat_mods['accuracy'] < -6:
+                        def_stat_mods['accuracy'] = -6
+                if stat_changed == 'evasion':
+                    def_stat_mods['evasion'] = def_stat_mods['evasion'] + change
+                    if def_stat_mods['evasion'] > 6:
+                        def_stat_mods['evasion'] = 6
+                    elif def_stat_mods['evasion'] < -6:
+                        def_stat_mods['evasion'] = -6
+    return [atk_stat_mods, def_stat_mods]
 
 
 """A function that determines the legality of a Pokémon team.

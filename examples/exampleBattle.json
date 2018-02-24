@@ -7,6 +7,7 @@
                 "name": "slayer",
                 "species": "spinarak",
                 "poke_id": "325cff49-3e69-4c23-9a63-b0552e2f4a87",
+                "gender": "female",
                 "hp_percent": 100,
                 "used_moves": [],
                 "status_condition": "none",
@@ -17,7 +18,9 @@
                     "defense": 1,
                     "special-attack": 1,
                     "special-defense": 1,
-                    "speed": 1
+                    "speed": 1,
+                    "accuracy": 1,
+                    "evasion": 1
                 }
             },
             "backup_pokemon": [
@@ -25,6 +28,7 @@
                     "name": "killer",
                     "species": "metapod",
                     "poke_id": "ed4120ed-97a1-4f7d-9ba1-574a546ea7c1",
+                    "gender": "male",
                     "hp_percent": 100,
                     "used_moves": [],
                     "status_condition": "none"
@@ -38,6 +42,7 @@
                 "name": "cutie",
                 "species": "caterpie",
                 "poke_id": "a1c33278-c5f8-4c6a-b992-a162fd329b40",
+                "gender": "male",
                 "hp_percent": 100,
                 "used_moves": [],
                 "status_condition": "none",
@@ -48,7 +53,9 @@
                     "defense": 1,
                     "special-attack": 1,
                     "special-defense": 1,
-                    "speed": 1
+                    "speed": 1,
+                    "accuracy": 1,
+                    "evasion": 1
                 }
             },
             "backup_pokemon": []
