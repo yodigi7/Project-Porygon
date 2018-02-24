@@ -1,54 +1,44 @@
 //Temporary Client Javascript file
 $(document).ready(function() {
+	var key = "cfbffc7a95ff415f85ceae08c25b0dca";
     var socket = io.connect('http://127.0.0.1:5000');
 
     socket.on('connect', function () {
-
-        socket.send('User has connected!'); //send to socketio.on('message')
-
-        $.getJSON('examples/exampleBattle.json', function(data){
-            var jsonData1 = {
-                jsondata: data,
-                filename: 'battleFile.txt'
-            };
-            socket.emit('jsonParse', jsonData1);
-        });
-        console.log("Example Battle Sent");
-
-        $.getJSON('examples/bugcatchercindy/87759413-5681-40eb-8546-9cc7f5874e88.json', function(data){
-            var jsonData2 = {
-                jsondata: data,
-                filename: '87759413-5681-40eb-8546-9cc7f5874e88.json',
-                trainer: 'BugCatcherCindy'
-            };
-            socket.emit('jsonParse', jsonData2);
-        });
-        console.log("Bug Catcher Cindy Sent");
-
-        $.getJSON('examples/bugcatchersteve/410a089a-9e6b-4a8b-bddd-c5480f02c389.json', function(data){
-            var jsonData3 = {
-                jsondata: data,
-                filename: '410a089a-9e6b-4a8b-bddd-c5480f02c389.json',
-                trainer: 'BugCatcherSteve'
-            };
-            socket.emit('jsonParse', jsonData3);
-        });
-        console.log("Bug Catcher Steve Sent");
-
-        $.get('examples/exampleTextFile.txt', function(data){
-            var txtData1 = {
-                txtdata: data,
-                filename: 'TxtFile4Battle.txt',
-            };
-            socket.emit('textFiles', txtData1);
-        });
-        console.log("Example Text File Sent");
-
-        console.log("Finished!")
+		console.log("Connected successfully. Logging in.")
+		socket.emit('json', {login: key});
     });
 
     socket.on('message', function(msg) {
         // $("#messages").append('<li>'+msg+'</li>');
         console.log('Received message: ' + msg);
     });
+	
+	socket.on('json', function(obj) {
+		console.log('Received json: ' + JSON.stringify(obj));
+		
+		if('success' in obj) {
+			switch(obj.success) {
+				case 'logged in':
+					console.log('Logged in. Selecting room and team.')
+					socket.emit('json', {room: -1, team: 'defaultTeam'})
+					break;
+				case 'room joined':
+					console.log('Room joined. Awaiting battle start.')
+					socket.emit('json', {message: 'Hello, Room!'})
+					break;
+			}
+		}
+		
+		if('failure' in obj) {
+			
+		}
+		
+		if('disconnect' in obj) {
+			
+		}
+		
+		if('battleState' in obj) {
+			
+		}
+	});
 });

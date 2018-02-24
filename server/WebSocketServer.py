@@ -1,29 +1,28 @@
 from flask import Flask, request, render_template, session, abort, url_for, redirect, flash
-from flask_socketio import SocketIO, send
+from flask_socketio import SocketIO, send, emit, join_room, leave_room
 from functools import wraps
 import os
 import json
 import uuid
+from server.Room import Room, Player
 
 
-MAX_BOTS = 5
+# Shortcuts
 
-app = Flask(__name__)
-app.secret_key = "This isn't very secret"
-socketio = SocketIO(app)
-
-users_file = 'users.json'
-user_settings_file = 'user_settings.json'
-
-
-def user():
-    """ Returns the current user's user-settings dictionary. """
+def persistent():
+    """ Shortcut for user_settings[session['username']] """
     if session['username'] not in user_settings:
         user_settings[session['username']] = {
             'bots': []
         }
         save_to_file(user_settings, user_settings_file)
     return user_settings[session['username']]
+
+def connection():
+    """ Shortcut for connected_users[request.sid] """
+    return connected_users[request.sid]
+
+# Helper functions
 
 def save_to_file(data, filepath):
     """ Saves JSON from 'data' to a file at 'filepath'. """
@@ -40,11 +39,11 @@ def load_from_file(filepath):
 
 def user_exists(username):
     """ Returns true if the 'username' is an existing one. """
-    return username in users
+    return username in usernames
 
 def valid_login(username, password):
     """ Returns true if the username/password combination is a match. """
-    return username in users and users[username] == password
+    return username in usernames and usernames[username] == password
 
 # Decorators
 
@@ -66,6 +65,79 @@ def require_logged_out(func):
             return redirect(url_for('home'))
         return func(*args, **kwargs)
     return f
+
+# Initialization
+
+MAX_BOTS = 5
+MAX_TEAMS = 5
+NUM_ROOMS = 10
+
+app = Flask(__name__)
+app.secret_key = "This isn't very secret"
+socketio = SocketIO(app)
+
+users_file = 'users.json'
+user_settings_file = 'user_settings.json'
+
+usernames = load_from_file(users_file)
+user_settings = load_from_file(user_settings_file)
+rooms = [Room() for _ in range(NUM_ROOMS)]
+connected_users = {}
+
+# Socket functions
+
+def bot_login(obj):
+    for u, s in user_settings.items():
+        for bot in s['bots']:
+            if bot['key'] == obj['login']:
+                session['username'] = u
+                session['bot'] = bot
+                emit('json', {'success': 'logged in'})
+                print("Bot identified as: {}, {} with key: {}".format(u, bot['name'], bot['key']))
+                return
+    emit('json', {'failure', 'invalid login'})
+
+def bot_join_room(obj):
+    if 'room' not in obj or 'team' not in obj:
+        emit('json', {'failure': 'send room and team choice'})
+        return
+
+    # Try to pick a room to join. A room choice outside room index bounds becomes auto-assign.
+    room = None
+    if 0 <= obj['room'] < NUM_ROOMS and not rooms[obj['room']].is_full():
+            room = obj['room']
+    elif 0 > obj['room'] or NUM_ROOMS <= obj['room']:
+        for r in range(len(rooms)):
+            if not rooms[r].is_full():
+                room = r
+                break
+
+    # Try to pick a team to use. If team name is invalid, cannot join room.
+    team = None
+    for team_name in persistent()['teams']:
+        if team_name == obj['team']:
+            team = team_name
+            break
+
+    # If both the room and team were valid choices, join the room using the team requested.
+    if room is None or team is None:
+        emit('json', {
+            'failure': {
+                'room': ('full' if room is None else 'available'),
+                'team': ('invalid' if team is None else 'valid')
+        }})
+        print('Invalid room/team request from {}'.format(session['username']))
+        return
+
+    # Connect user to room, send success message.
+    connection()['room'] = room
+    rooms[room].players.append(Player(request.sid, session['username'], team))
+    join_room(room)
+    emit('json', {'success': 'room joined'})
+    print('{} joined room {}.'.format(session['username'], room))
+
+def start_battle(room_id):
+    emit('json', {'battleState': "There's like, some stuff going on..."}, room=room_id)
 
 # ************** #
 # WEBSITE ROUTES #
@@ -90,20 +162,20 @@ def battle():
 def account():
     if request.method == 'POST':
         if 'newAI' in request.form:
-            if len(user()['bots']) >= MAX_BOTS:
+            if len(persistent()['bots']) >= MAX_BOTS:
                 flash("You are at the maximum number of AIs already.")
             else:
-                bot_name = "Bot " + str(len(user()['bots']))
+                bot_name = "Bot " + str(len(persistent()['bots']))
                 bot_key = uuid.uuid4().hex
-                user()['bots'].append({'name': bot_name, 'key': bot_key})
+                persistent()['bots'].append({'name': bot_name, 'key': bot_key})
                 save_to_file(user_settings, user_settings_file)
         elif 'deleteAI' in request.form:
-            for i in range(len(user()['bots'])):
-                if user()['bots'][i]['key'] == request.form['deleteAI']:
-                    del user()['bots'][i]
+            for i in range(len(persistent()['bots'])):
+                if persistent()['bots'][i]['key'] == request.form['deleteAI']:
+                    del persistent()['bots'][i]
                     save_to_file(user_settings, user_settings_file)
                     break
-    return render_template('account.html', bots=user()['bots'])
+    return render_template('account.html', bots=persistent()['bots'])
 
 @app.route('/signup/', methods=['GET', 'POST'])
 @require_logged_out
@@ -112,8 +184,8 @@ def signup():
         if user_exists(request.form['username']):
             flash("That username is already in use.", 'error')
         else:
-            users[request.form['username']] = request.form['password']
-            save_to_file(users, users_file)
+            usernames[request.form['username']] = request.form['password']
+            save_to_file(usernames, users_file)
             session['username'] = request.form['username']
             return redirect(url_for('home'))
     return render_template('signup.html')
@@ -143,45 +215,63 @@ def logout():
 # ************* #
 
 @socketio.on('connect')
-def connect():
-    print("User Connected.")
+def on_connect():
+    connected_users[request.sid] = {}
+    print("Bot connected with session id: " + request.sid)
+
+@socketio.on('disconnect')
+def on_disconnect():
+    if 'room' in connection():
+        print("Player disconnected from room {}. Resetting room...".format(connection()['room']))
+        leave_room(connection()['room'])
+        r = rooms[connection()['room']]
+
+        # Send a message to all other players in the room that one player disconnected.
+        #   Then, remove all players from the room.
+        for i in range(len(r.players)):
+            if r.players[i].sid != request.sid:
+                emit('json', {'disconnect': 'another player has disconnected'}, room=r.players[i].sid)
+                del connected_users[r.players[i].sid]['room']
+        r.players = []
+
+    # Remove the user from our connected users.
+    print("Bot disconnected with session id: " + request.sid)
+    del connected_users[request.sid]
 
 @socketio.on('message')
-def messageHandler(msg):
+def on_message(msg):
+    if 'bot' not in session:
+        print("Unauthorized message")
+        return
+
     print('Message: ' + msg)
 
 #  alternatively depending on what the client is sending,
 #  we could just send json based on events specified
-@socketio.on('jsonParse')
-def parse_Json(jsonObject):
-    send("JSONObject Obtained")
-    jsonData = jsonObject['jsondata']
-    print(jsonData)
+@socketio.on('json')
+def on_json(obj):
+    # Exhaustive search to find out which bot this is...
+    if 'bot' not in session and 'login' in obj:
+        bot_login(obj)
+        return
 
-    if 'pokemon' in jsonData:  # Trainer Json
-        Trainer = jsonObject['trainer']
-        FileName = jsonObject['filename']
+    if 'bot' not in session:
+        print("Unauthorized JSON")
+        return
 
-        if not os.path.exists('Trainers/' + Trainer):
-            os.makedirs('Trainers/' + Trainer)
-        # else the trainer directory already exists
+    # If the bot is not yet in a room,
+    if 'room' not in connection():
+        bot_join_room(obj)
+        if 'room' in connection() and rooms[connection()['room']].is_full():
+            start_battle(connection()['room'])
+        return
 
-        with open('Trainers/' + Trainer + '/' + FileName, 'w') as F:
-            F.write(json.dumps(jsonData, indent=2))
+    # AI is alreay in a room
+    print("AI of {} sent json << {} >> from room: {}".format(session['username'], obj, connection()['room']))
 
-        print('Player JSON Received')
-        return 'Player JSON Received'
 
-    elif 'players' in jsonData:  # exampleBattle.json
-        print('Battle JSON Received')  # Do something with Battle JSON
-        return 'Battle JSON Received'
-
-    else:
-        print("JSON had trouble parsing")
-        return 'Error reading in JSON'
-
-@socketio.on('textFiles')
-def battleFiles(data):
+@socketio.on('text')
+def on_textfile(data):
     content = data['txtdata']
     print(content)
 
@@ -191,13 +281,10 @@ def battleFiles(data):
     if not os.path.exists('text/'): #making sure text directory is created
         os.makedirs('text')
 
-    with open ('text/' + filename, 'w') as f:
+    with open('text/' + filename, 'w') as f:
         f.write(content) #writing text contents in text directory with file specified in header
 
     return 'Received Battle File for visualization'
 
 
-if __name__ == '__main__':
-    users = load_from_file(users_file)
-    user_settings = load_from_file(user_settings_file)
-    socketio.run(app, debug=True)
+socketio.run(app, debug=False)
