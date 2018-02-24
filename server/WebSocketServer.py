@@ -3,7 +3,10 @@ from flask_socketio import SocketIO, send
 from functools import wraps
 import os
 import json
+import uuid
 
+
+MAX_BOTS = 5
 
 app = Flask(__name__)
 app.secret_key = "This isn't very secret"
@@ -12,6 +15,14 @@ socketio = SocketIO(app)
 users_file = 'users.json'
 user_settings_file = 'user_settings.json'
 
+
+def user():
+    if session['username'] not in user_settings:
+        user_settings[session['username']] = {
+            'bots': []
+        }
+        save_to_file(user_settings, user_settings_file)
+    return user_settings[session['username']]
 
 def save_to_file(data, filepath):
     with open(filepath, 'w') as f:
@@ -66,42 +77,53 @@ def leaderboard():
 @app.route('/battle/')
 @require_login
 def battle():
-    print(session)
     return render_template('battle.html')
 
-@app.route('/account/')
+@app.route('/account/', methods=['GET', 'POST'])
 @require_login
 def account():
-    return render_template('account.html')
+    if request.method == 'POST':
+        if 'newAI' in request.form:
+            if len(user()['bots'] >= MAX_BOTS):
+                flash("You are at the maximum number of AIs already.")
+            else:
+                bot_name = "Bot " + str(len(user()['bots']))
+                bot_key = uuid.uuid4()
+                user()['bots'].append({'name': bot_name, 'key': bot_key})
+                save_to_file(user_settings, user_settings_file)
+        elif 'deleteAI' in request.form:
+            for i in range(len(user()['bots'])):
+                if user()['bots'][i]['key'] == request.form['deleteAI']:
+                    del user()['bots'][i]
+                    save_to_file(user_settings, user_settings_file)
+                    break
+    return render_template('account.html', bots=user()['bots'])
 
 @app.route('/signup/', methods=['GET', 'POST'])
 @require_logged_out
 def signup():
-    if request.method == 'GET':
-        return render_template('signup.html')
     if request.method == 'POST':
         if user_exists(request.form['username']):
             flash("That username is already in use.", 'error')
-            return render_template('signup.html')
-        users[request.form['username']] = request.form['password']
-        save_to_file(users, users_file)
-        session['username'] = request.form['username']
-        return redirect(url_for('home'))
+        else:
+            users[request.form['username']] = request.form['password']
+            save_to_file(users, users_file)
+            session['username'] = request.form['username']
+            return redirect(url_for('home'))
+    return render_template('signup.html')
 
 @app.route('/login/', methods=['GET', 'POST'])
 @require_logged_out
 def login():
     if 'username' in session:
         return redirect(url_for('home'))
-
-    if request.method == 'GET':
-        return render_template('login.html')
     if request.method == 'POST':
         if not valid_login(request.form['username'], request.form['password']):
             flash("Invalid username or password.", 'error')
-            return render_template('login.html')
-        session['username'] = request.form['username']
-        return redirect(url_for('home'))
+        else:
+            session['username'] = request.form['username']
+            return redirect(url_for('home'))
+    return render_template('login.html')
 
 @app.route('/logout/')
 def logout():

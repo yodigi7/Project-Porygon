@@ -3,5 +3,29 @@
   <div class="account_page">
     <h1>Account</h1>
     <p>Mangement of an account is done here, will include login at a later date</p>
+
+  </div>
+  <div>
+    <h1>Your AIs</h1>
+    <form method="post">
+      <button type="submit" name="newAI" value="add">Add New AI</button>
+    </form>
+    {% if len(value) == 0 %}
+      <p>No AIs to display.</p>
+    {% else %}
+    <table>
+      {% for bot in bots %}
+        <tr>
+          <td>Bot Name</td>
+          <td>Login Key</td>
+        </tr>
+        <tr>
+          <td>{{ bot['name'] }}</td>
+          <td>{{ bot['key'] }}</td>
+          <td><form method="post"><button type="submit" name="deleteAI" value="{{ bot['key'] }}">Delete</button></form></td>
+        </tr>
+      {% endfor %}
+    </table>
+    {% endif %}
   </div>
 {% endblock %}
