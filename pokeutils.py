@@ -291,7 +291,7 @@ def applyStatus(atk_poke, def_poke, attack):
             # Grass types cannot be affected by powder moves, nor can Pokémon with the ability Overcoat
             # Powder moves that inflict status are Stun Spore, Spore, Sleep Powder, and Poison Powder
             # These attacks have ids of 78, 147, 79, and 77
-            elif attack.id == 77 or attack.id == 78 or attack.id == 79 or attack.id == 147:
+            if attack.id == 77 or attack.id == 78 or attack.id == 79 or attack.id == 147:
                 for type_name in pb.pokemon(def_poke['species']).types:
                     if type_name.type.name == 'grass':
                         status_inflicted = 'none'
@@ -467,10 +467,7 @@ def changeStats(atk_poke, def_poke, atk_stat_mods, def_stat_mods, attack):
                             def_stat_mods['attack'] = stage_to_mod[atk_stage]
                         elif change < 0 and def_poke['ability'] == 'competitive' and (stat_stage - change > -6):
                             # If a stat was lowered and the defending mon has competitive, increase special attack by 2 stages
-                            sp_atk_stage = mod_to_stage[def_stat_mods['special-attack']] + 2
-                            if sp_atk_stage > 6:
-                                sp_atk_stage = 6
-                            def_stat_mods['special-attack'] = stage_to_mod[sp_atk_stage]
+                            stat_stage = stat_stage + 2
                         if stat_stage > 6:
                             stat_stage = 6
                         elif stat_stage < -6:
