@@ -183,7 +183,9 @@ def switch(battle_JSON, team_id, poke_id):
                         "defense": 1,
                         "special-attack": 1,
                         "special-defense": 1,
-                        "speed": 1 }
+                        "speed": 1,
+                        "accuracy": 0,
+                        "evasion": 0 }
     # Do the swap
     battle_dict["players"][team_num]["active_pokemon"] = backup_pokemon
     battle_dict["players"][team_num]["backup_pokemon"][place_list] = active_pokemon
