@@ -291,7 +291,7 @@ def applyStatus(atk_poke, def_poke, attack):
             # Grass types cannot be affected by powder moves, nor can Pokémon with the ability Overcoat
             # Powder moves that inflict status are Stun Spore, Spore, Sleep Powder, and Poison Powder
             # These attacks have ids of 78, 147, 79, and 77
-            elif attack.id == 77 or attack.id == 78 or attack.id == 79 or attack.id == 147:
+            if attack.id == 77 or attack.id == 78 or attack.id == 79 or attack.id == 147:
                 for type_name in pb.pokemon(def_poke['species']).types:
                     if type_name.type.name == 'grass':
                         status_inflicted = 'none'
@@ -320,14 +320,19 @@ to bother changing the def_stat_mods, and vice-versa. Return them in attacker,
 defender order. Remember that no stat modifier can go below -6 or above +6.
 
 Parameters:
+atk_poke -- the attacking pokemon as a dict
+def_poke -- the defending pokemon as a dict
 atk_stat_mods -- the attacker's stat modifiers as a dict
 def_stat_mods -- the defender's stat modifiers as a dict
 attack -- the raw data for a pokemon attack
 """
-def changeStats(atk_stat_mods, def_stat_mods, attack):
+def changeStats(atk_poke, def_poke, atk_stat_mods, def_stat_mods, attack):
     stage_to_mod = {-6: 0.25, -5: 0.29, -4: 0.33, -3: 0.4, -2: 0.5, -1: 0.67, 0: 1, 1: 1.5, 2: 2, 3: 2.5, 4: 3, 5: 3.5, 6: 4}
     mod_to_stage = {0.25: -6, 0.29: -5, 0.33: -4, 0.4: -3, 0.5: -2, 0.67: -1, 1: 0, 1.5: 1, 2: 2, 2.5: 3, 3: 4, 3.5: 5, 4: 6}
     stat_chance = attack.meta.stat_chance
+    # Double the chance of causing a stat change if the attacker has Serene Grace
+    if atk_poke['ability'] == 'serene-grace':
+        stat_chance = stat_chance * 2
     stat_changed_prob = random.randrange(0,100)
     if stat_changed_prob < stat_chance or stat_chance == 0:
         # Figure out which Pokémon's stats will be changed
@@ -400,57 +405,170 @@ def changeStats(atk_stat_mods, def_stat_mods, attack):
                         atk_stat_mods['evasion'] = -6
             else:
                 if stat_changed == 'attack':
-                    stat_stage = mod_to_stage[def_stat_mods['attack']]
-                    stat_stage = stat_stage + change
-                    if stat_stage > 6:
-                        stat_stage = 6
-                    elif stat_stage < -6:
-                        stat_stage = -6
-                    def_stat_mods['attack'] = stage_to_mod[stat_stage]
+                    # the abilities hyper-cutter and clear body prevent opponents from lowering the Pokémon's attack
+                    # the ability Mold Breaker ignores this
+                    if (def_poke['ability'] == 'hyper-cutter' or def_poke['ability'] == 'clear-body') and atk_poke['ability'] != 'mold-breaker' and change < 0:
+                        pass
+                    else:
+                        stat_stage = mod_to_stage[def_stat_mods['attack']]
+                        stat_stage = stat_stage + change
+                        if change < 0 and def_poke['ability'] == 'defiant' and (stat_stage - change > -6):
+                            # If the attack stat was lowered, raise it by 2 stages if the defending mon has defiant
+                            stat_stage = stat_stage + 2
+                        elif change < 0 and def_poke['ability'] == 'competitive' and (stat_stage - change > -6):
+                            # If a stat was lowered and the defending mon has competitive, increase special attack by 2 stages
+                            sp_atk_stage = mod_to_stage[def_stat_mods['special-attack']] + 2
+                            if sp_atk_stage > 6:
+                                sp_atk_stage = 6
+                            def_stat_mods['special-attack'] = stage_to_mod[sp_atk_stage]
+                        if stat_stage > 6:
+                            stat_stage = 6
+                        elif stat_stage < -6:
+                            stat_stage = -6
+                        def_stat_mods['attack'] = stage_to_mod[stat_stage]
                 if stat_changed == 'defense':
-                    stat_stage = mod_to_stage[def_stat_mods['defense']]
-                    stat_stage = stat_stage + change
-                    if stat_stage > 6:
-                        stat_stage = 6
-                    elif stat_stage < -6:
-                        stat_stage = -6
-                    def_stat_mods['defense'] = stage_to_mod[stat_stage]
+                    # the abilities big pecks and clear body prevent opponents from lowering the Pokémon's defense
+                    # the ability Mold Breaker ignores this
+                    if (def_poke['ability'] == 'big-pecks' or def_poke['ability'] == 'clear-body') and atk_poke['ability'] != 'mold-breaker' and change < 0:
+                        pass
+                    else:
+                        stat_stage = mod_to_stage[def_stat_mods['defense']]
+                        stat_stage = stat_stage + change
+                        if change < 0 and def_poke['ability'] == 'defiant' and (stat_stage - change > -6):
+                            # If a stat was lowered and the defending mon has defiant, increase attack by 2 stages
+                            atk_stage = mod_to_stage[def_stat_mods['attack']] + 2
+                            if atk_stage > 6:
+                                atk_stage = 6
+                            def_stat_mods['attack'] = stage_to_mod[atk_stage]
+                        elif change < 0 and def_poke['ability'] == 'competitive' and (stat_stage - change > -6):
+                            # If a stat was lowered and the defending mon has competitive, increase special attack by 2 stages
+                            sp_atk_stage = mod_to_stage[def_stat_mods['special-attack']] + 2
+                            if sp_atk_stage > 6:
+                                sp_atk_stage = 6
+                            def_stat_mods['special-attack'] = stage_to_mod[sp_atk_stage]
+                        if stat_stage > 6:
+                            stat_stage = 6
+                        elif stat_stage < -6:
+                            stat_stage = -6
+                        def_stat_mods['defense'] = stage_to_mod[stat_stage]
                 if stat_changed == 'special-attack':
-                    stat_stage = mod_to_stage[def_stat_mods['special-attack']]
-                    stat_stage = stat_stage + change
-                    if stat_stage > 6:
-                        stat_stage = 6
-                    elif stat_stage < -6:
-                        stat_stage = -6
-                    def_stat_mods['special-attack'] = stage_to_mod[stat_stage]
+                    # The ability clear body prevents opponents from lowering special attack
+                    # The ability mold breaker ignores this
+                    if def_poke['ability'] == 'clear-body' and atk_poke['ability'] != 'mold-breaker' and change < 0:
+                        pass
+                    else:
+                        stat_stage = mod_to_stage[def_stat_mods['special-attack']]
+                        stat_stage = stat_stage + change
+                        if change < 0 and def_poke['ability'] == 'defiant' and (stat_stage - change > -6):
+                            # If a stat was lowered and the defending mon has defiant, increase attack by 2 stages
+                            atk_stage = mod_to_stage[def_stat_mods['attack']] + 2
+                            if atk_stage > 6:
+                                atk_stage = 6
+                            def_stat_mods['attack'] = stage_to_mod[atk_stage]
+                        elif change < 0 and def_poke['ability'] == 'competitive' and (stat_stage - change > -6):
+                            # If a stat was lowered and the defending mon has competitive, increase special attack by 2 stages
+                            stat_stage = stat_stage + 2
+                        if stat_stage > 6:
+                            stat_stage = 6
+                        elif stat_stage < -6:
+                            stat_stage = -6
+                        def_stat_mods['special-attack'] = stage_to_mod[stat_stage]
                 if stat_changed == 'special-defense':
-                    stat_stage = mod_to_stage[def_stat_mods['special-defense']]
-                    stat_stage = stat_stage + change
-                    if stat_stage > 6:
-                        stat_stage = 6
-                    elif stat_stage < -6:
-                        stat_stage = -6
-                    def_stat_mods['special-defense'] = stage_to_mod[stat_stage]
+                    # The ability clear body prevents opponents from lowering special defense
+                    # The ability mold breaker ignores this
+                    if def_poke['ability'] == 'clear-body' and atk_poke['ability'] != 'mold-breaker' and change < 0:
+                        pass
+                    else:
+                        stat_stage = mod_to_stage[def_stat_mods['special-defense']]
+                        stat_stage = stat_stage + change
+                        if change < 0 and def_poke['ability'] == 'defiant' and (stat_stage - change > -6):
+                            # If a stat was lowered and the defending mon has defiant, increase attack by 2 stages
+                            atk_stage = mod_to_stage[def_stat_mods['attack']] + 2
+                            if atk_stage > 6:
+                                atk_stage = 6
+                            def_stat_mods['attack'] = stage_to_mod[atk_stage]
+                        elif change < 0 and def_poke['ability'] == 'competitive' and (stat_stage - change > -6):
+                            # If a stat was lowered and the defending mon has competitive, increase special attack by 2 stages
+                            sp_atk_stage = mod_to_stage[def_stat_mods['special-attack']] + 2
+                            if sp_atk_stage > 6:
+                                sp_atk_stage = 6
+                            def_stat_mods['special-attack'] = stage_to_mod[sp_atk_stage]
+                        if stat_stage > 6:
+                            stat_stage = 6
+                        elif stat_stage < -6:
+                            stat_stage = -6
+                        def_stat_mods['special-defense'] = stage_to_mod[stat_stage]
                 if stat_changed == 'speed':
-                    stat_stage = mod_to_stage[def_stat_mods['speed']]
-                    stat_stage = stat_stage + change
-                    if stat_stage > 6:
-                        stat_stage = 6
-                    elif stat_stage < -6:
-                        stat_stage = -6
-                    def_stat_mods['speed'] = stage_to_mod[stat_stage]
+                    # The ability clear body prevents opponents from lowering speed
+                    # The ability mold breaker ignores this
+                    if def_poke['ability'] == 'clear-body' and atk_poke['ability'] != 'mold-breaker' and change < 0:
+                        pass
+                    else:
+                        stat_stage = mod_to_stage[def_stat_mods['speed']]
+                        stat_stage = stat_stage + change
+                        if change < 0 and def_poke['ability'] == 'defiant' and (stat_stage - change > -6):
+                            # If a stat was lowered and the defending mon has defiant, increase attack by 2 stages
+                            atk_stage = mod_to_stage[def_stat_mods['attack']] + 2
+                            if atk_stage > 6:
+                                atk_stage = 6
+                            def_stat_mods['attack'] = stage_to_mod[atk_stage]
+                        elif change < 0 and def_poke['ability'] == 'competitive' and (stat_stage - change > -6):
+                            # If a stat was lowered and the defending mon has competitive, increase special attack by 2 stages
+                            sp_atk_stage = mod_to_stage[def_stat_mods['special-attack']] + 2
+                            if sp_atk_stage > 6:
+                                sp_atk_stage = 6
+                            def_stat_mods['special-attack'] = stage_to_mod[sp_atk_stage]
+                        if stat_stage > 6:
+                            stat_stage = 6
+                        elif stat_stage < -6:
+                            stat_stage = -6
+                        def_stat_mods['speed'] = stage_to_mod[stat_stage]
                 if stat_changed == 'accuracy':
-                    def_stat_mods['accuracy'] = def_stat_mods['accuracy'] + change
-                    if def_stat_mods['accuracy'] > 6:
-                        def_stat_mods['accuracy'] = 6
-                    elif def_stat_mods['accuracy'] < -6:
-                        def_stat_mods['accuracy'] = -6
+                    # the abilities keen eye and clear body prevent opponents from lowering the Pokémon's accuracy
+                    # the ability Mold Breaker ignores this
+                    if (def_poke['ability'] == 'keen-eye' or def_poke['ability'] == 'clear-body') and atk_poke['ability'] != 'mold-breaker' and change < 0:
+                        pass
+                    else:
+                        def_stat_mods['accuracy'] = def_stat_mods['accuracy'] + change
+                        if change < 0 and def_poke['ability'] == 'defiant' and (stat_stage - change > -6):
+                            # If a stat was lowered and the defending mon has defiant, increase attack by 2 stages
+                            atk_stage = mod_to_stage[def_stat_mods['attack']] + 2
+                            if atk_stage > 6:
+                                atk_stage = 6
+                            def_stat_mods['attack'] = stage_to_mod[atk_stage]
+                        elif change < 0 and def_poke['ability'] == 'competitive' and (stat_stage - change > -6):
+                            # If a stat was lowered and the defending mon has competitive, increase special attack by 2 stages
+                            sp_atk_stage = mod_to_stage[def_stat_mods['special-attack']] + 2
+                            if sp_atk_stage > 6:
+                                sp_atk_stage = 6
+                            def_stat_mods['special-attack'] = stage_to_mod[sp_atk_stage]
+                        if def_stat_mods['accuracy'] > 6:
+                            def_stat_mods['accuracy'] = 6
+                        elif def_stat_mods['accuracy'] < -6:
+                            def_stat_mods['accuracy'] = -6
                 if stat_changed == 'evasion':
-                    def_stat_mods['evasion'] = def_stat_mods['evasion'] + change
-                    if def_stat_mods['evasion'] > 6:
-                        def_stat_mods['evasion'] = 6
-                    elif def_stat_mods['evasion'] < -6:
-                        def_stat_mods['evasion'] = -6
+                    # The ability clear body prevents opponents from lowering evasion
+                    # The ability mold breaker ignores this
+                    if def_poke['ability'] == 'clear-body' and atk_poke['ability'] != 'mold-breaker' and change < 0:
+                        pass
+                    else:
+                        def_stat_mods['evasion'] = def_stat_mods['evasion'] + change
+                        if change < 0 and def_poke['ability'] == 'defiant' and (stat_stage - change > -6):
+                            # If a stat was lowered and the defending mon has defiant, increase attack by 2 stages
+                            atk_stage = mod_to_stage[def_stat_mods['attack']] + 2
+                            if atk_stage > 6:
+                                atk_stage = 6
+                            def_stat_mods['attack'] = stage_to_mod[atk_stage]
+                        elif change < 0 and def_poke['ability'] == 'competitive' and (stat_stage - change > -6):
+                            # If a stat was lowered and the defending mon has competitive, increase special attack by 2 stages
+                            sp_atk_stage = mod_to_stage[def_stat_mods['special-attack']] + 2
+                            if sp_atk_stage > 6:
+                                sp_atk_stage = 6
+                            def_stat_mods['special-attack'] = stage_to_mod[sp_atk_stage]
+                        if def_stat_mods['evasion'] > 6:
+                            def_stat_mods['evasion'] = 6
+                        elif def_stat_mods['evasion'] < -6:
+                            def_stat_mods['evasion'] = -6
     return [atk_stat_mods, def_stat_mods]
 
 
