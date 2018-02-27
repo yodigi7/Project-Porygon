@@ -288,6 +288,10 @@ def applyStatus(atk_poke, def_poke, attack):
                 for type_name in pb.pokemon(def_poke['species']).types:
                     if type_name.type.name == 'grass':
                         status_inflicted = 'none'
+            # Genderless Pokémon cannot be attracted, nor can Pokémon with the ability Oblivious or Pokémon of the same gender
+            elif status_inflicted == 'infatuation':
+                if atk_poke['gender'] == 'genderless' or def_poke['gender'] == 'genderless' or atk_poke['gender'] == def_poke['gender'] or def_poke['ability'] == 'oblivious':
+                    status_inflicted = 'none'
             # Grass types cannot be affected by powder moves, nor can Pokémon with the ability Overcoat
             # Powder moves that inflict status are Stun Spore, Spore, Sleep Powder, and Poison Powder
             # These attacks have ids of 78, 147, 79, and 77
