@@ -118,7 +118,18 @@ def attack(battle_JSON, atk_index, poke_id):
         #  we'll have to make an exception for 'curse' too
         #  and leech seed, oh god there's so many
         if status == 'confusion' and def_poke_confused == 0:
-            battle_dict['players'][def_in]['active_pokemon']['confused'] = 1
+            battle_dict['players'][def_in]['active_pokemon']['confused'] = random.randrange(1, 5)
+        elif status == 'curse':
+            battle_dict['players'][def_in]['active_pokemon']['curse'] = True
+        elif status == 'leech-seed':
+            battle_dict['players'][def_in]['active_pokemon']['leech-seed'] = True
+        elif status == 'infatuation':
+            battle_dict['players'][def_in]['active_pokemon']['infatuation'] = True
+        elif status == 'perish-song':
+            if battle_dict['players'][def_in]['active_pokemon']['perish_song_turn_count'] == 0:
+                battle_dict['players'][def_in]['active_pokemon']['perish_song_turn_count'] = 4
+            if battle_dict['players'][atk_in]['active_pokemon']['perish_song_turn_count'] == 0:
+                battle_dict['players'][atk_in]['active_pokemon']['perish_song_turn_count'] = 4
         elif def_poke_status == 'none':
             battle_dict['players'][def_in]['active_pokemon']['status_condition'] = status
 
