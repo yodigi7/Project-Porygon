@@ -135,7 +135,7 @@ def attack(battle_JSON, atk_index, poke_id):
             battle_dict['players'][def_in]['active_pokemon']['status_condition'] = status
 
     #  if the attack tries to change stats, try to change stats
-    if 'stats' in atk_category:
+    if atk_category == 'damage+raise' or atk_category == 'damage+lower' or atk_category == 'net-good-stats':
         atk_stat_mods, def_stat_mods = pk.changeStats(atk_stat_mods, def_stat_mods, attack)
         battle_dict['players'][atk_in]['active_pokemon']['stat_modifiers'] = atk_stat_mods
         battle_dict['players'][def_in]['active_pokemon']['stat_modifiers'] = def_stat_mods
