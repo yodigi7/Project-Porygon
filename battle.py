@@ -142,6 +142,12 @@ def attack(battle_JSON, atk_index, poke_id):
                 battle_dict['players'][def_in]['active_pokemon']['perish_song_turn_count'] = 4
             if battle_dict['players'][atk_in]['active_pokemon']['perish_song_turn_count'] == 0:
                 battle_dict['players'][atk_in]['active_pokemon']['perish_song_turn_count'] = 4
+        elif status == 'trap':
+            if battle_dict['players'][def_in]['active_pokemon']['trap_turns'] == 0:
+                battle_dict['players'][def_in]['active_pokemon']['trapped'] == 'partial'
+                battle_dict['players'][def_in]['active_pokemon']['trap_turns'] = random.randrange(4, 6)
+        elif status == 'trapped':
+            battle_dict['players'][def_in]['active_pokemon']['trapped'] == 'by-opponent'
         elif def_poke_status == 'none':
             battle_dict['players'][def_in]['active_pokemon']['status_condition'] = status
 
