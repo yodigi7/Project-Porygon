@@ -113,7 +113,7 @@ def attack(battle_JSON, atk_index, poke_id):
     def_poke_status = def_player['active_pokemon']['status_condition']
     def_poke_confused = def_player['active_pokemon']['confused']
     if 'ailment' in atk_category:
-        status = pk.applyStatus(combatants, attack)
+        status = pk.applyStatus(combatants['atk_poke'], combatants['def_poke'], attack)
 
         #  confusion is separate from status conditions
         #  we'll have to make an exception for 'curse' too
