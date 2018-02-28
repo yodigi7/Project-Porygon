@@ -332,6 +332,11 @@ def applyStatus(atk_poke, def_poke, attack):
             elif status_inflicted == 'infatuation':
                 if atk_poke['gender'] == 'genderless' or def_poke['gender'] == 'genderless' or atk_poke['gender'] == def_poke['gender'] or def_poke['ability'] == 'oblivious':
                     status_inflicted = 'none'
+            # Ghost types cannot be trapped
+            elif status_inflicted == 'trap':
+                for type_name in pb.pokemon(def_poke['species']).types:
+                    if type_name.type.name == 'ghost':
+                        status_inflicted = 'none'
             # Grass types cannot be affected by powder moves, nor can Pokémon with the ability Overcoat
             # Powder moves that inflict status are Stun Spore, Spore, Sleep Powder, and Poison Powder
             # These attacks have ids of 78, 147, 79, and 77
@@ -358,6 +363,12 @@ def applyStatus(atk_poke, def_poke, attack):
     # Taunt has an id of 269
     elif attack.id == 269 and def_poke['ability'] != 'oblivious':
         status_inflicted = 'taunt'
+    # The moves Block (id = 335) and Mean Look (id = 212) trap the opponent if they are not Ghost type
+    elif attack.id == 335 or attack.id == 212:
+        status_inflicted = 'trapped'
+        for type_name in pb.pokemon(def_poke['species']).types:
+            if type_name.type.name == 'ghost':
+                status_inflicted = 'none'
     return status_inflicted
 
 
