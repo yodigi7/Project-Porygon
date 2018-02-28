@@ -341,6 +341,11 @@ def applyStatus(atk_poke, def_poke, attack):
                         status_inflicted = 'none'
                 if def_poke['ability'] == 'overcoat':
                     status_inflicted = 'none'
+            # Ground types are immune to the move Thunder Wave (id = 86) under normal circumstances.
+            elif attack.id == 86:
+                for type_name in pb.pokemon(def_poke['species']).types:
+                    if type_name.type.name == 'ground':
+                        status_inflicted = 'none'
     # Case for curse, as status is listed as 'none' in PokéAPI
     # Curse applies a curse effect if the user is ghost type, curse has internal id of 174
     # No Pokémon is innately immune to curse
