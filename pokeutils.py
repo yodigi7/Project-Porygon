@@ -105,12 +105,45 @@ def calcDamage(combatants, raw_stats, modded_stats, attack):
     #  Calculate damage
     #  I used Bulbapedia for the math. Hopefully it's correct!
     
+    #  useful variables that correspond to any given attack
+    atk_dam_type = attack.damage_class.name
+    atk_power = attack.power
+    atk_acc = attack.accuracy
+    
     #  get accuracy out of the way unless one of the Pokémon has No Guard,
     #  in which case it will always hit
     if atk_poke('ability') != 'no-guard' and def_poke('ability') != 'no-guard':
         miss_chance = random.randrange(0,100)
         if miss_chance > atk_acc:
             return 0
+    
+    # Attacks do a different amount of damage based on type matchups.
+    type_effective = 1
+    attack_type = attack.type.name
+    for def_type in pb.pokemon(def_poke['species']).types:
+        for immunity in pb.type_(def_type.name).damage_relations.no_damage_from:
+            if immunity.name == attack_type:
+                return 0 # move doesn't effect foe, so no damage is dealt
+        for resistance in pb.type_(def_type.name).damage_relations.half_damage_from:
+            if resistance.name == attack_type:
+                type_effective = type_effective / 2 # move is resisted by this type, so half the factor
+        for weakness in pb.type_(def_type.name).damage_relations.double_damage_from:
+            if weakness.name == attack_type:
+                type_effective = type_effective * 2 # move is a weakness of this type, so double the factor
+            
+    
+    #  the level of the attacker is used in damage calcs
+    atk_level = atk_poke['level']
+    
+    #  the moves Seismic Toss (id = 69) and Night Shade (id = 101) deal fixed damage based on the level of the attacker
+    if attack.id == 69 or attack.id == 101:
+        return atk_level
+    #  the move Dragon Rage (id = 82) always deals 40 damage
+    elif attack.id == 82:
+        return 40
+    #  the move Sonic Boom (id = 49) always deals 20 damage:
+    elif attack.id = 49:
+        return 20
     
     #  The modifier consists of a ton of variables, like weather, STAB,
     #  type effectiveness, damage rolls, etc.
@@ -123,12 +156,20 @@ def calcDamage(combatants, raw_stats, modded_stats, attack):
     weather_modifier = 1
     
     # Each move has a chance to be a critical hit and deal 1.5x damage.
-    # Most moves have a 4.17% chance to be a critical hit, but some have higher odds.
+    # Most moves have a 4.17% (1 in 24) chance to be a critical hit, but some have higher odds.
     # For now, each move will have a 4.17% chance to be a critical hit.
     crit = False
-    crit_mod = 1
-    crit_chance = random.randrange(0, 10000)
-    if crit_chance < 417:
+    # Determine the critical hit stage of the attack. This is based on multiple factors, but for now it will depend only on the move used
+    crit_stage = attack.meta.crit_rate
+    # Check if the move will be a critical hit. The critical hit is guaranteed if the critical hit stage is at least 3
+    crit_chance = 0 # will stay at 0 for guaranteed critical hit if the stage is above 2
+    if crit_stage == 0: # No crit modification, 1 in 24 chance to crit
+        crit_chance = random.randrange(0, 24)
+    elif crit_stage == 1: # +1 crit modifier, 1 in 8 chance to crit
+        crit_chance = random.randrange(0, 8)
+    elif crit_stage == 2: # +2 crit modifier, 1 in 2 chance to crit
+        crit_chance = random.randrange(0, 2)
+    if crit_chance == 0:
         crit = True
         crit_mod = 1.5
     
@@ -137,8 +178,6 @@ def calcDamage(combatants, raw_stats, modded_stats, attack):
     
     # An attack gets a boost if the Pokémon using the attack shares a type with it.
     # The boost is 1.5x normally, but is increased to 2x if the user has the ability Adaptability.
-    # Currently, the function does not include the type of the attack user, so it is
-    # set to 1 for now.
     stab = 1
     for atk_type in pb.pokemon(atk_poke['species']).types:
         if atk_type.type.name == attack.type.name:
@@ -146,14 +185,14 @@ def calcDamage(combatants, raw_stats, modded_stats, attack):
             if atk_poke('ability') == 'adaptability':
                 stab = 2
     
-    # Attacks do a different amount of damage based on type matchups. Currently, the types
-    # of the defending Pokémon are not implemented, so this modifier is set to 1.
-    type_effective = 1
+    
     
     # The power of an attack is halved if the attacker is burned, the attack is physical,
     # the attack is not Facade, and the attacker's ability is not guts.
-    # Currently, status and abilities are not implemented, so this value is set to 1.
+    # Currently, abilities are not connected to these functions, so Guts is not implemented.
     burn_modifier = 1
+    if attack.id != 263 and atk_poke['status'] == 'burn' and atk_dam_type == 'physical':
+        burn_modifier = 0.5
     
     # There is an other modifier that varies based on other factors, which are yet to be
     # implemented. This modifier will be 1 for now.
@@ -162,34 +201,44 @@ def calcDamage(combatants, raw_stats, modded_stats, attack):
     # The overall modifier
     modifier = weather_modifier * crit_mod * random_mult * stab * type_effective * burn_modifier * other_modifier
 
-    #  useful variables that correspond to any given attack
-    atk_dam_type = attack.damage_class.name
-    atk_power = attack.power
-    atk_acc = attack.accuracy
-
-    #  the level of the attacker is used in damage calcs
-    atk_level = atk_poke['level']
 
     #  get relevant stat dictionaries
-    #  in the case of a crit, we use the defender's unmodified stats
     atk_stats = modded_stats['atk_stats']
-    if crit:
+    def_stats = modded_stats['def_stats']
+    #  in the case of a crit, we use the defender's unmodified stats if those are lower than the modified stats
+    if crit and atk_dam_type == 'physical' and raw_stats['def_stats']['defense'] < def_stats['defense']:
         def_stats = raw_stats['def_stats']
-    else:
-        def_stats = modded_stats['def_stats']
+    elif crit and atk_dam_type == 'special' and raw_stats['def_stats']['special-defense'] < def_stats['special-defense']:
+        def_stats = raw_stats['def_stats']
+    # in the case of a crit, we use the attacker's unmodified stats if those are higher than the modified stats
+    if crit and atk_dam_type == 'physical' and raw_stats['atk_stats']['attack'] > atk_stats['attack']:
+        atk_stats = raw_stats['atk_stats']
+    elif crit and atk_dam_type == 'special' and raw_stats['atk_stats']['special-attack'] > atk_stats['special-attack']:
+        atk_stats = raw_stats['atk_stats']
 
-    #  calcs vary based on physical versus special attacks
+    #  calcs vary based on physical versus special attacks, although the moves Psyshock (id = 473),
+    #  Secret Sword (id = 548), and Psystrike (id = 540) deal physical damage off of the attacker's special attack stat
     if atk_dam_type == 'physical':
-        damage = (
+        damage_unrounded = (
             (((((2*atk_level)/5)+2)*atk_power
             *(atk_stats['attack']/def_stats['defense']))/50)+2)*modifier
-    elif atk_dam_type == 'special':
-        damage = (
+    elif attack.id == 473 or attack.id == 548 or attack.id == 540:
+        damage_unrounded = (
             (((((2*atk_level)/5)+2)*atk_power
-            *(atk_stats['special_attck']/def_stats['special_defense']))
+            *(atk_stats['special-attack']/def_stats['defense']))
             /50)+2)*modifier
-
-    return int(damage)
+    elif atk_dam_type == 'special':
+        damage_unrounded = (
+            (((((2*atk_level)/5)+2)*atk_power
+            *(atk_stats['special-attack']/def_stats['special-defense']))
+            /50)+2)*modifier
+    #  round the damage dealt to a whole number
+    damage = int(damage_unrounded)
+    #  if no damage would be dealt, the minimum damage of 1 is dealt instead
+    if damage == 0:
+        damage = 1
+    
+    return damage
 
 
 """A function that attempts to apply a status ailment to a Pokemon.
