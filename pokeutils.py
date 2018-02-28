@@ -156,8 +156,7 @@ def calcDamage(combatants, raw_stats, modded_stats, attack):
     weather_modifier = 1
     
     # Each move has a chance to be a critical hit and deal 1.5x damage.
-    # Most moves have a 4.17% (1 in 24) chance to be a critical hit, but some have higher odds.
-    # For now, each move will have a 4.17% chance to be a critical hit.
+    # Most moves have a 1 in 24 chance to be a critical hit, but some have higher odds.
     crit = False
     # Determine the critical hit stage of the attack. This is based on multiple factors, but for now it will depend only on the move used
     crit_stage = attack.meta.crit_rate
