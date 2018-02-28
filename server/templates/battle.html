@@ -1,7 +1,66 @@
+<style>
+	#div1, #div2, #div3, #div4, #div5, #div6
+	{
+		float: left;
+    	width: 100px;
+    	height: 50px;
+    	margin: 10px;
+    	padding: 10px;
+    	border: 1px solid black;
+    }
+</style>
+
+<script>
+	function allowDrop(ev)
+	{
+		ev.preventDefault();
+		ev.dataTransfer.dropEffect= "copy";
+	}
+
+	function drag(ev)
+	{
+		ev.dataTransfer.setData("image", ev.target.id);
+		event.dropEffect = "copy";
+	}
+
+	function drop(ev)
+	{
+		ev.preventDefault();
+		var data = ev.dataTransfer.getData("image");
+		ev.target.appendChild(document.getElementById(data).cloneNode(true));
+	}
+</script>
+
 {% extends "layout.html" %}
 {% block content %}
    <div class="battle_page">
      <h1>Battle</h1>
-     <p>This page will probably be for running the visualizer, or keeping track of past battles and the visualizer on a different page</p>
+	     <table width="20" align="left">
+	     	<tr><th scope="row"><div id="div1" ondrop="drop(event)" ondragover="allowDrop(event)">
+	     	</div></th></tr>
+	     	<tr><th scope="row"><div id="div2" ondrop="drop(event)" ondragover="allowDrop(event)">
+	     	</div></th></tr>
+	     	<tr><th scope="row"><div id="div3" ondrop="drop(event)" ondragover="allowDrop(event)">
+	     	</div></th></tr>
+	     	<tr><th scope="row"><div id="div4" ondrop="drop(event)" ondragover="allowDrop(event)">
+	     	</div></th></tr>
+	     	<tr><th scope="row"><div id="div5" ondrop="drop(event)" ondragover="allowDrop(event)">
+	     	</div></th></tr>
+	     	<tr><th scope="row"><div id="div6" ondrop="drop(event)" ondragover="allowDrop(event)">
+	     	</div></th></tr>
+	     </table>
+	     <table width="20" align="center">
+		 	<tr><th scope="row"><img id="drag1" src="https://www.serebii.net/pokearth/sprites/hgss/001.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th></tr>
+			<tr><th scope="row"><img id="drag2" src="https://www.serebii.net/pokearth/sprites/hgss/002.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th></tr>
+			<tr><th scope="row"><img id="drag3" src="https://www.serebii.net/pokearth/sprites/hgss/003.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th></tr>
+			<tr><th scope="row"><img id="drag4" src="https://www.serebii.net/pokearth/sprites/hgss/004.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th></tr>
+			<tr><th scope="row"><img id="drag5" src="https://www.serebii.net/pokearth/sprites/hgss/005.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th></tr>
+		 	<tr><th scope="row"><img id="drag6" src="https://www.serebii.net/pokearth/sprites/hgss/006.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th></tr>
+		 	<tr><th scope="row"><img id="drag7" src="https://www.serebii.net/pokearth/sprites/hgss/007.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th></tr>
+			<tr><th scope="row"><img id="drag8" src="https://www.serebii.net/pokearth/sprites/hgss/008.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th></tr>
+			<tr><th scope="row"><img id="drag9" src="https://www.serebii.net/pokearth/sprites/hgss/009.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th></tr>
+	     </table>
+     </select>
    </div>
- {% endblock %}
+<div class="vl"></div>
+{% endblock %}
