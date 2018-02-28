@@ -108,14 +108,6 @@ def calcDamage(combatants, raw_stats, modded_stats, attack):
     #  useful variables that correspond to any given attack
     atk_dam_type = attack.damage_class.name
     atk_power = attack.power
-    atk_acc = attack.accuracy
-    
-    #  get accuracy out of the way unless one of the Pokémon has No Guard,
-    #  in which case it will always hit
-    if atk_poke('ability') != 'no-guard' and def_poke('ability') != 'no-guard':
-        miss_chance = random.randrange(0,100)
-        if miss_chance > atk_acc:
-            return 0
     
     # Attacks do a different amount of damage based on type matchups.
     type_effective = 1

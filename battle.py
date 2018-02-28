@@ -98,6 +98,12 @@ def attack(battle_JSON, atk_index, poke_id):
     performed and the results are written to the battle dictionary.
     """
     atk_category = attack.meta.category.name
+    #  Check to see if the attack lands
+    atk_accuracy = attack.accuracy
+    miss_chance = random.randrange(0, 100)
+    if miss_chance > atk_accuracy:
+        return battle_dict # If it misses, return the battle_dict unmodified
+    #  This gets executed if the attack lands
     if 'damage' in atk_category:
         raw_damage = pk.calcDamage(combatants, raw_stats, modded_stats, attack)
 
