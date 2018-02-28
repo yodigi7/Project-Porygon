@@ -7,6 +7,7 @@ At the moment, Project Porygon only supports 2-player single battles.
 import json
 import pokebase as pb
 import pokeutils as pk
+import random
 
 
 """Updates the battle JSON file.
