@@ -100,9 +100,14 @@ def attack(battle_JSON, atk_index, poke_id):
     atk_category = attack.meta.category.name
     #  Check to see if the attack lands
     atk_accuracy = attack.accuracy
-    miss_chance = random.randrange(0, 100)
-    if miss_chance > atk_accuracy:
-        return battle_dict # If it misses, return the battle_dict unmodified
+    #  Check to see if the attack is a no-miss move, which has an accuracy listed as null in the API
+    #  but is treated as None in python code. Skip the accuracy check if the move is a no-miss move.
+    if atk_accuracy is None:
+        pass
+    else: # The move may have a chance to miss. Check to see if it lands.
+        miss_chance = random.randrange(0, 100)
+        if miss_chance > atk_accuracy:
+            return battle_dict # If it misses, return the battle_dict unmodified
     #  This gets executed if the attack lands
     if 'damage' in atk_category:
         raw_damage = pk.calcDamage(combatants, raw_stats, modded_stats, attack)
