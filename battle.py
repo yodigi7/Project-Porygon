@@ -14,22 +14,24 @@ import random
 
 Parameters:
 battle_JSON -- the filepath to a Pokémon battle JSON
-updated_JSON -- the updated python dictionary representing the battle
+updated_dict -- the updated python dictionary representing the battle
 """
-def update_battle(battle_JSON, updated_JSON):
+def update_battle(battle_JSON, updated_dict):
     with open(battle_JSON, 'w') as f:
-        f.write(json.dumps(updated_JSON))
+        f.write(json.dumps(updated_dict))
 
 
 """Performs an attack using the stats of the passed Pokémon.
 
+In the future, this function should only take an attacking Pokemon and a
+defending Pokemon as parameters.
+
 Parameters:
-battle_JSON -- the filepath to a Pokémon battle
+battle_dict -- a dictionary containing a Pokemon battle
 atk_index -- a number from 0 to 3 that indicates the selected move
 poke_id -- a stringified UUID representing the attacking Pokémon
 """
-def attack(battle_JSON, atk_index, poke_id):
-    battle_dict = pk.load_data(battle_JSON)
+def attack(battle_dict, atk_index, poke_id):
 
     #  determine the attacking and defending pokémon
     #  currently, this only supports 2 player single battles
@@ -98,13 +100,15 @@ def attack(battle_JSON, atk_index, poke_id):
     performed and the results are written to the battle dictionary.
     """
     atk_category = attack.meta.category.name
+
     #  Check to see if the attack lands
     atk_accuracy = attack.accuracy
+
     #  Check to see if the attack is a no-miss move, which has an accuracy listed as null in the API
     #  but is treated as None in python code. Skip the accuracy check if the move is a no-miss move.
     if atk_accuracy is None:
         pass
-    else: # The move may have a chance to miss. Check to see if it lands.
+    else: #  The move may have a chance to miss. Check to see if it lands.
         miss_chance = random.randrange(0, 100)
         if miss_chance > atk_accuracy:
             return battle_dict # If it misses, return the battle_dict unmodified

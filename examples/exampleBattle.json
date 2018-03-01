@@ -13,6 +13,8 @@
                 "status_condition": "none",
                 "confused": 0,
                 "perish_song_turn_count": 0,
+                "cursed": 0,
+                "seeded": 0,
                 "stat_modifiers": {
                     "attack": 1,
                     "defense": 1,
@@ -48,6 +50,8 @@
                 "status_condition": "none",
                 "confused": 0,
                 "perish_song_turn_count": 0,
+                "cursed": 0,
+                "seeded": 0,
                 "stat_modifiers": {
                     "attack": 1,
                     "defense": 1,

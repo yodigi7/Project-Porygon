@@ -39,6 +39,89 @@ def get_team_path(name, team_id):
     return TEAM_DIR + name + '/' + team_id + '.json'
 
 
+"""Initializes the battle dictionary and returns it.
+
+Parameters:
+team_one, team_two -- dictionaries representing the battling Pokemon teams
+(you get these by using pokeutils.load_data on the team JSON files)
+"""
+def initBattle(team_one, team_two):
+    battle_dict = {}
+    players = []
+
+    #  add pokemon info to player list
+    players.append(formatTeamAsBattle(team_one))
+    players.append(formatTeamAsBattle(team_two))
+
+    #  add to dict and return
+    battle_dict['players'] = players
+    return battle_dict
+
+
+"""Converts a Pokemon team into battle format and returns the dictionary.
+
+Parameters:
+team -- a dictionary representing a Pokemon team dumped from a team JSON
+"""
+def formatTeamAsBattle(team):
+    player_dict = {}
+
+    #  add metadata to dictionary
+    player_dict['account_name'] = team['account_name']
+    player_dict['team_id'] = team['team_id']
+
+    #  default values for the active pokemon
+    active_pokemon = {
+        'hp_percent': 100,
+        'used_moves': [],
+        'status_condition': 'none',
+        'confused': 0,
+        'perish_song_turn_count': 0,
+        'cursed': 0,
+        'seeded': 0,
+        'stat_modifiers': {
+            'attack': 1,
+            'defense': 1,
+            'special-attack': 1,
+            'special-defense': 1,
+            'speed': 1,
+            'accuracy': 1,
+            'evasion': 1
+        }
+    }
+
+    backup_pokemon = []
+    backup_pokemon_dict = {
+        'hp_percent': 100,
+        'used_moves': [],
+        'status_condition': 'none'
+    }
+
+    poke_list = team['pokemon']
+    first_poke = poke_list[0]
+
+    #  the first pokemon is the default active pokemon
+    active_pokemon['name'] = first_poke['name']
+    active_pokemon['species'] = first_poke['species']
+    active_pokemon['poke_id'] = first_poke['poke_id']
+    active_pokemon['gender'] = first_poke['gender']
+
+    #  the rest of them are stored as backup pokemon
+    for pokemon in poke_list[1:]:
+        backup_pokemon_dict['name'] = pokemon['name']
+        backup_pokemon_dict['species'] = pokemon['species']
+        backup_pokemon_dict['poke_id'] = pokemon['poke_id']
+        backup_pokemon_dict['gender'] = pokemon['gender']
+
+        #  add the dict to the backup_pokemon list
+        backup_pokemon.append(backup_pokemon_dict)
+
+    #  add pokemon to player_dict and return
+    player_dict['active_pokemon'] = active_pokemon
+    player_dict['backup_pokemon'] = backup_pokemon
+    return player_dict
+
+
 """A function that calculates and returns the stats of a Pokémon as a dict.
 
 Parameters:
@@ -108,6 +191,14 @@ def calcDamage(combatants, raw_stats, modded_stats, attack):
     #  useful variables that correspond to any given attack
     atk_dam_type = attack.damage_class.name
     atk_power = attack.power
+    atk_acc = attack.accuracy
+    
+    #  get accuracy out of the way unless one of the Pokémon has No Guard,
+    #  in which case it will always hit
+    if atk_poke('ability') != 'no-guard' and def_poke('ability') != 'no-guard':
+        miss_chance = random.randrange(0,100)
+        if miss_chance > atk_acc:
+            return 0
     
     # Attacks do a different amount of damage based on type matchups.
     type_effective = 1
@@ -134,7 +225,7 @@ def calcDamage(combatants, raw_stats, modded_stats, attack):
     elif attack.id == 82:
         return 40
     #  the move Sonic Boom (id = 49) always deals 20 damage:
-    elif attack.id = 49:
+    elif attack.id == 49:
         return 20
     
     #  The modifier consists of a ton of variables, like weather, STAB,
@@ -332,11 +423,6 @@ def applyStatus(atk_poke, def_poke, attack):
             elif status_inflicted == 'infatuation':
                 if atk_poke['gender'] == 'genderless' or def_poke['gender'] == 'genderless' or atk_poke['gender'] == def_poke['gender'] or def_poke['ability'] == 'oblivious':
                     status_inflicted = 'none'
-            # Ghost types cannot be trapped
-            elif status_inflicted == 'trap':
-                for type_name in pb.pokemon(def_poke['species']).types:
-                    if type_name.type.name == 'ghost':
-                        status_inflicted = 'none'
             # Grass types cannot be affected by powder moves, nor can Pokémon with the ability Overcoat
             # Powder moves that inflict status are Stun Spore, Spore, Sleep Powder, and Poison Powder
             # These attacks have ids of 78, 147, 79, and 77
@@ -346,11 +432,6 @@ def applyStatus(atk_poke, def_poke, attack):
                         status_inflicted = 'none'
                 if def_poke['ability'] == 'overcoat':
                     status_inflicted = 'none'
-            # Ground types are immune to the move Thunder Wave (id = 86) under normal circumstances.
-            elif attack.id == 86:
-                for type_name in pb.pokemon(def_poke['species']).types:
-                    if type_name.type.name == 'ground':
-                        status_inflicted = 'none'
     # Case for curse, as status is listed as 'none' in PokéAPI
     # Curse applies a curse effect if the user is ghost type, curse has internal id of 174
     # No Pokémon is innately immune to curse
@@ -363,12 +444,6 @@ def applyStatus(atk_poke, def_poke, attack):
     # Taunt has an id of 269
     elif attack.id == 269 and def_poke['ability'] != 'oblivious':
         status_inflicted = 'taunt'
-    # The moves Block (id = 335) and Mean Look (id = 212) trap the opponent if they are not Ghost type
-    elif attack.id == 335 or attack.id == 212:
-        status_inflicted = 'trapped'
-        for type_name in pb.pokemon(def_poke['species']).types:
-            if type_name.type.name == 'ghost':
-                status_inflicted = 'none'
     return status_inflicted
 
 

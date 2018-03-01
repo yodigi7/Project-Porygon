@@ -461,10 +461,3 @@ if __name__ == '__main__':
 
     def_poke['ability'] = 'overcoat'
     test_Overcoat(atk_poke, def_poke)
-
-
-
-
-
-
-
