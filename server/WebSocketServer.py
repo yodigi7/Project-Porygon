@@ -157,6 +157,11 @@ def leaderboard():
 def battle():
     return render_template('battle.html')
 
+@app.route('/teambuilder/')
+@require_login
+def teambuilder():
+    return render_template('teambuilder.html')
+
 @app.route('/account/', methods=['GET', 'POST'])
 @require_login
 def account():
