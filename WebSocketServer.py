@@ -312,7 +312,7 @@ def on_action(data):
     battle_json = pokeutils.load_data('../examples/exampleBattle.json')
 
     #Through the main battle function check if the player lost or won
-    endCondition = False #Temporary use of an end condition (if false loop occurs)
+    endCondition = True #Temporary use of an end condition (if false loop occurs)
     if (endCondition):
         for i in r.players:
             if i.sid == request.sid:
