@@ -1,1 +1,4 @@
-{"admin": {"bots": [{"name": "Bot 0", "key": "cfbffc7a95ff415f85ceae08c25b0dca"}], "teams": {"defaultTeam": []}}}
+{"admin": {"bots": [{"name": "Bot 0", "key": "cfbffc7a95ff415f85ceae08c25b0dca"}], "teams": {"defaultTeam": []}},
+  "admin2": {"bots": [{"name": "Bot 0", "key": "a364f34bcbe84c7eb2002f1418c3d8f3"}], "teams": {"defaultTeam": []}},
+  "DiffRoom1Client": {"bots": [{"name": "Bot 0", "key": "a57865a4833f4ac69bdf28d80300a5d4"}], "teams": {"defaultTeam": []}},
+  "DiffRoom2Client": {"bots": [{"name": "Bot 0", "key": "53f2555c576249648241f52c508267dd"}], "teams": {"defaultTeam": []}}}

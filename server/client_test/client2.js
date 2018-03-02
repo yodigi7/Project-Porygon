@@ -1,6 +1,6 @@
 //Temporary Client Javascript file
 $(document).ready(function() {
-	var key = "cfbffc7a95ff415f85ceae08c25b0dca";
+	var key = "a364f34bcbe84c7eb2002f1418c3d8f3";
     var socket = io.connect('http://127.0.0.1:5000');
 
     socket.on('connect', function () {
@@ -12,10 +12,9 @@ $(document).ready(function() {
         // $("#messages").append('<li>'+msg+'</li>');
         console.log('Received message: ' + msg);
     });
-	
+
 	socket.on('json', function(obj) {
 		console.log('Received json: ' + JSON.stringify(obj));
-		
 		if('success' in obj) {
 			switch(obj.success) {
 				case 'logged in':
@@ -28,17 +27,16 @@ $(document).ready(function() {
 					break;
 			}
 		}
-		
+
 		if('failure' in obj) {
-			
+
 		}
-		
+
 		if('disconnect' in obj) {
-			
+
 		}
-		
-        if('battleState' in obj) {
-            socket.emit('action', {action: 'attack 4'}) //example
+		if('battleState' in obj) {
+            socket.emit('action', {action: 'attack 2'}) //example
 		}
         if('end' in obj){
             switch(obj.end){
