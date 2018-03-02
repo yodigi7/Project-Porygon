@@ -4,7 +4,8 @@ from functools import wraps
 import os
 import json
 import uuid
-from server.Room import Room, Player
+from Room import Room, Player
+import pokeutils as pokeutils
 
 
 # Shortcuts
@@ -137,7 +138,11 @@ def bot_join_room(obj):
     print('{} joined room {}.'.format(session['username'], room))
 
 def start_battle(room_id):
-    emit('json', {'battleState': "There's like, some stuff going on..."}, room=room_id)
+    team_one = pokeutils.load_data('../examples/bugcatchercindy/87759413-5681-40eb-8546-9cc7f5874e88.json')
+    team_two = pokeutils.load_data('../examples/bugcatchersteve/410a089a-9e6b-4a8b-bddd-c5480f02c389.json')
+    pokeutils.initBattle(team_one, team_two)
+    battle_json = pokeutils.load_data('../examples/exampleBattle.json')
+    emit('json', {'battleState': battle_json}, room=room_id) #Sending BattleJSON
 
 # ************** #
 # WEBSITE ROUTES #
@@ -291,5 +296,38 @@ def on_textfile(data):
 
     return 'Received Battle File for visualization'
 
+@socketio.on('action')
+def on_action(data):
+    print("Action << {} >> called from Room #{} sent by {}".format(data, connection()['room'], session['username']))
+    r = rooms[connection()['room']]
 
+    #This block is used to check if a player has sent more than one action
+    for player in r.players:
+        if player.username == session['username']:
+            if player.actionUsed == False:
+                player.actionUsed = data
+            else:
+                print("Player: {} sent action twice".format(player.username))
+
+    #This is where we would prob call the main battle function (which would return the updated battle json)
+    battle_json = pokeutils.load_data('../examples/exampleBattle.json')
+
+    #Through the main battle function check if the player lost or won
+    endCondition = True #Temporary use of an end condition (if false loop occurs)
+    if (endCondition):
+        for i in r.players:
+            if i.sid == request.sid:
+                if (data['action'] == "attack 2"):
+                    emit('json', {'end': 'Winner of Room#{}'.format(connection()['room'])}, room=request.sid)
+                elif (data['action'] == "attack 4"):
+                    emit('json', {'end': 'Loser of Room#{}'.format(connection()['room'])}, room=request.sid)
+        print("Battle Ended Successfully")
+    else:
+        #Send an updated battleJSON if no end condition has been met
+        if all(player.actionUsed != False for player in r.players):
+           print('Updated Battle JSON sent to all players in the room #{}'.format(connection()['room']))
+           emit('json', {'battleState': 'Updated Battle JSON sent to all players in the room #{}'.format(connection()['room'])}, room=connection()['room'])
+           for player in r.players:
+               player.actionUsed = False
+							 
 socketio.run(app, debug=False)

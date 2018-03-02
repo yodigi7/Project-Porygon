@@ -5,10 +5,11 @@ to a predefined JSON format. See the examples folder for details.
 At the moment, Project Porygon only supports 2-player single battles.
 """
 import json
-import pokebase as pb
-import pokeutils as pk
 import random
 
+import pokebase as pb
+
+from server import pokeutils as pk
 
 """Updates the battle JSON file.
 

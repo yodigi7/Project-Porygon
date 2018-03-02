@@ -5,7 +5,7 @@ import sys
 sys.path.append('../')
 
 import pokebase as pb
-import pokeutils as pk
+from server import pokeutils as pk
 
 """Test Serene Grace
 """

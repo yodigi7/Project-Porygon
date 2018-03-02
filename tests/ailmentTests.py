@@ -5,8 +5,7 @@ import sys
 sys.path.append('../')
 
 import pokebase as pb
-import pokeutils as pk
-
+from server import pokeutils as pk
 
 """Tests the infliction of poison.
 """
