@@ -37,18 +37,8 @@ $(document).ready(function() {
 			
 		}
 		
-        if('battleState' in obj) {
-            socket.emit('action', {action: 'attack 4'}) //example
-		}
-        if('end' in obj){
-            switch(obj.end){
-                case 'Winner':
-                    console.log('Winner. Game Ended.')
-                    break;
-                case 'Loser':
-                    console.log('Loser. Game Ended.')
-                    break;
-            }
+		if('battleState' in obj) {
+			
 		}
 	});
 });

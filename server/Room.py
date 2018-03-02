@@ -5,7 +5,6 @@ class Player:
         self.sid = sid
         self.username = username
         self.team = team
-        self.actionUsed = False
 
 class Room:
     def __init__(self):
