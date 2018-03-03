@@ -185,6 +185,11 @@ def account():
                     del persistent()['bots'][i]
                     save_to_file(user_settings, user_settings_file)
                     break
+	elif 'team' in request.form:
+            for i in range(len(persistent()['bots'])):
+                if persistent()['bots'][i]['key'] == request.form['team']:
+                    save_to_file(user_settings, user_settings_file)
+                    break
     return render_template('account.html', bots=persistent()['bots'])
 
 @app.route('/signup/', methods=['GET', 'POST'])
