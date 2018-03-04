@@ -167,6 +167,11 @@ def battle():
 def teambuilder():
     return render_template('teambuilder.html')
 
+@app.route('/pEditor/')
+@require_login
+def pEditor():
+    return render_template('pokemonEditor.html')
+
 @app.route('/account/', methods=['GET', 'POST'])
 @require_login
 def account():
