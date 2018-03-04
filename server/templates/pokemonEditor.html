@@ -1,0 +1,95 @@
+<div class="pEditor_page">
+    <form>
+    	Nickname:<br>
+    	<input type="text" name="nickname">
+    	<br>
+    </form>
+    <form>
+    	Gender:<br>
+    	<input type="radio" name"gender" value="male" checked>Male<br>
+    	<input type="radio" name"gender" value="female">Female
+    	<br>
+    </form>
+    <form>
+    	Nature<br>
+    	<select>
+    		<option value="hardy">Hardy</option>
+    		<option value="lonely">Lonely</option>
+    		<option value="brave">Brave</option>
+    		<option value="adamant">Adamant</option>
+    		<option value="naughty">Naughty</option>
+    		<option value="bold">Bold</option>
+    		<option value="docile">Docile</option>
+    		<option value="relaxed">Relaxed</option>
+    		<option value="impish">Impish</option>
+    		<option value="lax">Lax</option>
+    		<option value="timid">Timid</option>
+    		<option value="hasty">Hasty</option>
+    		<option value="serious">Serious</option>
+    		<option value="jolly">Jolly</option>
+    		<option value="naive">Naive</option>
+    		<option value="modest">Modest</option>
+    		<option value="mild">Mild</option>
+    		<option value="quiet">Quiet</option>
+    		<option value="bashful">Bashful</option>
+    		<option value="rash">Rash</option>
+    		<option value="calm">Calm</option>
+    		<option value="gentle">Gentle</option>
+    		<option value="sassy">Sassy</option>
+    		<option value="careful">Careful</option>
+    		<option value="quirky">Quirky</option>
+    	</select>
+    	<br>
+    </form>
+    <form>
+    	Item<br>
+    	<select>
+    	</select>
+    	<br>
+    </form>
+    <form>
+    	<p>Level: <span id="level"></span></p><br>
+    	<div class="slidecontainer">
+    		<input type="range" min="1" max="100" value="50" class="slider" id="range">
+    	</div>
+    </form> 
+    <form>
+    	<table>
+    		<tr>
+    			<td>Move 1</td>
+    			<td>Move 2</td>
+    			<td>Move 3</td>
+    			<td>Move 4</td>
+    		</tr>
+    		<tr>
+    			<td>
+	    			<select>
+	    			</select>
+	    		</td>
+	    		<td>
+	    			<select>
+	    			</select>
+	    		</td>
+	    		<td>
+	    			<select>
+	    			</select>
+	    		</td>
+	    		<td>
+	    			<select>
+	    			</select>
+	    		</td>
+    		</tr>
+	    </table>
+    </form>
+</div>
+
+<script>
+	var slider = document.getElementById("range");
+	var output = document.getElementById("level");
+	output.innerHTML = slider.value;
+
+	slider.oninput = function()
+	{
+  		output.innerHTML = this.value;
+	}
+</script>
