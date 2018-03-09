@@ -5,11 +5,11 @@ import os
 import json
 import uuid
 from Room import Room, Player
-import pokeutils as pokeutils
+import pokeutils as pk
 
 
-# Shortcuts
-
+"""Shortcuts
+"""
 def persistent():
     """ Shortcut for user_settings[session['username']] """
     if session['username'] not in user_settings:
@@ -23,8 +23,9 @@ def connection():
     """ Shortcut for connected_users[request.sid] """
     return connected_users[request.sid]
 
-# Helper functions
 
+"""Helper Functions
+"""
 def save_to_file(data, filepath):
     """ Saves JSON from 'data' to a file at 'filepath'. """
     with open(filepath, 'w') as f:
@@ -46,8 +47,9 @@ def valid_login(username, password):
     """ Returns true if the username/password combination is a match. """
     return username in usernames and usernames[username] == password
 
-# Decorators
 
+"""Decorators
+"""
 def require_login(func):
     """ Decorator to redirect to the login page if not logged in. """
     @wraps(func)
@@ -67,8 +69,9 @@ def require_logged_out(func):
         return func(*args, **kwargs)
     return f
 
-# Initialization
 
+"""Initialization
+"""
 MAX_BOTS = 5
 MAX_TEAMS = 5
 NUM_ROOMS = 10
@@ -85,8 +88,9 @@ user_settings = load_from_file(user_settings_file)
 rooms = [Room() for _ in range(NUM_ROOMS)]
 connected_users = {}
 
-# Socket functions
 
+"""Socket functions
+"""
 def bot_login(obj):
     for u, s in user_settings.items():
         for bot in s['bots']:
@@ -106,19 +110,20 @@ def bot_join_room(obj):
     # Try to pick a room to join. A room choice outside room index bounds becomes auto-assign.
     room = None
     if 0 <= obj['room'] < NUM_ROOMS and not rooms[obj['room']].is_full():
-            room = obj['room']
+        room_num = obj['room']
     elif 0 > obj['room'] or NUM_ROOMS <= obj['room']:
         for r in range(len(rooms)):
             if not rooms[r].is_full():
-                room = r
+                room_num = r
                 break
+    room = rooms[room_num]
 
     # Try to pick a team to use. If team name is invalid, cannot join room.
     team = None
-    for team_name in persistent()['teams']:
-        if team_name == obj['team']:
-            team = team_name
-            break
+    for team_obj in persistent()['teams']:
+        if team_obj['name'] == obj['team']:
+            team_path = pk.get_team_path(session['username'], team_obj['id'])
+            team = pk.load_data(team_path)
 
     # If both the room and team were valid choices, join the room using the team requested.
     if room is None or team is None:
@@ -131,23 +136,20 @@ def bot_join_room(obj):
         return
 
     # Connect user to room, send success message.
-    connection()['room'] = room
-    rooms[room].players.append(Player(request.sid, session['username'], team))
-    join_room(room)
+    connection()['room_num'] = room_num
+    rooms[room_num].players.append(Player(request.sid, session['username'], team))
     emit('json', {'success': 'room joined'})
-    print('{} joined room {}.'.format(session['username'], room))
+    print('{} joined room {}.'.format(session['username'], room_num))
 
-def start_battle(room_id):
-    team_one = pokeutils.load_data('../examples/bugcatchercindy/87759413-5681-40eb-8546-9cc7f5874e88.json')
-    team_two = pokeutils.load_data('../examples/bugcatchersteve/410a089a-9e6b-4a8b-bddd-c5480f02c389.json')
-    pokeutils.initBattle(team_one, team_two)
-    battle_json = pokeutils.load_data('../examples/exampleBattle.json')
-    emit('json', {'battleState': battle_json}, room=room_id) #Sending BattleJSON
+def start_battle(room):
+    team_one = room.players[0].team
+    team_two = room.players[1].team
+    battle_dict = pk.initBattle(team_one, team_two)
+    emit('json', {'battleState': battle_dict}) #Sending BattleJSON
 
-# ************** #
-# WEBSITE ROUTES #
-# ************** #
 
+"""Website routes
+"""
 @app.route('/')
 def home():
     return render_template('home.html')
@@ -190,7 +192,7 @@ def account():
                     del persistent()['bots'][i]
                     save_to_file(user_settings, user_settings_file)
                     break
-	elif 'team' in request.form:
+        elif 'team' in request.form:
             for i in range(len(persistent()['bots'])):
                 if persistent()['bots'][i]['key'] == request.form['team']:
                     save_to_file(user_settings, user_settings_file)
@@ -230,10 +232,9 @@ def logout():
 
     return redirect(url_for('login'))
 
-# ************* #
-# SOCKET EVENTS #
-# ************* #
 
+"""Socket events
+"""
 @socketio.on('connect')
 def on_connect():
     connected_users[request.sid] = {}
@@ -241,17 +242,17 @@ def on_connect():
 
 @socketio.on('disconnect')
 def on_disconnect():
-    if 'room' in connection():
-        print("Player disconnected from room {}. Resetting room...".format(connection()['room']))
-        leave_room(connection()['room'])
-        r = rooms[connection()['room']]
+    if 'room_num' in connection():
+        print("Player disconnected from room {}. Resetting room...".format(connection()['room_num']))
+        leave_room(connection()['room_num'])
+        r = rooms[connection()['room_num']]
 
-        # Send a message to all other players in the room that one player disconnected.
-        #   Then, remove all players from the room.
+        #  Send a message to all other players in the room that one player disconnected.
+        #  Then, remove all players from the room.
         for i in range(len(r.players)):
             if r.players[i].sid != request.sid:
                 emit('json', {'disconnect': 'another player has disconnected'}, room=r.players[i].sid)
-                del connected_users[r.players[i].sid]['room']
+                del connected_users[r.players[i].sid]['room_num']
         r.players = []
 
     # Remove the user from our connected users.
@@ -263,7 +264,6 @@ def on_message(msg):
     if 'bot' not in session:
         print("Unauthorized message")
         return
-
     print('Message: ' + msg)
 
 #  alternatively depending on what the client is sending,
@@ -280,15 +280,15 @@ def on_json(obj):
         return
 
     # If the bot is not yet in a room,
-    if 'room' not in connection():
+    if 'room_num' not in connection():
         bot_join_room(obj)
-        if 'room' in connection() and rooms[connection()['room']].is_full():
-            start_battle(connection()['room'])
+        if 'room_num' in connection() and rooms[connection()['room_num']].is_full():
+            print('woo')
+            start_battle(rooms[connection()['room_num']])
         return
 
     # AI is alreay in a room
-    print("AI of {} sent json << {} >> from room: {}".format(session['username'], obj, connection()['room']))
-
+    print("AI of {} sent json << {} >> from room: {}".format(session['username'], obj, connection()['room_num']))
 
 @socketio.on('text')
 def on_textfile(data):
@@ -308,8 +308,8 @@ def on_textfile(data):
 
 @socketio.on('action')
 def on_action(data):
-    print("Action << {} >> called from Room #{} sent by {}".format(data, connection()['room'], session['username']))
-    r = rooms[connection()['room']]
+    print("Action << {} >> called from Room #{} sent by {}".format(data, connection()['room_num'], session['username']))
+    r = rooms[connection()['room_num']]
 
     #This block is used to check if a player has sent more than one action
     for player in r.players:
@@ -320,7 +320,7 @@ def on_action(data):
                 print("Player: {} sent action twice".format(player.username))
 
     #This is where we would prob call the main battle function (which would return the updated battle json)
-    battle_json = pokeutils.load_data('../examples/exampleBattle.json')
+    #battle_json = pk.load_data('../examples/exampleBattle.json')
 
     #Through the main battle function check if the player lost or won
     endCondition = True #Temporary use of an end condition (if false loop occurs)
@@ -328,16 +328,16 @@ def on_action(data):
         for i in r.players:
             if i.sid == request.sid:
                 if (data['action'] == "attack 2"):
-                    emit('json', {'end': 'Winner of Room#{}'.format(connection()['room'])}, room=request.sid)
+                    emit('json', {'end': 'Winner of Room#{}'.format(connection()['room_num'])}, room=request.sid)
                 elif (data['action'] == "attack 4"):
-                    emit('json', {'end': 'Loser of Room#{}'.format(connection()['room'])}, room=request.sid)
+                    emit('json', {'end': 'Loser of Room#{}'.format(connection()['room_num'])}, room=request.sid)
         print("Battle Ended Successfully")
     else:
         #Send an updated battleJSON if no end condition has been met
         if all(player.actionUsed != False for player in r.players):
            print('Updated Battle JSON sent to all players in the room #{}'.format(connection()['room']))
-           emit('json', {'battleState': 'Updated Battle JSON sent to all players in the room #{}'.format(connection()['room'])}, room=connection()['room'])
+           emit('json', {'battleState': 'Updated Battle JSON sent to all players in the room #{}'.format(connection()['room_num'])}, room=connection()['room_num'])
            for player in r.players:
                player.actionUsed = False
-							 
+
 socketio.run(app, debug=False)

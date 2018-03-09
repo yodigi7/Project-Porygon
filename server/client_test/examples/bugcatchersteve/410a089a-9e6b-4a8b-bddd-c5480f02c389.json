@@ -1,9 +1,13 @@
 {
+    "team_id": "410a089a-9e6b-4a8b-bddd-c5480f02c389",
+    "team_name": "coolest bugs",
+    "account_name": "bug catcher steve",
     "pokemon": [
         {
             "name": "slayer",
             "species": "spinarak",
             "poke_id": "325cff49-3e69-4c23-9a63-b0552e2f4a87",
+            "gender": "female",
             "nature": "bold",
             "ability": "swarm",
             "item": "eviolite",
@@ -31,6 +35,7 @@
             "name": "killer",
             "species": "metapod",
             "poke_id": "ed4120ed-97a1-4f7d-9ba1-574a546ea7c1",
+            "gender": "male",
             "nature": "bold",
             "ability": "shed-skin",
             "item": "chesto-berry",

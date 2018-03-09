@@ -5,7 +5,7 @@ import json
 import random
 import pokebase as pb
 
-TEAM_DIR = 'examples/'
+TEAM_DIR = '../examples/'
 DEFAULT_LEVEL = 50
 DEFAULT_EV = 0
 POS_NATURE_MOD = 1.1

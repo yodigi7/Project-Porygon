@@ -1,4 +1,6 @@
 {
+    "weather": "normal",
+    "terrain": "normal",
     "players": [
         {
             "account_name": "bug catcher steve",

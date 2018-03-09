@@ -1,5 +1,3 @@
-
-
 class Player:
     def __init__(self, sid, username, team):
         self.sid = sid
