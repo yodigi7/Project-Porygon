@@ -138,14 +138,15 @@ def bot_join_room(obj):
     # Connect user to room, send success message.
     connection()['room_num'] = room_num
     rooms[room_num].players.append(Player(request.sid, session['username'], team))
+    join_room(room_num)
     emit('json', {'success': 'room joined'})
     print('{} joined room {}.'.format(session['username'], room_num))
 
-def start_battle(room):
+def start_battle(room, room_broadcast):
     team_one = room.players[0].team
     team_two = room.players[1].team
     battle_dict = pk.initBattle(team_one, team_two)
-    emit('json', {'battleState': battle_dict}) #Sending BattleJSON
+    emit('json', {'battleState': battle_dict}, room=room_broadcast) #Sending BattleJSON
 
 
 """Website routes
@@ -284,7 +285,7 @@ def on_json(obj):
         bot_join_room(obj)
         if 'room_num' in connection() and rooms[connection()['room_num']].is_full():
             print('woo')
-            start_battle(rooms[connection()['room_num']])
+            start_battle(rooms[connection()['room_num']], connection()['room_num'])
         return
 
     # AI is alreay in a room
@@ -319,25 +320,39 @@ def on_action(data):
             else:
                 print("Player: {} sent action twice".format(player.username))
 
-    #This is where we would prob call the main battle function (which would return the updated battle json)
-    #battle_json = pk.load_data('../examples/exampleBattle.json')
-
-    #Through the main battle function check if the player lost or won
-    endCondition = True #Temporary use of an end condition (if false loop occurs)
-    if (endCondition):
-        for i in r.players:
-            if i.sid == request.sid:
-                if (data['action'] == "attack 2"):
-                    emit('json', {'end': 'Winner of Room#{}'.format(connection()['room_num'])}, room=request.sid)
-                elif (data['action'] == "attack 4"):
-                    emit('json', {'end': 'Loser of Room#{}'.format(connection()['room_num'])}, room=request.sid)
-        print("Battle Ended Successfully")
-    else:
         #Send an updated battleJSON if no end condition has been met
+        #If all players have submitted an action
         if all(player.actionUsed != False for player in r.players):
-           print('Updated Battle JSON sent to all players in the room #{}'.format(connection()['room']))
-           emit('json', {'battleState': 'Updated Battle JSON sent to all players in the room #{}'.format(connection()['room_num'])}, room=connection()['room_num'])
-           for player in r.players:
-               player.actionUsed = False
+           #TODO: Call Battle Function
+           """
+           example access to players and actions
+           #To access players: r.players[0] r.players[1]
+           #To access their actions: r.players[0].actionUsed['action'], r.players[1].actionUsed['action'] 
+           """
+           battle_json = pk.load_data('../examples/exampleBattle.json')
+
+           # Through the main battle function check if the player lost or won
+           #TODO: Replace endCondition bit with something else
+           endCondition = True  # Temporary use of an end condition (if false, a server->client->server loop occurs)
+
+           calling_room = connection()['room_num'] #the client who called the action function's room
+           if (endCondition):
+               #TODO: Check for repeated pokemon switches, in which AI likes to stall to survive
+               #TODO: Also check for incorrect actions from data
+               for i in r.players:
+                   if (i.actionUsed['action'] == "attack 2"):
+                       print('Winner of Room #{} is {}'.format(calling_room, i.username))
+                       emit('json', {'end': 'Winner of Room#{}'.format(calling_room)}, room=i.sid)
+                   elif (i.actionUsed['action'] == "attack 4"):
+                       print('Loser of Room #{} is {}'.format(connection()['room_num'], i.username))
+                       emit('json', {'end': 'Loser of Room#{}'.format(calling_room)}, room=i.sid)
+               print("Battle Ended Successfully (By endCondition = True)")
+           else:
+               print("Should be printed when 2 players submit an action") #Obviously when no end condition has been met
+               print('Updated Battle JSON sent to all players in the room #{}'.format(connection()['room_num']))
+               emit('json', {'battleState': 'Updated Battle JSON sent to all players in the room #{}'.format(calling_room)}, room=calling_room)
+               emit('json', {'battleState': battle_json}, room=calling_room)  # Sending BattleJSON
+               for player in r.players:
+                   player.actionUsed = False
 
 socketio.run(app, debug=False)
