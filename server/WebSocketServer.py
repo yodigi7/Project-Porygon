@@ -6,6 +6,7 @@ import json
 import uuid
 from Room import Room, Player
 import pokeutils as pk
+import battle as bt
 
 
 """Shortcuts
@@ -146,6 +147,7 @@ def start_battle(room, room_broadcast):
     team_one = room.players[0].team
     team_two = room.players[1].team
     battle_dict = pk.initBattle(team_one, team_two)
+    room.battle = battle_dict
     emit('json', {'battleState': battle_dict}, room=room_broadcast) #Sending BattleJSON
 
 
@@ -284,7 +286,6 @@ def on_json(obj):
     if 'room_num' not in connection():
         bot_join_room(obj)
         if 'room_num' in connection() and rooms[connection()['room_num']].is_full():
-            print('woo')
             start_battle(rooms[connection()['room_num']], connection()['room_num'])
         return
 
@@ -323,36 +324,40 @@ def on_action(data):
         #Send an updated battleJSON if no end condition has been met
         #If all players have submitted an action
         if all(player.actionUsed != False for player in r.players):
-           #TODO: Call Battle Function
-           """
-           example access to players and actions
-           #To access players: r.players[0] r.players[1]
-           #To access their actions: r.players[0].actionUsed['action'], r.players[1].actionUsed['action'] 
-           """
-           battle_json = pk.load_data('../examples/exampleBattle.json')
+            teams = []
+            actions = []
+            for player in r.players:
+                teams.append(player.team)
 
-           # Through the main battle function check if the player lost or won
-           #TODO: Replace endCondition bit with something else
-           endCondition = True  # Temporary use of an end condition (if false, a server->client->server loop occurs)
+                action_dict = {}
+                action_dict['player'] = player.username
+                action_dict['action'] = player.actionUsed['action']
+                actions.append(action_dict)
+                
+            r.battle = bt.performTurn(r.battle, actions, teams)
 
-           calling_room = connection()['room_num'] #the client who called the action function's room
-           if (endCondition):
-               #TODO: Check for repeated pokemon switches, in which AI likes to stall to survive
-               #TODO: Also check for incorrect actions from data
-               for i in r.players:
-                   if (i.actionUsed['action'] == "attack 2"):
-                       print('Winner of Room #{} is {}'.format(calling_room, i.username))
-                       emit('json', {'end': 'Winner of Room#{}'.format(calling_room)}, room=i.sid)
-                   elif (i.actionUsed['action'] == "attack 4"):
-                       print('Loser of Room #{} is {}'.format(connection()['room_num'], i.username))
-                       emit('json', {'end': 'Loser of Room#{}'.format(calling_room)}, room=i.sid)
-               print("Battle Ended Successfully (By endCondition = True)")
-           else:
-               print("Should be printed when 2 players submit an action") #Obviously when no end condition has been met
-               print('Updated Battle JSON sent to all players in the room #{}'.format(connection()['room_num']))
-               emit('json', {'battleState': 'Updated Battle JSON sent to all players in the room #{}'.format(calling_room)}, room=calling_room)
-               emit('json', {'battleState': battle_json}, room=calling_room)  # Sending BattleJSON
-               for player in r.players:
-                   player.actionUsed = False
+            # Through the main battle function check if the player lost or won
+            #TODO: Replace endCondition bit with something else
+            endCondition = True  # Temporary use of an end condition (if false, a server->client->server loop occurs)
+
+            calling_room = connection()['room_num'] #the client who called the action function's room
+            if (endCondition):
+                #TODO: Check for repeated pokemon switches, in which AI likes to stall to survive
+                #TODO: Also check for incorrect actions from data
+                for i in r.players:
+                    if (i.actionUsed['action'] == "attack 2"):
+                        print('Winner of Room #{} is {}'.format(calling_room, i.username))
+                        emit('json', {'end': 'Winner of Room#{}'.format(calling_room)}, room=i.sid)
+                    elif (i.actionUsed['action'] == "attack 4"):
+                        print('Loser of Room #{} is {}'.format(connection()['room_num'], i.username))
+                        emit('json', {'end': 'Loser of Room#{}'.format(calling_room)}, room=i.sid)
+                print("Battle Ended Successfully (By endCondition = True)")
+            else:
+                print("Should be printed when 2 players submit an action") #Obviously when no end condition has been met
+                print('Updated Battle JSON sent to all players in the room #{}'.format(connection()['room_num']))
+                emit('json', {'battleState': 'Updated Battle JSON sent to all players in the room #{}'.format(calling_room)}, room=calling_room)
+                emit('json', {'battleState': battle_json}, room=calling_room)  # Sending BattleJSON
+                for player in r.players:
+                    player.actionUsed = False
 
 socketio.run(app, debug=False)

@@ -54,6 +54,10 @@ def initBattle(team_one, team_two):
     players.append(formatTeamAsBattle(team_two))
 
     #  add to dict and return
+    battle_dict['loser'] = 'none'
+    battle_dict['loss_reason'] = 'none'
+    battle_dict['weather'] = 'none'
+    battle_dict['terrain'] = 'none'
     battle_dict['players'] = players
     return battle_dict
 
@@ -68,6 +72,9 @@ def formatTeamAsBattle(team):
 
     #  add metadata to dictionary
     player_dict['account_name'] = team['account_name']
+
+    #  remove spaces (which just show up somehow?)
+    player_dict['account_name'] = player_dict['account_name'].replace(' ','')
     player_dict['team_id'] = team['team_id']
 
     #  default values for the active pokemon
@@ -79,6 +86,8 @@ def formatTeamAsBattle(team):
         'perish_song_turn_count': 0,
         'cursed': 0,
         'seeded': 0,
+        'infatuated': 0,
+        'trapped': 0,
         'stat_modifiers': {
             'attack': 1,
             'defense': 1,
@@ -122,7 +131,8 @@ def formatTeamAsBattle(team):
     return player_dict
 
 
-"""A function that calculates and returns the stats of a Pokémon as a dict.
+"""A function that calculates and returns the base stats
+(not including in-battle modifiers) and returns a dict.
 
 Parameters:
 pokemon -- a list of info that constitutes a Pokémon (see the team JSONs)

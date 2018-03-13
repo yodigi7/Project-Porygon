@@ -8,6 +8,7 @@ class Player:
 class Room:
     def __init__(self):
         self.players = []
+        self.battle = {}
 
     def get_player_names(self):
         return [n.username for n in self.players]
