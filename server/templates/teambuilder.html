@@ -11,6 +11,26 @@
 </style>
 
 <script>
+	function popup(mylink, windowname)
+	{
+	    if (! window.focus)
+	      return true;
+	    var href;
+	    if (typeof(mylink) == 'string')
+	      href=mylink;
+	    else
+	      href=mylink.href;
+	    window.open(href, windowname, 'width=1000, height=800, scrollbars=yes');
+	    return false;
+  	}
+
+	function remove(ev)
+	{
+    	var elem = document.getElementById(ev);
+    	elem.parentNode.removeChild(elem);
+    	return false;
+	}
+
 	function allowDrop(ev)
 	{
 		ev.preventDefault();
@@ -34,173 +54,241 @@
 <div class="teambuilder_page">
     <h1>Team Builder</h1>
 	    <table width="20" align="left">
-	     	<tr><th scope="row"><div id="div1" ondrop="drop(event)" ondragover="allowDrop(event)">
-	     	</div></th>
-	     	<th scope="row"><div id="div2" ondrop="drop(event)" ondragover="allowDrop(event)">
-	     	</div></th>
-	     	<th scope="row"><div id="div3" ondrop="drop(event)" ondragover="allowDrop(event)">
-	     	</div></th></tr>
-	     	<tr><th scope="row"><div id="div4" ondrop="drop(event)" ondragover="allowDrop(event)">
-	     	</div></th>
-	     	<th scope="row"><div id="div5" ondrop="drop(event)" ondragover="allowDrop(event)">
-	     	</div></th>
-	     	<th scope="row"><div id="div6" ondrop="drop(event)" ondragover="allowDrop(event)">
-	     	</div></th></tr>
+	     	<tr>
+	     		<th scope="row"><div id="div1" draggable="false" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+	     				<button type="submit" value="event" name="edit" onclick="return popup('http://localhost:5000/pEditor', 'notes')">Edit</button>
+	     				<button type="submit" value="event" name="remove" onclick="remove(event)">Remove</button>
+	     		</th>
+	     		<th scope="row"><div id="div2" draggable="false" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+	     				<button type="submit" value="event" name="edit" onclick="return popup('http://localhost:5000/pEditor', 'notes')">Edit</button>
+	     				<button type="submit" value="event" name="remove" onclick="remove(event)">Remove</button>
+	     		</th>
+	     		<th scope="row"><div id="div3" draggable="false" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+	     				<button type="submit" value="event" name="edit" onclick="return popup('http://localhost:5000/pEditor', 'notes')">Edit</button>
+	     				<button type="submit" value="event" name="remove" onclick="remove(event)">Remove</button>
+	     		</th>
+	     	</tr>
+	     	<tr>
+	     		<th scope="row"><div id="div4" draggable="false" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+	     				<button type="submit" value="event" name="edit" onclick="return popu('http://localhost:5000/pEditor', 'notes')">Edit</button>
+	     				<button type="submit" value="event" name="remove" onclick="remove(event)">Remove</button>
+	     		</th>
+	     		<th scope="row"><div id="div5" draggable="false" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+	     				<button type="submit" value="event" name="edit" onclick="return popup('http://localhost:5000/pEditor', 'notes')">Edit</button>
+	     				<button type="submit" value="event" name="remove" onclick="remove(event)">Remove</button>
+	     		</th>
+	     		<th scope="row"><div id="div6" draggable="false" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+	     				<button type="submit" value="event" name="edit" onclick="return popup('http://localhost:5000/pEditor', 'notes')">Edit</button>
+	     				<button type="submit" value="event" name="remove" onclick="remove(event)">Remove</button>
+	     		</th>
+	     	</tr>
 	    </table>
 	    <div style="height:200px; overflow-y: scroll;">
 		    <table align="center">
 		     	<tbody>
-				 	<tr><th scope="row"><img id="drag1" src="https://www.serebii.net/pokearth/sprites/hgss/001.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag2" src="https://www.serebii.net/pokearth/sprites/hgss/002.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag3" src="https://www.serebii.net/pokearth/sprites/hgss/003.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag4" src="https://www.serebii.net/pokearth/sprites/hgss/004.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag5" src="https://www.serebii.net/pokearth/sprites/hgss/005.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-				 	<th scope="row"><img id="drag6" src="https://www.serebii.net/pokearth/sprites/hgss/006.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th></tr>
-				 	<tr><th scope="row"><img id="drag7" src="https://www.serebii.net/pokearth/sprites/hgss/007.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag8" src="https://www.serebii.net/pokearth/sprites/hgss/008.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag9" src="https://www.serebii.net/pokearth/sprites/hgss/009.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag10" src="https://www.serebii.net/pokearth/sprites/hgss/010.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag11" src="https://www.serebii.net/pokearth/sprites/hgss/011.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-				 	<th scope="row"><img id="drag12" src="https://www.serebii.net/pokearth/sprites/hgss/012.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th></tr>
-				 	<tr><th scope="row"><img id="drag13" src="https://www.serebii.net/pokearth/sprites/hgss/013.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag14" src="https://www.serebii.net/pokearth/sprites/hgss/014.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag15" src="https://www.serebii.net/pokearth/sprites/hgss/015.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag16" src="https://www.serebii.net/pokearth/sprites/hgss/016.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag17" src="https://www.serebii.net/pokearth/sprites/hgss/017.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-				 	<th scope="row"><img id="drag18" src="https://www.serebii.net/pokearth/sprites/hgss/018.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th></tr>
-				 	<tr><th scope="row"><img id="drag19" src="https://www.serebii.net/pokearth/sprites/hgss/019.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag20" src="https://www.serebii.net/pokearth/sprites/hgss/020.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag21" src="https://www.serebii.net/pokearth/sprites/hgss/021.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag22" src="https://www.serebii.net/pokearth/sprites/hgss/022.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag23" src="https://www.serebii.net/pokearth/sprites/hgss/023.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-				 	<th scope="row"><img id="drag24" src="https://www.serebii.net/pokearth/sprites/hgss/024.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th></tr>
-				 	<tr><th scope="row"><img id="drag25" src="https://www.serebii.net/pokearth/sprites/hgss/025.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag26" src="https://www.serebii.net/pokearth/sprites/hgss/026.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag27" src="https://www.serebii.net/pokearth/sprites/hgss/027.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag28" src="https://www.serebii.net/pokearth/sprites/hgss/028.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag29" src="https://www.serebii.net/pokearth/sprites/hgss/029.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-				 	<th scope="row"><img id="drag30" src="https://www.serebii.net/pokearth/sprites/hgss/030.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th></tr>
-				 	<tr><th scope="row"><img id="drag31" src="https://www.serebii.net/pokearth/sprites/hgss/031.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag32" src="https://www.serebii.net/pokearth/sprites/hgss/032.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag33" src="https://www.serebii.net/pokearth/sprites/hgss/033.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag34" src="https://www.serebii.net/pokearth/sprites/hgss/034.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag35" src="https://www.serebii.net/pokearth/sprites/hgss/035.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-				 	<th scope="row"><img id="drag36" src="https://www.serebii.net/pokearth/sprites/hgss/036.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th></tr>
-				 	<tr><th scope="row"><img id="drag37" src="https://www.serebii.net/pokearth/sprites/hgss/037.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag38" src="https://www.serebii.net/pokearth/sprites/hgss/038.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag39" src="https://www.serebii.net/pokearth/sprites/hgss/039.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag40" src="https://www.serebii.net/pokearth/sprites/hgss/040.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag41" src="https://www.serebii.net/pokearth/sprites/hgss/041.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-				 	<th scope="row"><img id="drag42" src="https://www.serebii.net/pokearth/sprites/hgss/042.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th></tr>
-				 	<tr><th scope="row"><img id="drag43" src="https://www.serebii.net/pokearth/sprites/hgss/043.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="dra44" src="https://www.serebii.net/pokearth/sprites/hgss/044.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag45" src="https://www.serebii.net/pokearth/sprites/hgss/045.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag46" src="https://www.serebii.net/pokearth/sprites/hgss/046.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag47" src="https://www.serebii.net/pokearth/sprites/hgss/047.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-				 	<th scope="row"><img id="drag48" src="https://www.serebii.net/pokearth/sprites/hgss/048.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th></tr>
-				 	<tr><th scope="row"><img id="drag49" src="https://www.serebii.net/pokearth/sprites/hgss/049.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag50" src="https://www.serebii.net/pokearth/sprites/hgss/050.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag51" src="https://www.serebii.net/pokearth/sprites/hgss/051.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag52" src="https://www.serebii.net/pokearth/sprites/hgss/052.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag53" src="https://www.serebii.net/pokearth/sprites/hgss/053.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-				 	<th scope="row"><img id="drag54" src="https://www.serebii.net/pokearth/sprites/hgss/054.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th></tr>
-				 	<tr><th scope="row"><img id="drag55" src="https://www.serebii.net/pokearth/sprites/hgss/055.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag56" src="https://www.serebii.net/pokearth/sprites/hgss/056.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag57" src="https://www.serebii.net/pokearth/sprites/hgss/057.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag58" src="https://www.serebii.net/pokearth/sprites/hgss/058.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag59" src="https://www.serebii.net/pokearth/sprites/hgss/059.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-				 	<th scope="row"><img id="drag60" src="https://www.serebii.net/pokearth/sprites/hgss/060.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th></tr>
-				 	<tr><th scope="row"><img id="drag61" src="https://www.serebii.net/pokearth/sprites/hgss/061.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag62" src="https://www.serebii.net/pokearth/sprites/hgss/062.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag63" src="https://www.serebii.net/pokearth/sprites/hgss/063.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag64" src="https://www.serebii.net/pokearth/sprites/hgss/064.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag65" src="https://www.serebii.net/pokearth/sprites/hgss/065.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-				 	<th scope="row"><img id="drag66" src="https://www.serebii.net/pokearth/sprites/hgss/066.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th></tr>
-				 	<tr><th scope="row"><img id="drag67" src="https://www.serebii.net/pokearth/sprites/hgss/067.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag68" src="https://www.serebii.net/pokearth/sprites/hgss/068.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag69" src="https://www.serebii.net/pokearth/sprites/hgss/069.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag70" src="https://www.serebii.net/pokearth/sprites/hgss/070.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag71" src="https://www.serebii.net/pokearth/sprites/hgss/071.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-				 	<th scope="row"><img id="drag72" src="https://www.serebii.net/pokearth/sprites/hgss/072.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th></tr>
-				 	<tr><th scope="row"><img id="drag73" src="https://www.serebii.net/pokearth/sprites/hgss/073.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag74" src="https://www.serebii.net/pokearth/sprites/hgss/074.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag75" src="https://www.serebii.net/pokearth/sprites/hgss/075.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag76" src="https://www.serebii.net/pokearth/sprites/hgss/076.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag77" src="https://www.serebii.net/pokearth/sprites/hgss/077.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-				 	<th scope="row"><img id="drag78" src="https://www.serebii.net/pokearth/sprites/hgss/078.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th></tr>
-				 	<tr><th scope="row"><img id="drag79" src="https://www.serebii.net/pokearth/sprites/hgss/079.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag80" src="https://www.serebii.net/pokearth/sprites/hgss/080.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag81" src="https://www.serebii.net/pokearth/sprites/hgss/081.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag82" src="https://www.serebii.net/pokearth/sprites/hgss/082.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag83" src="https://www.serebii.net/pokearth/sprites/hgss/083.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-				 	<th scope="row"><img id="drag84" src="https://www.serebii.net/pokearth/sprites/hgss/084.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th></tr>
-				 	<tr><th scope="row"><img id="drag85" src="https://www.serebii.net/pokearth/sprites/hgss/085.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag86" src="https://www.serebii.net/pokearth/sprites/hgss/086.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag87" src="https://www.serebii.net/pokearth/sprites/hgss/087.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag88" src="https://www.serebii.net/pokearth/sprites/hgss/088.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag89" src="https://www.serebii.net/pokearth/sprites/hgss/089.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-				 	<th scope="row"><img id="drag90" src="https://www.serebii.net/pokearth/sprites/hgss/090.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th></tr>
-				 	<tr><th scope="row"><img id="drag91" src="https://www.serebii.net/pokearth/sprites/hgss/091.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag92" src="https://www.serebii.net/pokearth/sprites/hgss/092.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag93" src="https://www.serebii.net/pokearth/sprites/hgss/093.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag94" src="https://www.serebii.net/pokearth/sprites/hgss/094.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag95" src="https://www.serebii.net/pokearth/sprites/hgss/095.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-				 	<th scope="row"><img id="drag96" src="https://www.serebii.net/pokearth/sprites/hgss/096.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th></tr>
-				 	<tr><th scope="row"><img id="drag97" src="https://www.serebii.net/pokearth/sprites/hgss/097.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag98" src="https://www.serebii.net/pokearth/sprites/hgss/098.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag99" src="https://www.serebii.net/pokearth/sprites/hgss/099.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag100" src="https://www.serebii.net/pokearth/sprites/hgss/100.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag101" src="https://www.serebii.net/pokearth/sprites/hgss/101.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-				 	<th scope="row"><img id="drag102" src="https://www.serebii.net/pokearth/sprites/hgss/102.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th></tr>
-				 	<tr><th scope="row"><img id="drag103" src="https://www.serebii.net/pokearth/sprites/hgss/103.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag104" src="https://www.serebii.net/pokearth/sprites/hgss/104.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag105" src="https://www.serebii.net/pokearth/sprites/hgss/105.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag106" src="https://www.serebii.net/pokearth/sprites/hgss/106.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag107" src="https://www.serebii.net/pokearth/sprites/hgss/107.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-				 	<th scope="row"><img id="drag108" src="https://www.serebii.net/pokearth/sprites/hgss/108.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th></tr>
-				 	<tr><th scope="row"><img id="drag109" src="https://www.serebii.net/pokearth/sprites/hgss/109.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag110" src="https://www.serebii.net/pokearth/sprites/hgss/110.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag111" src="https://www.serebii.net/pokearth/sprites/hgss/111.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag112" src="https://www.serebii.net/pokearth/sprites/hgss/112.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag113" src="https://www.serebii.net/pokearth/sprites/hgss/113.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-				 	<th scope="row"><img id="drag114" src="https://www.serebii.net/pokearth/sprites/hgss/114.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th></tr>
-				 	<tr><th scope="row"><img id="drag115" src="https://www.serebii.net/pokearth/sprites/hgss/115.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag116" src="https://www.serebii.net/pokearth/sprites/hgss/116.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag117" src="https://www.serebii.net/pokearth/sprites/hgss/117.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag118" src="https://www.serebii.net/pokearth/sprites/hgss/118.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag119" src="https://www.serebii.net/pokearth/sprites/hgss/119.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-				 	<th scope="row"><img id="drag120" src="https://www.serebii.net/pokearth/sprites/hgss/120.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th></tr>
-				 	<tr><th scope="row"><img id="drag121" src="https://www.serebii.net/pokearth/sprites/hgss/121.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag122" src="https://www.serebii.net/pokearth/sprites/hgss/122.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag123" src="https://www.serebii.net/pokearth/sprites/hgss/123.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag124" src="https://www.serebii.net/pokearth/sprites/hgss/124.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag125" src="https://www.serebii.net/pokearth/sprites/hgss/125.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-				 	<th scope="row"><img id="drag126" src="https://www.serebii.net/pokearth/sprites/hgss/126.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th></tr>
-				 	<tr><th scope="row"><img id="drag127" src="https://www.serebii.net/pokearth/sprites/hgss/127.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag128" src="https://www.serebii.net/pokearth/sprites/hgss/128.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag129" src="https://www.serebii.net/pokearth/sprites/hgss/129.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag130" src="https://www.serebii.net/pokearth/sprites/hgss/130.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag131" src="https://www.serebii.net/pokearth/sprites/hgss/131.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-				 	<th scope="row"><img id="drag132" src="https://www.serebii.net/pokearth/sprites/hgss/132.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th></tr>
-				 	<tr><th scope="row"><img id="drag133" src="https://www.serebii.net/pokearth/sprites/hgss/133.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag134" src="https://www.serebii.net/pokearth/sprites/hgss/134.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag135" src="https://www.serebii.net/pokearth/sprites/hgss/135.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag136" src="https://www.serebii.net/pokearth/sprites/hgss/136.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag137" src="https://www.serebii.net/pokearth/sprites/hgss/137.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-				 	<th scope="row"><img id="drag138" src="https://www.serebii.net/pokearth/sprites/hgss/138.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th></tr>
-				 	<tr><th scope="row"><img id="drag139" src="https://www.serebii.net/pokearth/sprites/hgss/139.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag140" src="https://www.serebii.net/pokearth/sprites/hgss/140.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag141" src="https://www.serebii.net/pokearth/sprites/hgss/141.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag142" src="https://www.serebii.net/pokearth/sprites/hgss/142.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag143" src="https://www.serebii.net/pokearth/sprites/hgss/143.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-				 	<th scope="row"><img id="drag144" src="https://www.serebii.net/pokearth/sprites/hgss/144.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th></tr>
-				 	<tr><th scope="row"><img id="drag145" src="https://www.serebii.net/pokearth/sprites/hgss/145.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag146" src="https://www.serebii.net/pokearth/sprites/hgss/146.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag147" src="https://www.serebii.net/pokearth/sprites/hgss/147.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag148" src="https://www.serebii.net/pokearth/sprites/hgss/148.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-					<th scope="row"><img id="drag149" src="https://www.serebii.net/pokearth/sprites/hgss/149.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th>
-				 	<th scope="row"><img id="drag150" src="https://www.serebii.net/pokearth/sprites/hgss/150.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th></tr>
-				 	<tr><th scope="row"><img id="drag151" src="https://www.serebii.net/pokearth/sprites/hgss/151.png" draggable="true" ondragstart="drag(event)" width="50" height="50"></th></tr>
+				 	<tr>
+				 		<th scope="row"><img id="1" src="https://www.serebii.net/pokearth/sprites/hgss/001.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Bulbasaur</th>
+						<th scope="row"><img id="2" src="https://www.serebii.net/pokearth/sprites/hgss/002.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Ivysaur</th>
+						<th scope="row"><img id="3" src="https://www.serebii.net/pokearth/sprites/hgss/003.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Venusaur</th>
+						<th scope="row"><img id="4" src="https://www.serebii.net/pokearth/sprites/hgss/004.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Charmander</th>
+						<th scope="row"><img id="5" src="https://www.serebii.net/pokearth/sprites/hgss/005.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Charmeleon</th>
+					 	<th scope="row"><img id="6" src="https://www.serebii.net/pokearth/sprites/hgss/006.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Charizard</th>
+					</tr>
+				 	<tr>
+				 		<th scope="row"><img id="7" src="https://www.serebii.net/pokearth/sprites/hgss/007.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Squirtle</th>
+						<th scope="row"><img id="8" src="https://www.serebii.net/pokearth/sprites/hgss/008.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Wartortle</th>
+						<th scope="row"><img id="9" src="https://www.serebii.net/pokearth/sprites/hgss/009.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Blastoise</th>
+						<th scope="row"><img id="10" src="https://www.serebii.net/pokearth/sprites/hgss/010.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Caterpie</th>
+						<th scope="row"><img id="11" src="https://www.serebii.net/pokearth/sprites/hgss/011.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Metapod</th>
+					 	<th scope="row"><img id="12" src="https://www.serebii.net/pokearth/sprites/hgss/012.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Butterfree</th>
+					</tr>
+					<tr>
+						<th scope="row"><img id="13" src="https://www.serebii.net/pokearth/sprites/hgss/013.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Weedle</th>
+						<th scope="row"><img id="14" src="https://www.serebii.net/pokearth/sprites/hgss/014.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Kakuna</th>
+						<th scope="row"><img id="15" src="https://www.serebii.net/pokearth/sprites/hgss/015.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Beedrill</th>
+						<th scope="row"><img id="16" src="https://www.serebii.net/pokearth/sprites/hgss/016.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Pidgey</th>
+						<th scope="row"><img id="17" src="https://www.serebii.net/pokearth/sprites/hgss/017.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Pidgeotto</th>
+					 	<th scope="row"><img id="18" src="https://www.serebii.net/pokearth/sprites/hgss/018.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Pidgeot</th>
+					</tr>
+					<tr>
+						<th scope="row"><img id="19" src="https://www.serebii.net/pokearth/sprites/hgss/019.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Rattata</th>
+						<th scope="row"><img id="20" src="https://www.serebii.net/pokearth/sprites/hgss/020.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Ratticate</th>
+						<th scope="row"><img id="21" src="https://www.serebii.net/pokearth/sprites/hgss/021.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Spearow</th>
+						<th scope="row"><img id="22" src="https://www.serebii.net/pokearth/sprites/hgss/022.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Fearow</th>
+						<th scope="row"><img id="23" src="https://www.serebii.net/pokearth/sprites/hgss/023.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Ekans</th>
+					 	<th scope="row"><img id="24" src="https://www.serebii.net/pokearth/sprites/hgss/024.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Arbok</th>
+					</tr>
+				 	<tr>
+				 		<th scope="row"><img id="25" src="https://www.serebii.net/pokearth/sprites/hgss/025.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Pikachu</th>
+						<th scope="row"><img id="26" src="https://www.serebii.net/pokearth/sprites/hgss/026.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Raichu</th>
+						<th scope="row"><img id="27" src="https://www.serebii.net/pokearth/sprites/hgss/027.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Sandshrew</th>
+						<th scope="row"><img id="28" src="https://www.serebii.net/pokearth/sprites/hgss/028.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Sandslash</th>
+						<th scope="row"><img id="29" src="https://www.serebii.net/pokearth/sprites/hgss/029.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Nidoran(Female)</th>
+					 	<th scope="row"><img id="30" src="https://www.serebii.net/pokearth/sprites/hgss/030.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Nidorina</th>
+					</tr>
+				 	<tr>
+				 		<th scope="row"><img id="31" src="https://www.serebii.net/pokearth/sprites/hgss/031.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Nidoqueen</th>
+						<th scope="row"><img id="32" src="https://www.serebii.net/pokearth/sprites/hgss/032.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Nidoran(Male)</th>
+						<th scope="row"><img id="33" src="https://www.serebii.net/pokearth/sprites/hgss/033.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Nidorino</th>
+						<th scope="row"><img id="34" src="https://www.serebii.net/pokearth/sprites/hgss/034.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Nidoking</th>
+						<th scope="row"><img id="35" src="https://www.serebii.net/pokearth/sprites/hgss/035.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Clefairy</th>
+					 	<th scope="row"><img id="36" src="https://www.serebii.net/pokearth/sprites/hgss/036.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Clefable</th>
+					</tr>
+					<tr>
+						<th scope="row"><img id="37" src="https://www.serebii.net/pokearth/sprites/hgss/037.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Vulpix</th>
+						<th scope="row"><img id="38" src="https://www.serebii.net/pokearth/sprites/hgss/038.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Ninetales</th>
+						<th scope="row"><img id="39" src="https://www.serebii.net/pokearth/sprites/hgss/039.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Jigglypuff</th>
+						<th scope="row"><img id="40" src="https://www.serebii.net/pokearth/sprites/hgss/040.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Wigglytuff</th>
+						<th scope="row"><img id="41" src="https://www.serebii.net/pokearth/sprites/hgss/041.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Zubat</th>
+					 	<th scope="row"><img id="42" src="https://www.serebii.net/pokearth/sprites/hgss/042.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Golbat</th>
+					</tr>
+				 	<tr>
+				 		<th scope="row"><img id="43" src="https://www.serebii.net/pokearth/sprites/hgss/043.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Oddish</th>
+						<th scope="row"><img id="44" src="https://www.serebii.net/pokearth/sprites/hgss/044.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Gloom</th>
+						<th scope="row"><img id="45" src="https://www.serebii.net/pokearth/sprites/hgss/045.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Vileplume</th>
+						<th scope="row"><img id="46" src="https://www.serebii.net/pokearth/sprites/hgss/046.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Paras</th>
+						<th scope="row"><img id="47" src="https://www.serebii.net/pokearth/sprites/hgss/047.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Parasect</th>
+					 	<th scope="row"><img id="48" src="https://www.serebii.net/pokearth/sprites/hgss/048.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Venonat</th>
+					</tr>
+				 	<tr>
+				 		<th scope="row"><img id="49" src="https://www.serebii.net/pokearth/sprites/hgss/049.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Venomoth</th>
+						<th scope="row"><img id="50" src="https://www.serebii.net/pokearth/sprites/hgss/050.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Diglett</th>
+						<th scope="row"><img id="51" src="https://www.serebii.net/pokearth/sprites/hgss/051.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Dugtrio</th>
+						<th scope="row"><img id="52" src="https://www.serebii.net/pokearth/sprites/hgss/052.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Meowth</th>
+						<th scope="row"><img id="53" src="https://www.serebii.net/pokearth/sprites/hgss/053.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Persian</th>
+					 	<th scope="row"><img id="54" src="https://www.serebii.net/pokearth/sprites/hgss/054.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Psyduck</th>
+					</tr>
+				 	<tr>
+				 		<th scope="row"><img id="55" src="https://www.serebii.net/pokearth/sprites/hgss/055.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Golduck</th>
+						<th scope="row"><img id="56" src="https://www.serebii.net/pokearth/sprites/hgss/056.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Mankey</th>
+						<th scope="row"><img id="57" src="https://www.serebii.net/pokearth/sprites/hgss/057.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Primeape</th>
+						<th scope="row"><img id="58" src="https://www.serebii.net/pokearth/sprites/hgss/058.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Growlithe</th>
+						<th scope="row"><img id="59" src="https://www.serebii.net/pokearth/sprites/hgss/059.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Arcanine</th>
+					 	<th scope="row"><img id="60" src="https://www.serebii.net/pokearth/sprites/hgss/060.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Poliwag</th>
+					</tr>
+					<tr>
+						<th scope="row"><img id="61" src="https://www.serebii.net/pokearth/sprites/hgss/061.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Poliwhirl</th>
+						<th scope="row"><img id="62" src="https://www.serebii.net/pokearth/sprites/hgss/062.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Poliwrath</th>
+						<th scope="row"><img id="63" src="https://www.serebii.net/pokearth/sprites/hgss/063.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Abra</th>
+						<th scope="row"><img id="64" src="https://www.serebii.net/pokearth/sprites/hgss/064.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Kadabra</th>
+						<th scope="row"><img id="65" src="https://www.serebii.net/pokearth/sprites/hgss/065.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Alakazam</th>
+					 	<th scope="row"><img id="66" src="https://www.serebii.net/pokearth/sprites/hgss/066.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Machop</th>
+					</tr>
+					<tr>
+					 	<th scope="row"><img id="67" src="https://www.serebii.net/pokearth/sprites/hgss/067.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Machoke</th>
+						<th scope="row"><img id="68" src="https://www.serebii.net/pokearth/sprites/hgss/068.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Machamp</th>
+						<th scope="row"><img id="69" src="https://www.serebii.net/pokearth/sprites/hgss/069.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Bellsprout</th>
+						<th scope="row"><img id="70" src="https://www.serebii.net/pokearth/sprites/hgss/070.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Weepinbell</th>
+						<th scope="row"><img id="71" src="https://www.serebii.net/pokearth/sprites/hgss/071.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Victreebel</th>
+					 	<th scope="row"><img id="72" src="https://www.serebii.net/pokearth/sprites/hgss/072.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Tentacool</th>
+					</tr>
+					<tr>
+						<th scope="row"><img id="73" src="https://www.serebii.net/pokearth/sprites/hgss/073.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Tentacruel</th>
+						<th scope="row"><img id="74" src="https://www.serebii.net/pokearth/sprites/hgss/074.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Geodude</th>
+						<th scope="row"><img id="75" src="https://www.serebii.net/pokearth/sprites/hgss/075.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Graveler</th>
+						<th scope="row"><img id="76" src="https://www.serebii.net/pokearth/sprites/hgss/076.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Golem</th>
+						<th scope="row"><img id="77" src="https://www.serebii.net/pokearth/sprites/hgss/077.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Ponyta</th>
+					 	<th scope="row"><img id="78" src="https://www.serebii.net/pokearth/sprites/hgss/078.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Rapidash</th>
+					</tr>
+					<tr>
+						<th scope="row"><img id="79" src="https://www.serebii.net/pokearth/sprites/hgss/079.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Slowpoke</th>
+						<th scope="row"><img id="80" src="https://www.serebii.net/pokearth/sprites/hgss/080.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Slowbro</th>
+						<th scope="row"><img id="81" src="https://www.serebii.net/pokearth/sprites/hgss/081.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Magnemite</th>
+						<th scope="row"><img id="82" src="https://www.serebii.net/pokearth/sprites/hgss/082.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Magneton</th>
+						<th scope="row"><img id="83" src="https://www.serebii.net/pokearth/sprites/hgss/083.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Farfetch'd</th>
+					 	<th scope="row"><img id="84" src="https://www.serebii.net/pokearth/sprites/hgss/084.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Doduo</th>
+					</tr>
+					<tr>
+						<th scope="row"><img id="85" src="https://www.serebii.net/pokearth/sprites/hgss/085.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Dodrio</th>
+						<th scope="row"><img id="86" src="https://www.serebii.net/pokearth/sprites/hgss/086.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Seel</th>
+						<th scope="row"><img id="87" src="https://www.serebii.net/pokearth/sprites/hgss/087.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Dewgong</th>
+						<th scope="row"><img id="88" src="https://www.serebii.net/pokearth/sprites/hgss/088.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Grimer</th>
+						<th scope="row"><img id="89" src="https://www.serebii.net/pokearth/sprites/hgss/089.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Muk</th>
+					 	<th scope="row"><img id="90" src="https://www.serebii.net/pokearth/sprites/hgss/090.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Shellder</th>
+					</tr>
+					<tr>
+						<th scope="row"><img id="91" src="https://www.serebii.net/pokearth/sprites/hgss/091.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Cloyster</th>
+						<th scope="row"><img id="92" src="https://www.serebii.net/pokearth/sprites/hgss/092.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Gastly</th>
+						<th scope="row"><img id="93" src="https://www.serebii.net/pokearth/sprites/hgss/093.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Haunter</th>
+						<th scope="row"><img id="94" src="https://www.serebii.net/pokearth/sprites/hgss/094.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Gengar</th>
+						<th scope="row"><img id="95" src="https://www.serebii.net/pokearth/sprites/hgss/095.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Onyx</th>
+					 	<th scope="row"><img id="96" src="https://www.serebii.net/pokearth/sprites/hgss/096.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Drowzee</th>
+					</tr>
+					<tr>
+						<th scope="row"><img id="97" src="https://www.serebii.net/pokearth/sprites/hgss/097.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Hypno</th>
+						<th scope="row"><img id="98" src="https://www.serebii.net/pokearth/sprites/hgss/098.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Krabby</th>
+						<th scope="row"><img id="99" src="https://www.serebii.net/pokearth/sprites/hgss/099.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Kingler</th>
+						<th scope="row"><img id="100" src="https://www.serebii.net/pokearth/sprites/hgss/100.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Voltorb</th>
+						<th scope="row"><img id="101" src="https://www.serebii.net/pokearth/sprites/hgss/101.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Electrode</th>
+					 	<th scope="row"><img id="102" src="https://www.serebii.net/pokearth/sprites/hgss/102.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Exeggcute</th>
+					</tr>
+					<tr>
+						<th scope="row"><img id="103" src="https://www.serebii.net/pokearth/sprites/hgss/103.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Exeggutor</th>
+						<th scope="row"><img id="104" src="https://www.serebii.net/pokearth/sprites/hgss/104.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Cubone</th>
+						<th scope="row"><img id="105" src="https://www.serebii.net/pokearth/sprites/hgss/105.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Marowak</th>
+						<th scope="row"><img id="106" src="https://www.serebii.net/pokearth/sprites/hgss/106.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Hitmonlee</th>
+						<th scope="row"><img id="107" src="https://www.serebii.net/pokearth/sprites/hgss/107.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Hitmonchan</th>
+					 	<th scope="row"><img id="108" src="https://www.serebii.net/pokearth/sprites/hgss/108.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Lickitung</th>
+					</tr>
+					<tr>
+						<th scope="row"><img id="109" src="https://www.serebii.net/pokearth/sprites/hgss/109.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Koffing</th>
+						<th scope="row"><img id="110" src="https://www.serebii.net/pokearth/sprites/hgss/110.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Weezing</th>
+						<th scope="row"><img id="111" src="https://www.serebii.net/pokearth/sprites/hgss/111.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Rhyhorn</th>
+						<th scope="row"><img id="112" src="https://www.serebii.net/pokearth/sprites/hgss/112.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Rhydon</th>
+						<th scope="row"><img id="113" src="https://www.serebii.net/pokearth/sprites/hgss/113.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Chansey</th>
+					 	<th scope="row"><img id="114" src="https://www.serebii.net/pokearth/sprites/hgss/114.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Tangela</th>
+					</tr>
+					<tr>
+						<th scope="row"><img id="115" src="https://www.serebii.net/pokearth/sprites/hgss/115.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Kangaskhan</th>
+						<th scope="row"><img id="116" src="https://www.serebii.net/pokearth/sprites/hgss/116.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Horsea</th>
+						<th scope="row"><img id="117" src="https://www.serebii.net/pokearth/sprites/hgss/117.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Seadra</th>
+						<th scope="row"><img id="118" src="https://www.serebii.net/pokearth/sprites/hgss/118.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Goldeen</th>
+						<th scope="row"><img id="119" src="https://www.serebii.net/pokearth/sprites/hgss/119.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Seaking</th>
+					 	<th scope="row"><img id="120" src="https://www.serebii.net/pokearth/sprites/hgss/120.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Staryu</th>
+					</tr>
+					<tr>
+						<th scope="row"><img id="121" src="https://www.serebii.net/pokearth/sprites/hgss/121.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Starmie</th>
+						<th scope="row"><img id="122" src="https://www.serebii.net/pokearth/sprites/hgss/122.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Mr. Mime</th>
+						<th scope="row"><img id="123" src="https://www.serebii.net/pokearth/sprites/hgss/123.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Scyther</th>
+						<th scope="row"><img id="124" src="https://www.serebii.net/pokearth/sprites/hgss/124.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Jynx</th>
+						<th scope="row"><img id="125" src="https://www.serebii.net/pokearth/sprites/hgss/125.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Electabuzz</th>
+					 	<th scope="row"><img id="126" src="https://www.serebii.net/pokearth/sprites/hgss/126.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Magmar</th>
+					</tr>
+					<tr>
+						<th scope="row"><img id="127" src="https://www.serebii.net/pokearth/sprites/hgss/127.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Pinsir</th>
+						<th scope="row"><img id="128" src="https://www.serebii.net/pokearth/sprites/hgss/128.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Tauros</th>
+						<th scope="row"><img id="129" src="https://www.serebii.net/pokearth/sprites/hgss/129.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Magikarp</th>
+						<th scope="row"><img id="130" src="https://www.serebii.net/pokearth/sprites/hgss/130.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Gyarados</th>
+						<th scope="row"><img id="131" src="https://www.serebii.net/pokearth/sprites/hgss/131.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Lapras</th>
+					 	<th scope="row"><img id="132" src="https://www.serebii.net/pokearth/sprites/hgss/132.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Ditto</th>
+					</tr>
+				 	<tr>
+				 		<th scope="row"><img id="133" src="https://www.serebii.net/pokearth/sprites/hgss/133.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Eevee</th>
+						<th scope="row"><img id="134" src="https://www.serebii.net/pokearth/sprites/hgss/134.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Vaporeon</th>
+						<th scope="row"><img id="135" src="https://www.serebii.net/pokearth/sprites/hgss/135.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Jolteon</th>
+						<th scope="row"><img id="136" src="https://www.serebii.net/pokearth/sprites/hgss/136.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Flareon</th>
+						<th scope="row"><img id="137" src="https://www.serebii.net/pokearth/sprites/hgss/137.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Porygon</th>
+					 	<th scope="row"><img id="138" src="https://www.serebii.net/pokearth/sprites/hgss/138.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Omanyte</th>
+					</tr>
+					<tr>
+					 	<th scope="row"><img id="139" src="https://www.serebii.net/pokearth/sprites/hgss/139.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Omastar</th>
+						<th scope="row"><img id="140" src="https://www.serebii.net/pokearth/sprites/hgss/140.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Kabuto</th>
+						<th scope="row"><img id="141" src="https://www.serebii.net/pokearth/sprites/hgss/141.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Kabutops</th>
+						<th scope="row"><img id="142" src="https://www.serebii.net/pokearth/sprites/hgss/142.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Aerodactyl</th>
+						<th scope="row"><img id="143" src="https://www.serebii.net/pokearth/sprites/hgss/143.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Snorlax</th>
+					 	<th scope="row"><img id="144" src="https://www.serebii.net/pokearth/sprites/hgss/144.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Articuno</th>
+					</tr>
+					<tr>
+						<th scope="row"><img id="145" src="https://www.serebii.net/pokearth/sprites/hgss/145.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Zapdos</th>
+						<th scope="row"><img id="146" src="https://www.serebii.net/pokearth/sprites/hgss/146.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Moltres</th>
+						<th scope="row"><img id="147" src="https://www.serebii.net/pokearth/sprites/hgss/147.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Dratini</th>
+						<th scope="row"><img id="148" src="https://www.serebii.net/pokearth/sprites/hgss/148.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Dragonair</th>
+						<th scope="row"><img id="149" src="https://www.serebii.net/pokearth/sprites/hgss/149.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Dragonite</th>
+					 	<th scope="row"><img id="150" src="https://www.serebii.net/pokearth/sprites/hgss/150.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Mewtwo</th>
+					</tr>
+					<tr>
+						<th scope="row"><img id="151" src="https://www.serebii.net/pokearth/sprites/hgss/151.png" draggable="true" ondragstart="drag(event)" width="50" height="50">Mew</th>
+					</tr>
 				</tbody>
 		    </table>
 		</div>
