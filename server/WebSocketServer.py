@@ -338,7 +338,9 @@ def on_action(data):
 
             # Through the main battle function check if the player lost or won
             #TODO: Replace endCondition bit with something else
-            endCondition = True  # Temporary use of an end condition (if false, a server->client->server loop occurs)
+            endCondition = False  # Temporary use of an end condition (if false, a server->client->server loop occurs)
+            if r.battle['loser'] != 'none':
+                endCondition = True
 
             calling_room = connection()['room_num'] #the client who called the action function's room
             if (endCondition):

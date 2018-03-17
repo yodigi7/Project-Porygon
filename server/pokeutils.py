@@ -58,6 +58,7 @@ def initBattle(team_one, team_two):
     battle_dict['loss_reason'] = 'none'
     battle_dict['weather'] = 'none'
     battle_dict['terrain'] = 'none'
+    battle_dict['must_switch'] = []
     battle_dict['players'] = players
     return battle_dict
 
@@ -192,11 +193,14 @@ modded_stats -- a dict containing the modified stats of each poke
 attack -- the raw data for a pokemon attack
 """
 def calcDamage(combatants, raw_stats, modded_stats, attack):
-    atk_poke = combatants['atk_poke']
-    def_poke = combatants['def_poke']
 
-    #  Calculate damage
-    #  I used Bulbapedia for the math. Hopefully it's correct!
+    #  represents team data for each Pokemon (nature, IVs, EVs, etc)
+    atk_poke = combatants['atk_poke_private']
+    def_poke = combatants['def_poke_private']
+
+    #  represents battle data for each Pokemon (status, modifiers, etc)
+    atk_poke_public = combatants['atk_poke_public']
+    def_poke_public = combatants['def_poke_public']
     
     #  useful variables that correspond to any given attack
     atk_dam_type = attack.damage_class.name
@@ -206,14 +210,14 @@ def calcDamage(combatants, raw_stats, modded_stats, attack):
     type_effective = 1
     attack_type = attack.type.name
     for def_type in pb.pokemon(def_poke['species']).types:
-        for immunity in pb.type_(def_type.name).damage_relations.no_damage_from:
-            if immunity.name == attack_type:
+        for immunity in pb.type_(def_type.type.name).damage_relations.no_damage_from:
+            if immunity['name'] == attack_type:
                 return 0 # move doesn't effect foe, so no damage is dealt
-        for resistance in pb.type_(def_type.name).damage_relations.half_damage_from:
-            if resistance.name == attack_type:
+        for resistance in pb.type_(def_type.type.name).damage_relations.half_damage_from:
+            if resistance['name'] == attack_type:
                 type_effective = type_effective / 2 # move is resisted by this type, so half the factor
-        for weakness in pb.type_(def_type.name).damage_relations.double_damage_from:
-            if weakness.name == attack_type:
+        for weakness in pb.type_(def_type.type.name).damage_relations.double_damage_from:
+            if weakness['name'] == attack_type:
                 type_effective = type_effective * 2 # move is a weakness of this type, so double the factor
             
     
@@ -247,6 +251,7 @@ def calcDamage(combatants, raw_stats, modded_stats, attack):
     crit_stage = attack.meta.crit_rate
     # Check if the move will be a critical hit. The critical hit is guaranteed if the critical hit stage is at least 3
     crit_chance = 0 # will stay at 0 for guaranteed critical hit if the stage is above 2
+    crit_mod = 1  #  stays at 1 unless we score a crit
     if crit_stage == 0: # No crit modification, 1 in 24 chance to crit
         crit_chance = random.randrange(0, 24)
     elif crit_stage == 1: # +1 crit modifier, 1 in 8 chance to crit
@@ -266,7 +271,7 @@ def calcDamage(combatants, raw_stats, modded_stats, attack):
     for atk_type in pb.pokemon(atk_poke['species']).types:
         if atk_type.type.name == attack.type.name:
             stab = 1.5
-            if atk_poke('ability') == 'adaptability':
+            if atk_poke['ability'] == 'adaptability':
                 stab = 2
     
     
@@ -275,7 +280,7 @@ def calcDamage(combatants, raw_stats, modded_stats, attack):
     # the attack is not Facade, and the attacker's ability is not guts.
     # Currently, abilities are not connected to these functions, so Guts is not implemented.
     burn_modifier = 1
-    if attack.id != 263 and atk_poke['status'] == 'burn' and atk_dam_type == 'physical':
+    if attack.id != 263 and atk_poke_public['status_condition'] == 'burn' and atk_dam_type == 'physical':
         burn_modifier = 0.5
     
     # There is an other modifier that varies based on other factors, which are yet to be
@@ -334,14 +339,16 @@ accuracy into account), then return a string representing the ailment
 of 'toxic' as a separate ailment from 'poison.'
 
 Parameters:
-atk_poke -- the attacking pokemon as a dict
-def_poke -- the defending pokemon as a dict
+combatants -- a dict that contains all the information for the battling Pokemon
 attack -- the raw data for a pokemon attack
 
 Returns a string corresponding to the ailment inflicted
 ('poison', 'confusion', 'paralysis', etc).
 """
-def applyStatus(atk_poke, def_poke, attack):
+def applyStatus(combatants, attack):
+    atk_poke = combatants['atk_poke_private']
+    def_poke = combatants['def_poke_private']
+
     # check what status the attack can inflict
     atk_status = attack.meta.ailment.name
     

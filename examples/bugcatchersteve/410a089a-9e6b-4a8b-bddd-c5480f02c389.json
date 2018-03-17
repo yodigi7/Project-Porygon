@@ -4,34 +4,6 @@
     "account_name": "bugcatchersteve",
     "pokemon": [
         {
-            "name": "slayer",
-            "species": "spinarak",
-            "poke_id": "325cff49-3e69-4c23-9a63-b0552e2f4a87",
-            "gender": "female",
-            "nature": "bold",
-            "ability": "swarm",
-            "item": "eviolite",
-            "level": 50,
-            "ivalues": {
-                "hp": 0,
-                "attack": 17,
-                "defense": 25,
-                "special-attack": 31,
-                "special-defense": 31,
-                "speed": 28
-            },
-            "evalues": {
-                "hp": 252,
-                "defense": 128,
-                "special-defense": 128
-            },
-            "moves": [
-                "poison-sting",
-                "string-shot",
-                "agility"
-            ]
-        },
-        {
             "name": "killer",
             "species": "metapod",
             "poke_id": "ed4120ed-97a1-4f7d-9ba1-574a546ea7c1",

@@ -77,7 +77,7 @@ def performTurn(battle_dict, player_choices, teams):
     sorted_attacks = sorted(attacks, key=lambda attack: attack['speed'])
     sorted_attacks = sorted(sorted_attacks, key=lambda attack: attack['attack_data'].priority)
 
-    #  first, attempt to switch (if pursuit wasn't used)
+    #  first, attempt to switch
     for switch in switches:
         if not pursuit:
             battle_dict = switch(battle_dict, switch['player'], int(switch['action'][-1]))
@@ -87,14 +87,56 @@ def performTurn(battle_dict, player_choices, teams):
             for attack in attacks:
                 if attack['attack_data'].id == 288:
                     battle_dict = perform_attack(battle_dict, teams, attack)
+
+                    #  after each attack is performed, check if anyone fainted
+                    for player in battle_dict['players']:
+                        if player['active_pokemon']['hp_percent'] <= 0:
+
+                            #  check if all backup Pokemon are also fainted
+                            for backup in player['backup_pokemon']:
+                                if backup['hp_percent'] != 0:
+                                    break
+                            else:
+                                battle_dict['loser'] = player['account_name']
+                                battle_dict['loss_reason'] = 'all Pokemon fainted'
+                                return battle_dict
+
+                            battle_dict['must_switch'].append(player)
+
+                    #  'must switch' is a special case that demands a switch from a certain user
+                    #  this does not count as an action for a turn
+                    if len(battle_dict['must_switch']) > 0:
+                        return battle_dict
+
                     attack['performed'] = True
                     battle_dict = switch(battle_dict, switch['player'], int(switch['action'][-1]))
 
     #  next, perform the attacks in order
     for attack in sorted_attacks:
-        battle_dict = perform_attack(battle_dict, teams, attack)
-        attack['performed'] = True
+        if attack['performed'] != True:
+            battle_dict = perform_attack(battle_dict, teams, attack)
 
+            #  after each attack is performed, check if anyone fainted
+            for player in battle_dict['players']:
+                if player['active_pokemon']['hp_percent'] <= 0:
+
+                    #  check if all backup Pokemon are also fainted
+                    for backup in player['backup_pokemon']:
+                        if backup['hp_percent'] != 0:
+                            break
+                    else:
+                        battle_dict['loser'] = player['account_name']
+                        battle_dict['loss_reason'] = 'all Pokemon fainted'
+                        return battle_dict
+
+                    battle_dict['must_switch'].append(player)
+
+            #  'must switch' is a special case that demands a switch from a certain user
+            #  this does not count as an action for a turn
+            if len(battle_dict['must_switch']) > 0:
+                return battle_dict
+
+            attack['performed'] = True
     return battle_dict
 
 
@@ -115,8 +157,12 @@ def perform_attack(battle_dict, teams, attack):
         atk_in = 1
         def_in = 0
 
+    combatants = {}
+    combatants['atk_poke_public'] = attack['battle_data']
+
     #  get the defending Pokemon
     def_poke = battle_dict['players'][def_in]['active_pokemon']
+    combatants['def_poke_public'] = def_poke
 
     #  load stat modifiers and HP percentages
     atk_stat_mods = attack['battle_data']['stat_modifiers']
@@ -126,7 +172,6 @@ def perform_attack(battle_dict, teams, attack):
 
     raw_stats = {}
     modded_stats = {}
-    combatants = {}
 
     #  calculate raw stats for each Pokemon
     raw_stats['atk_stats'] = pk.calcStats(attack['team_data'])
@@ -135,13 +180,12 @@ def perform_attack(battle_dict, teams, attack):
             for pokemon in team['pokemon']:
                 if pokemon['poke_id'] == def_poke['poke_id']:
                     raw_stats['def_stats'] = pk.calcStats(pokemon)
-                    combatants['def_poke'] = pokemon
-    combatants['atk_poke'] = attack['team_data']
+                    combatants['def_poke_private'] = pokemon
+    combatants['atk_poke_private'] = attack['team_data']
 
+    #  apply stat modifiers to each Pokemon
     modded_stats['atk_stats'] = raw_stats['atk_stats']
     modded_stats['def_stats'] = raw_stats['def_stats']
-
-    #  apply stat modifiers for each Pokemon
     for key, value in raw_stats['atk_stats'].items():
         if key != 'hp':
             modded_stats['atk_stats'][key] = value*attack['battle_data']['stat_modifiers'][key]
@@ -168,9 +212,9 @@ def perform_attack(battle_dict, teams, attack):
         raw_damage = pk.calcDamage(combatants, raw_stats, modded_stats, attack['attack_data'])
 
         #  Convert from an HP percentage to an HP amount and back again
-        def_hp = int((def_hp_pct/100)*def_stats['hp'])
+        def_hp = int((def_hp_pct/100)*raw_stats['def_stats']['hp'])
         def_hp -= raw_damage
-        def_hp_pct = int(def_hp/def_stats['hp']*100)
+        def_hp_pct = int(def_hp/raw_stats['def_stats']['hp']*100)
 
         #  Write the new HP percentage to the dictionary
         battle_dict['players'][def_in]['active_pokemon']['hp_percent'] = def_hp_pct
@@ -179,7 +223,7 @@ def perform_attack(battle_dict, teams, attack):
     def_poke_status = def_poke['status_condition']
     def_poke_confused = def_poke['confused']
     if 'ailment' in atk_category:
-        status = pk.applyStatus(combatants['atk_poke'], combatants['def_poke'], attack['attack_data'])
+        status = pk.applyStatus(combatants, attack['attack_data'])
 
         #  confusion is separate from status conditions
         #  we'll have to make an exception for 'curse' too
