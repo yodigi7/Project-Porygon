@@ -337,8 +337,7 @@ def on_action(data):
             r.battle = bt.performTurn(r.battle, actions, teams)
 
             # Through the main battle function check if the player lost or won
-            #TODO: Replace endCondition bit with something else
-            endCondition = False  # Temporary use of an end condition (if false, a server->client->server loop occurs)
+            endCondition = False
             if r.battle['loser'] != 'none':
                 endCondition = True
 
@@ -358,7 +357,7 @@ def on_action(data):
                 print("Should be printed when 2 players submit an action") #Obviously when no end condition has been met
                 print('Updated Battle JSON sent to all players in the room #{}'.format(connection()['room_num']))
                 emit('json', {'battleState': 'Updated Battle JSON sent to all players in the room #{}'.format(calling_room)}, room=calling_room)
-                emit('json', {'battleState': battle_json}, room=calling_room)  # Sending BattleJSON
+                emit('json', {'battleState': r.battle}, room=calling_room)  # Sending BattleJSON
                 for player in r.players:
                     player.actionUsed = False
 

@@ -252,7 +252,7 @@ def perform_attack(battle_dict, teams, attack):
 
     #  if the attack tries to change stats, try to change stats
     if atk_category == 'damage+raise' or atk_category == 'damage+lower' or atk_category == 'net-good-stats':
-        atk_stat_mods, def_stat_mods = pk.changeStats(atk_stat_mods, def_stat_mods, attack['attack_data'])
+        atk_stat_mods, def_stat_mods = pk.changeStats(combatants, attack['attack_data'])
         battle_dict['players'][atk_in]['active_pokemon']['stat_modifiers'] = atk_stat_mods
         battle_dict['players'][def_in]['active_pokemon']['stat_modifiers'] = def_stat_mods
 
