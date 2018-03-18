@@ -34,6 +34,7 @@ $(document).ready(function() {
         if('disconnect' in obj) {
         }
         if('battleState' in obj) {
+            print(obj)
             socket.emit('action', {action: 'attack 0'}) //example
         }
         if('end' in obj) {

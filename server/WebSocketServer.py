@@ -343,20 +343,12 @@ def on_action(data):
 
             calling_room = connection()['room_num'] #the client who called the action function's room
             if (endCondition):
-                #TODO: Check for repeated pokemon switches, in which AI likes to stall to survive
-                #TODO: Also check for incorrect actions from data
-                for i in r.players:
-                    if (i.actionUsed['action'] == "attack 2"):
-                        print('Winner of Room #{} is {}'.format(calling_room, i.username))
-                        emit('json', {'end': 'Winner of Room#{}'.format(calling_room)}, room=i.sid)
-                    elif (i.actionUsed['action'] == "attack 4"):
-                        print('Loser of Room #{} is {}'.format(connection()['room_num'], i.username))
-                        emit('json', {'end': 'Loser of Room#{}'.format(calling_room)}, room=i.sid)
                 print("Battle Ended Successfully (By endCondition = True)")
             else:
                 print("Should be printed when 2 players submit an action") #Obviously when no end condition has been met
                 print('Updated Battle JSON sent to all players in the room #{}'.format(connection()['room_num']))
-                emit('json', {'battleState': 'Updated Battle JSON sent to all players in the room #{}'.format(calling_room)}, room=calling_room)
+                print(r.battle)
+                #emit('json', {'battleState': 'Updated Battle JSON sent to all players in the room #{}'.format(calling_room)}, room=calling_room)
                 emit('json', {'battleState': r.battle}, room=calling_room)  # Sending BattleJSON
                 for player in r.players:
                     player.actionUsed = False
