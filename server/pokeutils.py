@@ -136,7 +136,7 @@ def formatTeamAsBattle(team):
 (not including in-battle modifiers) and returns a dict.
 
 Parameters:
-pokemon -- a list of info that constitutes a Pokémon (see the team JSONs)
+pokemon -- a list of info that constitutes a Pokemon (see the team JSONs)
 """
 def calcStats(pokemon):
     stats = {}
@@ -157,7 +157,7 @@ def calcStats(pokemon):
         except KeyError:
             ev = DEFAULT_EV
 
-        #  retrieve the corresponding base stat from PokéAPI
+        #  retrieve the corresponding base stat from PokeAPI
         for base in base_stats:
             if base.stat.name == current_stat:
                 base_stat = base.base_stat
@@ -184,7 +184,7 @@ def calcStats(pokemon):
     return stats
 
 
-"""A function that calculates and returns the raw damage of a Pokémon attack.
+"""A function that calculates and returns the raw damage of a Pokemon attack.
 
 Parameters:
 combatants -- a dict containing the current pokemon in battle
@@ -265,7 +265,7 @@ def calcDamage(combatants, raw_stats, modded_stats, attack):
     # Each attack has a random range multiplier from  0.85 to 1.00
     random_mult = random.randrange(85, 101) / 100
     
-    # An attack gets a boost if the Pokémon using the attack shares a type with it.
+    # An attack gets a boost if the Pokemon using the attack shares a type with it.
     # The boost is 1.5x normally, but is increased to 2x if the user has the ability Adaptability.
     stab = 1
     for atk_type in pb.pokemon(atk_poke['species']).types:
