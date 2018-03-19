@@ -1,5 +1,5 @@
 """This module contains several functions that emulate the logic 
-for a Pokémon battle. In particular, it requires a strict adherence 
+for a Pokemon battle. In particular, it requires a strict adherence 
 to a predefined JSON format. See the examples folder for details.
 
 At the moment, Project Porygon only supports 2-player single battles.
@@ -13,7 +13,7 @@ import pokeutils as pk
 """Updates the battle JSON file.
 
 Parameters:
-battle_JSON -- the filepath to a Pokémon battle JSON
+battle_JSON -- the filepath to a Pokemon battle JSON
 updated_dict -- the updated python dictionary representing the battle
 """
 def update_battle(battle_JSON, updated_dict):
