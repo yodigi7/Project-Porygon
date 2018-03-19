@@ -347,8 +347,11 @@ def on_action(data):
             else:
                 print("Should be printed when 2 players submit an action") #Obviously when no end condition has been met
                 print('Updated Battle JSON sent to all players in the room #{}'.format(connection()['room_num']))
-                print(r.battle)
-                #emit('json', {'battleState': 'Updated Battle JSON sent to all players in the room #{}'.format(calling_room)}, room=calling_room)
+
+                #  temporary output for demonstration
+                for player in r.battle['players']:
+                    print(player['active_pokemon'])
+
                 emit('json', {'battleState': r.battle}, room=calling_room)  # Sending BattleJSON
                 for player in r.players:
                     player.actionUsed = False
