@@ -259,7 +259,7 @@ def perform_attack(battle_dict, teams, attack):
     return battle_dict
 
 
-"""Switches a Pokémon into the active slot for a team.
+"""Switches a Pokemon into the active slot for a team.
 
 Parameters:
 battle_dict -- a dictionary representing a Pokemon battle
