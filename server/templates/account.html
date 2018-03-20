@@ -1,15 +1,17 @@
-<SCRIPT TYPE="text/javascript">
+<script TYPE="text/javascript">
   function popup(mylink, windowname)
   {
-    if (! window.focus)
-      return true;
-    var href;
-    if (typeof(mylink) == 'string')
-      href=mylink;
-    else
-      href=mylink.href;
-    window.open(href, windowname, 'width=1000, height=800, scrollbars=yes');
-    return false; } </SCRIPT>
+      if (! window.focus)
+          return true;
+      var href;
+      if (typeof(mylink) == 'string')
+          href=mylink;
+      else
+          href=mylink.href;
+      window.open(href, windowname, 'width=1000, height=800, scrollbars=yes');
+      return false;
+  }
+</script>
 
 {% extends "layout.html" %}
 {% block content %}
@@ -32,13 +34,15 @@
         <tr>
           <td>Bot Name</td>
           <td>Login Key</td>
+          <td>Team Name</td>
         </tr>
       {% for bot in bots %}
         <tr>
           <td>{{ bot['name'] }}</td>
           <td>{{ bot['key'] }}</td>
+          <td>{{ bot['defaultTeam'] }}</td>
           <td><form method="post"><button type="submit"
-                    name="team" value="{{ bot['key'] }}" onclick="return popup('http://localhost:5000/teambuilder', 'notes')">Team</button></form></td>
+                    name="team" value="{{ bot['key'] }}" onclick="return popup('http://localhost:5000/teambuilder', 'team')">Team</button></form></td>
           <td><form method="post"><button type="submit"
                     name="deleteAI" value="{{ bot['key'] }}" onclick="return confirm('Are you sure you want to delete this AI?')">Delete</button></form></td>
         </tr>
