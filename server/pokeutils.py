@@ -361,7 +361,7 @@ def applyStatus(combatants, attack):
         # chance that the attack can leave a status condition
         status_prob = attack.meta.ailment_chance
         
-        # if the attacking Pokémon has the ability Serene Grace, the chance to implement a status is doubled
+        # if the attacking Pokemon has the ability Serene Grace, the chance to implement a status is doubled
         if atk_poke['ability'] == 'serene-grace':
             status_prob = status_prob * 2
 
