@@ -387,40 +387,40 @@ def applyStatus(combatants, attack):
             elif attack.id == 92 or attack.id == 305:
                 status_inflicted = 'toxic'
 
-            # proceed to check if the status can be inflicted on the defending Pokémon
-            # Poison and steel types cannot be poisoned, nor can Pokémon with the ability Immunity
+            # proceed to check if the status can be inflicted on the defending Pokemon
+            # Poison and steel types cannot be poisoned, nor can Pokemon with the ability Immunity
             if status_inflicted == 'poison' or status_inflicted == 'toxic':
                 for type_name in pb.pokemon(def_poke['species']).types:
                     if type_name.type.name == 'poison' or type_name.type.name == 'steel':
                         status_inflicted = 'none'
                 if def_poke['ability'] == 'immunity':
                     status_inflicted = 'none'
-            # Fire types cannot be burned, nor can Pokémon with the ability Water Veil
+            # Fire types cannot be burned, nor can Pokemon with the ability Water Veil
             elif status_inflicted == 'burn':
                 for type_name in pb.pokemon(def_poke['species']).types:
                     if type_name.type.name == 'fire':
                         status_inflicted = 'none'
                 if def_poke['ability'] == 'water-veil':
                     status_inflicted = 'none'
-            # Electric types cannot be paralyzed, nor can Pokémon with the ability Limber
+            # Electric types cannot be paralyzed, nor can Pokemon with the ability Limber
             elif status_inflicted == 'paralysis':
                 for type_name in pb.pokemon(def_poke['species']).types:
                     if type_name.type.name == 'electric':
                         status_inflicted = 'none'
                 if def_poke['ability'] == 'limber':
                     status_inflicted = 'none'
-            # Ice types cannot be frozen, nor can Pokémon with the ability Magma Armor
+            # Ice types cannot be frozen, nor can Pokemon with the ability Magma Armor
             elif status_inflicted == 'freeze':
                 for type_name in pb.pokemon(def_poke['species']).types:
                     if type_name.type.name == 'ice':
                         status_inflicted = 'none'
                 if def_poke['ability'] == 'magma-armor':
                     status_inflicted = 'none'
-            # Pokémon with the abilities Insomnia and Vital Spirit cannot be put to sleep
+            # Pokemon with the abilities Insomnia and Vital Spirit cannot be put to sleep
             elif status_inflicted == 'sleep':
                 if def_poke['ability'] == 'insomnia' or def_poke['ability'] == 'vital-spirit':
                     status_inflicted = 'none'
-            # Pokémon with the ability Own Tempo cannot be confused
+            # Pokemon with the ability Own Tempo cannot be confused
             elif status_inflicted == 'confusion' and def_poke['ability'] == 'own-tempo':
                 status_inflicted = 'none'
             # Grass types cannot be affected by Leech Seed
@@ -428,11 +428,11 @@ def applyStatus(combatants, attack):
                 for type_name in pb.pokemon(def_poke['species']).types:
                     if type_name.type.name == 'grass':
                         status_inflicted = 'none'
-            # Genderless Pokémon cannot be attracted, nor can Pokémon with the ability Oblivious or Pokémon of the same gender
+            # Genderless Pokemon cannot be attracted, nor can Pokemon with the ability Oblivious or Pokemon of the same gender
             elif status_inflicted == 'infatuation':
                 if atk_poke['gender'] == 'genderless' or def_poke['gender'] == 'genderless' or atk_poke['gender'] == def_poke['gender'] or def_poke['ability'] == 'oblivious':
                     status_inflicted = 'none'
-            # Grass types cannot be affected by powder moves, nor can Pokémon with the ability Overcoat
+            # Grass types cannot be affected by powder moves, nor can Pokemon with the ability Overcoat
             # Powder moves that inflict status are Stun Spore, Spore, Sleep Powder, and Poison Powder
             # These attacks have ids of 78, 147, 79, and 77
             if attack.id == 77 or attack.id == 78 or attack.id == 79 or attack.id == 147:
@@ -441,15 +441,15 @@ def applyStatus(combatants, attack):
                         status_inflicted = 'none'
                 if def_poke['ability'] == 'overcoat':
                     status_inflicted = 'none'
-    # Case for curse, as status is listed as 'none' in PokéAPI
+    # Case for curse, as status is listed as 'none' in PokeAPI
     # Curse applies a curse effect if the user is ghost type, curse has internal id of 174
-    # No Pokémon is innately immune to curse
+    # No Pokemon is innately immune to curse
     elif attack.id == 174:
         for type_name in pb.pokemon(atk_poke['species']).types:
             if type_name.type.name == 'ghost':
                 status_inflicted = 'curse'
     # Case for taunt, as status is listed as 'none' in API
-    # Pokémon with the ability Oblivious are immune to the effects of taunt
+    # Pokemon with the ability Oblivious are immune to the effects of taunt
     # Taunt has an id of 269
     elif attack.id == 269 and def_poke['ability'] != 'oblivious':
         status_inflicted = 'taunt'
@@ -485,7 +485,7 @@ def changeStats(combatants, attack):
         stat_chance = stat_chance * 2
     stat_changed_prob = random.randrange(0,100)
     if stat_changed_prob < stat_chance or stat_chance == 0:
-        # Figure out which Pokémon's stats will be changed
+        # Figure out which Pokemon's stats will be changed
         poke_effected = ''
         if attack.meta.category.name == 'damage+lower' or attack.meta.category.name == 'swagger':
             poke_effected = 'def_poke'
@@ -555,7 +555,7 @@ def changeStats(combatants, attack):
                         atk_stat_mods['evasion'] = -6
             else:
                 if stat_changed == 'attack':
-                    # the abilities hyper-cutter and clear body prevent opponents from lowering the Pokémon's attack
+                    # the abilities hyper-cutter and clear body prevent opponents from lowering the Pokemon's attack
                     # the ability Mold Breaker ignores this
                     if (def_poke['ability'] == 'hyper-cutter' or def_poke['ability'] == 'clear-body') and atk_poke['ability'] != 'mold-breaker' and change < 0:
                         pass
@@ -577,7 +577,7 @@ def changeStats(combatants, attack):
                             stat_stage = -6
                         def_stat_mods['attack'] = stage_to_mod[stat_stage]
                 if stat_changed == 'defense':
-                    # the abilities big pecks and clear body prevent opponents from lowering the Pokémon's defense
+                    # the abilities big pecks and clear body prevent opponents from lowering the Pokemon's defense
                     # the ability Mold Breaker ignores this
                     if (def_poke['ability'] == 'big-pecks' or def_poke['ability'] == 'clear-body') and atk_poke['ability'] != 'mold-breaker' and change < 0:
                         pass
@@ -674,7 +674,7 @@ def changeStats(combatants, attack):
                             stat_stage = -6
                         def_stat_mods['speed'] = stage_to_mod[stat_stage]
                 if stat_changed == 'accuracy':
-                    # the abilities keen eye and clear body prevent opponents from lowering the Pokémon's accuracy
+                    # the abilities keen eye and clear body prevent opponents from lowering the Pokemon's accuracy
                     # the ability Mold Breaker ignores this
                     if (def_poke['ability'] == 'keen-eye' or def_poke['ability'] == 'clear-body') and atk_poke['ability'] != 'mold-breaker' and change < 0:
                         pass
@@ -725,7 +725,7 @@ def changeStats(combatants, attack):
 """A function that determines the legality of a Pokémon team.
 
 Parameters:
-pathToTeam -- the file path of a JSON document containing a Pokémon team
+pathToTeam -- the file path of a JSON document containing a Pokemon team
 """
 def verify(pathToTeam):
     try:
@@ -736,7 +736,7 @@ def verify(pathToTeam):
                 try:
                     pokemon = pb.pokemon(member['species'])
                 except ValueError:
-                    print(member['species'] + ' is not a real Pokémon!')
+                    print(member['species'] + ' is not a real Pokemon!')
                     return False
 
                 # make sure the nature exists
