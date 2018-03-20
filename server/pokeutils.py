@@ -722,7 +722,7 @@ def changeStats(combatants, attack):
     return [atk_stat_mods, def_stat_mods]
 
 
-"""A function that determines the legality of a Pokémon team.
+"""A function that determines the legality of a Pokemon team.
 
 Parameters:
 pathToTeam -- the file path of a JSON document containing a Pokemon team
