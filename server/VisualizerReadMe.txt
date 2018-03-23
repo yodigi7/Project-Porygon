@@ -1,0 +1,11 @@
+For some directions regarding the various files for handling the website/connecting to it/running it, the WebSocketServer.py file handles connections, the JSON files for users/user settings, and the handling of forms for the different webpage routes (@app.route segments of the code). Most currently just render their respective html files, which can be accessed in the templates folder in the server folder (and it goes on and on).
+
+Through the command (which is my frame of reference, thats how I've been running it), you make your way to the server folder, type set FLASK_APP=WebSocketServer.py or export FLASK_APP=WebSocketServer.py (the later is what Zach was using), and then type flask run to start running the server. Again, this is how I've been doing things on my Windows machine, so thats the only frame of reference I currently have. Afterwards, make way to localhost (currently running off of your own machine, clearly) and the website should load up.
+
+Currently, what needs to be worked on specifically is as follows:
+		
+		1. The drag and drop feature for the pokemon is great, but it is causing come issues with getting the individual dragged events to act, well, individually. All events are categorized as "event", so attempting to remove or pass the dragged elements results in this happening for ALL events performed up to that point. All elements have unique id's, its probably just a matter of figuring out how to access the id used in an event, or changing the method for team building.
+
+		2. Saving to the user setting JSON file is also not working, something I had some work towards but deleted as there was no way that method was working. Again, this is something that will depend on how we obtain the id's of passed elements, so figuring out the first point will eventually lead to figuring out the second point. There is already work saving newly created A.I's to the JSON file, so that won't take much, just figuring out that first crucial step.
+
+Those are the two things that need to be accomplished before we can move on to interpreting the battle logs. Everything at this moment depends on figuring out how to get those element id's and separating the individual events after they've been performed. I'm currently working towards this as well, but will post progress on that front in the visualization channel on the discord. Thank you
