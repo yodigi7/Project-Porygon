@@ -11,6 +11,8 @@
 </style>
 
 <script TYPE="text/javascript">
+	var pokeElements = new Array(6);
+
 	function popup(mylink, windowname)
 	{
 	    if (! window.focus)
@@ -24,24 +26,6 @@
 	    return false;
   	}
 
-	function remove(parent, child)
-	{
-		if(child == parent)
-		{
-			alert("No Pokemon in this slot");
-		}
-		else if(document.getElementById(child))
-		{
-			var childNew = document.getElementById(child.dataTransfer.getData("image"));
-			childNew.parent.removeChild(childNew);
-		}
-		else
-		{
-			alert("No Pokemon in this slot");
-			return false;
-		}
-	}
-
 	function allowDrop(ev)
 	{
 		ev.preventDefault();
@@ -54,12 +38,41 @@
 		event.dropEffect = "copy";
 	}
 
-	function drop(ev)
+	function drop(ev, type)
 	{
 		ev.preventDefault();
 		var data = ev.dataTransfer.getData("image");
 		ev.target.appendChild(document.getElementById(data).cloneNode(true));
+		if(ev.target.id == "div1")
+		{
+			pokeElements(1) = data;
+		}
+		else if(ev.target.id == "div2")
+		{
+			pokeElements(2) = data;
+		}
+		else if(ev.target.id == "div3")
+		{
+			pokeElements(3) = data;
+		}
+		else if(ev.target.id == "div4")
+		{
+			pokeElements(4) = data;
+		}
+		else if(ev.target.id == "div5")
+		{
+			pokeElements(5) = data;
+		}
+		else if(ev.target.id == "div6")
+		{
+			pokeElements(6) = data;
+		}
 	}
+
+	function save()
+	{
+	    self.close();
+  	}
 </script>
 
 <div class="teambuilder_page">
@@ -71,32 +84,38 @@
     <h1>Team Builder</h1>
 	    <table width="20" align="left">
 	     	<tr>
-	     		<th scope="row"><div id="div1" draggable="false" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-	     				<button type="submit" value="event" name="edit" onclick="return popup('http://localhost:5000/pEditor', 'edit')">Edit</button>
-	     				<button type="submit" value="event" name="remove" onclick="remove(id, event)">Remove</button>
-	     		</th>
-	     		<th scope="row"><div id="div2" draggable="false" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-	     				<button type="submit" value="event" name="edit" onclick="return popup('http://localhost:5000/pEditor', 'edit')">Edit</button>
-	     				<button type="submit" value="event" name="remove" onclick="remove(id, event)">Remove</button>
-	     		</th>
-	     		<th scope="row"><div id="div3" draggable="false" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-	     				<button type="submit" value="event" name="edit" onclick="return popup('http://localhost:5000/pEditor', 'edit')">Edit</button>
-	     				<button type="submit" value="event" name="remove" onclick="remove(id, event)">Remove</button>
-	     		</th>
+	     		<form>
+		     		<th scope="row"><div id="div1" draggable="false" ondrop="drop(event, this)" ondragover="allowDrop(event)"></div>
+	     				<button type="submit" value="event" name="edit1" onclick="return popup('http://localhost:5000/pEditor', 'edit')">Edit</button>
+		     		</th>
+		     	</form>
+		     	<form>
+		     		<th scope="row"><div id="div2" draggable="false" ondrop="drop(event, this)" ondragover="allowDrop(event)"></div>
+	     				<button type="submit" value="event" name="edit2" onclick="return popup('http://localhost:5000/pEditor', 'edit')">Edit</button>
+		     		</th>
+		     	</form>
+		     	<form>
+		     		<th scope="row"><div id="div3" draggable="false" ondrop="drop(event, this)" ondragover="allowDrop(event)"></div>
+	     				<button type="submit" value="event" name="edit3" onclick="return popup('http://localhost:5000/pEditor', 'edit')">Edit</button>
+		     		</th>
+		     	</form>
 	     	</tr>
 	     	<tr>
-	     		<th scope="row"><div id="div4" draggable="false" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-	     				<button type="submit" value="event" name="edit" onclick="return popu('http://localhost:5000/pEditor', 'edit')">Edit</button>
-	     				<button type="submit" value="event" name="remove" onclick="remove(id, event)">Remove</button>
-	     		</th>
-	     		<th scope="row"><div id="div5" draggable="false" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-	     				<button type="submit" value="event" name="edit" onclick="return popup('http://localhost:5000/pEditor', 'edit')">Edit</button>
-	     				<button type="submit" value="event" name="remove" onclick="remove(id, event)">Remove</button>
-	     		</th>
-	     		<th scope="row"><div id="div6" draggable="false" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-	     				<button type="submit" value="event" name="edit" onclick="return popup('http://localhost:5000/pEditor', 'edit')">Edit</button>
-	     				<button type="submit" value="event" name="remove" onclick="remove(id, event)">Remove</button>
-	     		</th>
+	     		<form>
+		     		<th scope="row"><div id="div4" draggable="false" ondrop="drop(event, this)" ondragover="allowDrop(event)"></div>
+		     				<button type="submit" value="event" name="edit4" onclick="return popu('http://localhost:5000/pEditor', 'edit')">Edit</button>
+		     		</th>
+		     	</form>
+		     	<form>
+		     		<th scope="row"><div id="div5" draggable="false" ondrop="drop(event, this)" ondragover="allowDrop(event)"></div>
+		     				<button type="submit" value="event" name="edit5" onclick="return popup('http://localhost:5000/pEditor', 'edit')">Edit</button>
+		     		</th>
+		     	</form>
+		     	<form>
+		     		<th scope="row"><div id="div6" draggable="false" ondrop="drop(event, this)" ondragover="allowDrop(event)"></div>
+		     				<button type="submit" value="event" name="edit6" onclick="return popup('http://localhost:5000/pEditor', 'edit')">Edit</button>
+		     		</th>
+		     	</form>
 	     	</tr>
 	    </table>
 	    <div style="height:200px; overflow-y: scroll;">
@@ -311,7 +330,7 @@
     </select>
     <td>
     	<form method="post">
-    		<button type="submit" name="confirm" value="add" onclick="self.close()">Confirm</button>
+    		<button type="submit" name="confirm" value="add" onclick="save()">Confirm</button>
         </form>
     </td>
 </div>
