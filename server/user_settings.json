@@ -1,1 +1,24 @@
-{"bugcatchercindy": {"teams": [{"id": "87759413-5681-40eb-8546-9cc7f5874e88", "name": "neatest bugs"}], "bots": [{"key": "cfbffc7a95ff415f85ceae08c25b0dca", "name": "Bot 0"}]}, "bugcatchersteve": {"teams": [{"id": "410a089a-9e6b-4a8b-bddd-c5480f02c389", "name": "coolest bugs"}], "bots": [{"key": "a364f34bcbe84c7eb2002f1418c3d8f3", "name": "Bot 0"}]}, "DiffRoomClient2": {"teams": {"defaultTeam": []}, "bots": [{"key": "53f2555c576249648241f52c508267dd", "name": "Bot 0"}]}, "DiffRoomClient1": {"teams": {"defaultTeam": []}, "bots": [{"key": "a57865a4833f4ac69bdf28d80300a5d4", "name": "Bot 0"}]}, "admin": {"bots": []}}
+{
+    "bugcatchercindy": {
+        "bots": [
+            {
+                "name": "Bot 0",
+                "key": "cfbffc7a95ff415f85ceae08c25b0dca"
+            }
+        ],
+        "teams": [
+            "neatest bugs"
+        ]
+    },
+    "bugcatchersteve": {
+        "bots": [
+            {
+                "name": "Bot 0",
+                "key": "a364f34bcbe84c7eb2002f1418c3d8f3"
+            }
+        ],
+        "teams": [
+            "coolest bugs"
+        ]
+    }
+}

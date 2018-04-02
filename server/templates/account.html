@@ -25,26 +25,49 @@
     {% endwith %}
     <h1>Your AIs</h1>
     <form method="post">
-      <button type="submit" name="newAI" value="add">Add New AI</button>
+      <button id="newAIButton" type="submit" name="newAI" value="new bot"
+              onclick="document.getElementById('newAIButton').setAttribute('value', prompt('Name your new AI:'))">
+          Add New AI
+      </button>
     </form>
     {% if bots|length == 0 %}
       <p>No AIs to display.</p>
     {% else %}
-    <table>
+      <table>
         <tr>
           <td>Bot Name</td>
           <td>Login Key</td>
-          <td>Team Name</td>
         </tr>
-      {% for bot in bots %}
+        {% for bot in bots %}
+          <tr>
+            <td>{{ bot['name'] }}</td>
+            <td>{{ bot['key'] }}</td>
+            <td><form method="post"><button type="submit"
+                      name="deleteAI" value="{{ bot['key'] }}" onclick="return confirm('Are you sure you want to delete this AI?')">Delete</button></form></td>
+          </tr>
+        {% endfor %}
+      </table>
+    {% endif %}
+
+    <h1>Your Teams</h1>
+    <form method="post">
+      <button id="newTeamButton" type="submit" name="newTeam" value="new team"
+              onclick="document.getElementById('newTeamButton').setAttribute('value', prompt('Name your new Team (must be unique):'))">
+          Add New Team
+      </button>
+    </form>
+    {% if teams|length == 0 %}
+      <p>No Teams to display.</p>
+    {% else %}
+    <table>
+      {% for team in teams %}
         <tr>
-          <td>{{ bot['name'] }}</td>
-          <td>{{ bot['key'] }}</td>
-          <td>{{ bot['defaultTeam'] }}</td>
+          <td>{{ team }}</td>
           <td><form method="post"><button type="submit"
-                    name="team" value="{{ bot['key'] }}" onclick="return popup('http://localhost:5000/teambuilder', 'team')">Team</button></form></td>
+                    name="editTeam" value="{{ team }}">Edit</button></form></td>
           <td><form method="post"><button type="submit"
-                    name="deleteAI" value="{{ bot['key'] }}" onclick="return confirm('Are you sure you want to delete this AI?')">Delete</button></form></td>
+                    name="deleteTeam" value="{{ team }}"
+                    onclick="return confirm('Are you sure you want to delete this team?')">Delete</button></form></td>
         </tr>
       {% endfor %}
     </table>

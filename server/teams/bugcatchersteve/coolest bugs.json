@@ -1,0 +1,35 @@
+{
+    "account_name": "bugcatchersteve",
+    "pokemon": [
+        {
+            "moves": [],
+            "nature": "bold",
+            "ability": "shed-skin",
+            "species": "get_name()",
+            "level": 2,
+            "item": "none",
+            "ivalues": {
+                "hp": 5,
+                "speed": 5,
+                "attack": 5,
+                "special-attack": 5,
+                "defense": 5,
+                "special-defense": 5
+            },
+            "evalues": {
+                "hp": 20,
+                "defense": 5,
+                "special-defense": 5
+            },
+            "id": "1",
+            "name": "get_name()",
+            "gender": "male"
+        },
+        null,
+        null,
+        null,
+        null,
+        null
+    ],
+    "team_name": "coolest bugs"
+}

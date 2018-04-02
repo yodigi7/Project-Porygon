@@ -15,7 +15,8 @@ def persistent():
     """ Shortcut for user_settings[session['username']] """
     if session['username'] not in user_settings:
         user_settings[session['username']] = {
-            'bots': []
+            'bots': [],
+            'teams': []
         }
         save_to_file(user_settings, user_settings_file)
     return user_settings[session['username']]
@@ -30,7 +31,7 @@ def connection():
 def save_to_file(data, filepath):
     """ Saves JSON from 'data' to a file at 'filepath'. """
     with open(filepath, 'w') as f:
-        json.dump(data, f)
+        json.dump(data, f, indent=4)
 
 def load_from_file(filepath):
     """ Returns a JSON structure loaded from 'filepath'. """
@@ -47,6 +48,33 @@ def user_exists(username):
 def valid_login(username, password):
     """ Returns true if the username/password combination is a match. """
     return username in usernames and usernames[username] == password
+
+def new_default_pokemon(pkid):
+    pkname = "get_name()"
+    return {
+            "id": pkid,
+            "name": pkname,
+            "species": pkname,
+            "gender": "male",
+            "nature": "bold",
+            "ability": "shed-skin",
+            "item": "none",
+            "level": 2,
+            "ivalues": {
+                "hp": 5,
+                "attack": 5,
+                "defense": 5,
+                "special-attack": 5,
+                "special-defense": 5,
+                "speed": 5
+            },
+            "evalues": {
+                "hp": 20,
+                "defense": 5,
+                "special-defense": 5
+            },
+            "moves": []
+    }
 
 
 """Decorators
@@ -76,6 +104,7 @@ def require_logged_out(func):
 MAX_BOTS = 5
 MAX_TEAMS = 5
 NUM_ROOMS = 10
+team_path = "teams/{}/{}.json"
 
 app = Flask(__name__)
 app.secret_key = "This isn't very secret"
@@ -88,6 +117,9 @@ usernames = load_from_file(users_file)
 user_settings = load_from_file(user_settings_file)
 rooms = [Room() for _ in range(NUM_ROOMS)]
 connected_users = {}
+
+if not os.path.exists('teams'):
+    os.mkdir('teams')
 
 
 """Socket functions
@@ -109,22 +141,29 @@ def bot_join_room(obj):
         return
 
     # Try to pick a room to join. A room choice outside room index bounds becomes auto-assign.
-    room = None
-    if 0 <= obj['room'] < NUM_ROOMS and not rooms[obj['room']].is_full():
-        room_num = obj['room']
+    room_num = 0
+    if 0 <= obj['room'] < NUM_ROOMS:
+        if not rooms[obj['room']].is_full():
+            room_num = obj['room']
+        else:
+            emit('json', {'failure': 'Room is full.'})
+            return
+
     elif 0 > obj['room'] or NUM_ROOMS <= obj['room']:
         for r in range(len(rooms)):
             if not rooms[r].is_full():
                 room_num = r
                 break
+        else:
+            emit('json', {'failure': 'All rooms are full.'})
+            return
     room = rooms[room_num]
 
     # Try to pick a team to use. If team name is invalid, cannot join room.
     team = None
     for team_obj in persistent()['teams']:
         if team_obj['name'] == obj['team']:
-            team_path = pk.get_team_path(session['username'], team_obj['id'])
-            team = pk.load_data(team_path)
+            team = pk.load_data(load_from_file(team_path.format(session['username'], obj['team'])))
 
     # If both the room and team were valid choices, join the room using the team requested.
     if room is None or team is None:
@@ -132,7 +171,7 @@ def bot_join_room(obj):
             'failure': {
                 'room': ('full' if room is None else 'available'),
                 'team': ('invalid' if team is None else 'valid')
-        }})
+            }})
         print('Invalid room/team request from {}'.format(session['username']))
         return
 
@@ -167,40 +206,134 @@ def leaderboard():
 def battle():
     return render_template('battle.html')
 
-@app.route('/teambuilder/')
+@app.route('/teambuilder/', methods=['GET', 'POST'])
 @require_login
 def teambuilder():
-    return render_template('teambuilder.html', bots=persistent()['bots'])
+    if 'team' not in request.args or request.args['team'] not in persistent()['teams']:
+        flash('Invalid team to edit.')
+        return redirect('account')
+    team = load_from_file(team_path.format(session['username'], request.args['team']))
+    if request.method == 'POST':
+        # Get the POSTed data and the slot to edit, if available.
+        slot = None
+        if 'edit' in request.form:
+            data = json.loads(request.form['edit'])
+            slot = data['edit']
+        else:
+            data = json.loads(request.form['submit'])
 
-@app.route('/pEditor/')
+        # Get the IDs for the POSTed team.
+        new_team = json.loads(data['team'])
+
+        # Check that the team POSTed is of valid length.
+        if len(new_team) != 6:
+            flash("An error occurred. The new team's length was invalid.")
+            return render_template('teambuilder.html', team=team['pokemon'])
+
+        # Loop through each slot, checking for differences in IDs.
+        # If differences are found, create a new pokemon and replace the old one (or swap it for None).
+        for i in range(6):
+            if new_team[i] is not None:
+                if team['pokemon'][i] is None or team['pokemon'][i]['id'] != new_team[i]:
+                    team['pokemon'][i] = new_default_pokemon(new_team[i])
+            else:
+                team['pokemon'][i] = None
+        save_to_file(team, team_path.format(session['username'], request.args['team']))
+        print(slot, team['pokemon'][slot])
+
+        if slot is not None:
+            if team['pokemon'][slot] is None:
+                flash("That slot is empty.")
+                return render_template('teambuilder.html', team=team['pokemon'])
+            return redirect(url_for('editor', team=request.args['team'], slot=slot))
+        return redirect(url_for('account'))
+
+    # Only on method == GET, return template for the teambuilder.
+    return render_template('teambuilder.html', team=team['pokemon'])
+
+@app.route('/editor/', methods=['GET', 'POST'])
 @require_login
-def pEditor():
-    return render_template('pokemonEditor.html')
+def editor():
+    if 'team' not in request.args or request.args['team'] not in persistent()['teams']:
+        flash('Invalid team to edit.')
+        return redirect('account')
+    if 'slot' not in request.args:
+        flash('A slot must be selected for editing.')
+        return redirect(url_for('teambuilder', team=request.args['team']))
+    slot = int(request.args['slot'])
+    if slot < 0 or slot >= 6:
+        flash('Invalid slot to edit.')
+        return redirect(url_for('teambuilder', team=request.args['team']))
+
+    # Get the pokemon that we're planning on editing.
+    pokemon = load_from_file(team_path.format(session['username'], request.args['team']))['pokemon'][slot]
+    return render_template('pokemonEditor.html', pokemon=pokemon)
 
 @app.route('/account/', methods=['GET', 'POST'])
 @require_login
 def account():
     if request.method == 'POST':
+        # Create a new bot.
         if 'newAI' in request.form:
             if len(persistent()['bots']) >= MAX_BOTS:
                 flash("You are at the maximum number of AIs already.")
             else:
-                bot_name = "Bot " + str(len(persistent()['bots']))
+                bot_name = request.form['newAI']
                 bot_key = uuid.uuid4().hex
                 persistent()['bots'].append({'name': bot_name, 'key': bot_key})
                 save_to_file(user_settings, user_settings_file)
+
+        # Delete one of your bots.
         elif 'deleteAI' in request.form:
             for i in range(len(persistent()['bots'])):
                 if persistent()['bots'][i]['key'] == request.form['deleteAI']:
                     del persistent()['bots'][i]
                     save_to_file(user_settings, user_settings_file)
+                    flash("Successfully deleted your bot with ID: {}.".format(request.form['deleteAI']))
                     break
-        elif 'team' in request.form:
-            for i in range(len(persistent()['bots'])):
-                if persistent()['bots'][i]['key'] == request.form['team']:
+            else:
+                flash("A bot with that ID does not exist.")
+
+        # Create a new team for your bots to use.
+        elif 'newTeam' in request.form:
+            if len(persistent()['teams']) >= MAX_TEAMS:
+                flash("You are at the maximum number of Teams already.")
+            else:
+                # Check if the team name chosen already exists.
+                for team in persistent()['teams']:
+                    if team['name'] == request.form['newTeam']:
+                        flash("Team name must be unique!")
+                        break
+                else:  # else is triggered if the break statement was not hit.
+                    # If the team name chosen did not already exist, create it.
+                    persistent()['teams'].append(request.form['newTeam'])
                     save_to_file(user_settings, user_settings_file)
-                    break
-    return render_template('account.html', bots=persistent()['bots'])
+                    if not os.path.exists('teams/' + session['username']):
+                        os.mkdir('teams/' + session['username'])
+                    save_to_file({
+                        'team_name': request.form['newTeam'],
+                        'account_name': session['username'],
+                        'pokemon': [None for _ in range(6)]
+                    }, team_path.format(session['username'], request.form['newTeam']))
+
+        # Go to the editor to customize your team.
+        elif 'editTeam' in request.form:
+            return redirect(url_for('teambuilder', team=request.form['editTeam']))
+
+        # Delete one of your teams.
+        elif 'deleteTeam' in request.form:
+            if request.form['deleteTeam'] in persistent()['teams']:
+                # Delete the team from the user settings file, then delete the team file from the file system.
+                index = persistent()['teams'].index(request.form['deleteTeam'])
+                del persistent()['teams'][index]
+                save_to_file(user_settings, user_settings_file)
+                os.remove(team_path.format(session['username'], request.form['deleteTeam']))
+                flash("Successfully deleted you team: {}.".format(request.form['deleteTeam']))
+            else:
+                flash("That team does not exist.")
+
+    # Render the account page on either POST or GET.
+    return render_template('account.html', bots=persistent()['bots'], teams=persistent()['teams'])
 
 @app.route('/signup/', methods=['GET', 'POST'])
 @require_logged_out
@@ -316,7 +449,7 @@ def on_action(data):
     #This block is used to check if a player has sent more than one action
     for player in r.players:
         if player.username == session['username']:
-            if player.actionUsed == False:
+            if not player.actionUsed:
                 player.actionUsed = data
             else:
                 print("Player: {} sent action twice".format(player.username))
@@ -356,4 +489,4 @@ def on_action(data):
                 for player in r.players:
                     player.actionUsed = False
 
-socketio.run(app, debug=False)
+socketio.run(app, debug=True)
