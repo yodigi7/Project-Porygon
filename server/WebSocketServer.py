@@ -104,7 +104,8 @@ def require_logged_out(func):
 MAX_BOTS = 5
 MAX_TEAMS = 5
 NUM_ROOMS = 10
-team_path = "teams/{}/{}.json"
+team_path = "teams/{}/{}.json"  # Path to a team file. use team_path.format(session['username'], <team_name>).
+# TODO: All instances of { save_to_file/load_from_file (team_path.format()) } can be replaced with save_team() load_team() new functions.
 
 app = Flask(__name__)
 app.secret_key = "This isn't very secret"
@@ -163,7 +164,7 @@ def bot_join_room(obj):
     team = None
     for team_obj in persistent()['teams']:
         if team_obj['name'] == obj['team']:
-            team = pk.load_data(load_from_file(team_path.format(session['username'], obj['team'])))
+            team = load_from_file(team_path.format(session['username'], obj['team']))
 
     # If both the room and team were valid choices, join the room using the team requested.
     if room is None or team is None:
