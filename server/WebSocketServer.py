@@ -170,7 +170,7 @@ def battle():
 @app.route('/teambuilder/')
 @require_login
 def teambuilder():
-    return render_template('teambuilder.html')
+    return render_template('teambuilder.html', bots=persistent()['bots'])
 
 @app.route('/pEditor/')
 @require_login
