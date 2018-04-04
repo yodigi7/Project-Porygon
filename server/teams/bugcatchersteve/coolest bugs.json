@@ -5,62 +5,62 @@
         null,
         null,
         {
-            "species": "venusaur",
-            "nickname": "Girls go to Venus",
             "id": 3,
-            "item": "-NONE-",
-            "evalues": {
-                "defense": 255,
-                "hp": 255,
-                "special-defense": 255
+            "ivalues": {
+                "special-attack": 31,
+                "hp": 31,
+                "attack": 31,
+                "speed": 31,
+                "defense": 31,
+                "special-defense": 31
             },
+            "ability": "shed-skin",
             "moves": [
                 "take-down",
                 "double-team",
                 "bulldoze",
                 "leech-seed"
             ],
-            "ability": "shed-skin",
-            "ivalues": {
-                "defense": 31,
-                "special-attack": 31,
-                "special-defense": 31,
-                "speed": 31,
-                "attack": 31,
-                "hp": 31
-            },
-            "gender": "male",
-            "level": 50,
-            "nature": "naughty"
-        },
-        {
-            "species": "squirtle",
-            "nickname": "squit squaat",
-            "id": 7,
+            "nature": "naughty",
+            "species": "venusaur",
+            "nickname": "Girls go to Venus",
             "item": "-NONE-",
             "evalues": {
                 "defense": 255,
                 "hp": 255,
                 "special-defense": 255
             },
+            "level": 50,
+            "gender": "male"
+        },
+        {
+            "id": 7,
+            "ivalues": {
+                "special-attack": 31,
+                "hp": 31,
+                "attack": 31,
+                "speed": 31,
+                "defense": 31,
+                "special-defense": 31
+            },
+            "ability": "shed-skin",
             "moves": [
                 "ice-beam",
                 "body-slam",
                 "counter",
                 "bubble-beam"
             ],
-            "ability": "shed-skin",
-            "ivalues": {
-                "defense": 31,
-                "special-attack": 31,
-                "special-defense": 31,
-                "speed": 31,
-                "attack": 31,
-                "hp": 31
+            "nature": "lonely",
+            "species": "squirtle",
+            "nickname": "squit squaat",
+            "item": "-NONE-",
+            "evalues": {
+                "defense": 255,
+                "hp": 255,
+                "special-defense": 255
             },
-            "gender": "female",
             "level": 50,
-            "nature": "lonely"
+            "gender": "female"
         },
         null,
         null

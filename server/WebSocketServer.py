@@ -298,7 +298,7 @@ def editor():
     # Get the pokemon that we're planning on editing.
     api_pokemon = pk.pb.pokemon(pkmn_json['species'])
     api_moves = [i.move.name for i in api_pokemon.moves]
-    moves = [('-NONE-', '-NONE-')] + [(i, pk.display_name(i)) for i in api_moves]
+    moves = [('-NONE-', '-NONE-')] + sorted([(i, pk.display_name(i)) for i in api_moves])
 
     return render_template('pokemonEditor.html', pokemon=pkmn_json, moves=moves)
 
