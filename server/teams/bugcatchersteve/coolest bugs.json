@@ -1,35 +1,68 @@
 {
+    "team_name": "coolest bugs",
     "account_name": "bugcatchersteve",
     "pokemon": [
+        null,
+        null,
         {
-            "moves": [],
-            "nature": "bold",
-            "ability": "shed-skin",
-            "species": "get_name()",
-            "level": 2,
-            "item": "none",
-            "ivalues": {
-                "hp": 5,
-                "speed": 5,
-                "attack": 5,
-                "special-attack": 5,
-                "defense": 5,
-                "special-defense": 5
-            },
+            "species": "venusaur",
+            "nickname": "Girls go to Venus",
+            "id": 3,
+            "item": "-NONE-",
             "evalues": {
-                "hp": 20,
-                "defense": 5,
-                "special-defense": 5
+                "defense": 255,
+                "hp": 255,
+                "special-defense": 255
             },
-            "id": "1",
-            "name": "get_name()",
-            "gender": "male"
+            "moves": [
+                "take-down",
+                "double-team",
+                "bulldoze",
+                "leech-seed"
+            ],
+            "ability": "shed-skin",
+            "ivalues": {
+                "defense": 31,
+                "special-attack": 31,
+                "special-defense": 31,
+                "speed": 31,
+                "attack": 31,
+                "hp": 31
+            },
+            "gender": "male",
+            "level": 50,
+            "nature": "naughty"
+        },
+        {
+            "species": "squirtle",
+            "nickname": "squit squaat",
+            "id": 7,
+            "item": "-NONE-",
+            "evalues": {
+                "defense": 255,
+                "hp": 255,
+                "special-defense": 255
+            },
+            "moves": [
+                "ice-beam",
+                "body-slam",
+                "counter",
+                "bubble-beam"
+            ],
+            "ability": "shed-skin",
+            "ivalues": {
+                "defense": 31,
+                "special-attack": 31,
+                "special-defense": 31,
+                "speed": 31,
+                "attack": 31,
+                "hp": 31
+            },
+            "gender": "female",
+            "level": 50,
+            "nature": "lonely"
         },
         null,
-        null,
-        null,
-        null,
         null
-    ],
-    "team_name": "coolest bugs"
+    ]
 }

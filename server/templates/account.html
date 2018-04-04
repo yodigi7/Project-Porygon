@@ -16,13 +16,6 @@
 {% extends "layout.html" %}
 {% block content %}
   <div class="account_page">
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            {% for message in messages %}
-                <p>{{ message }}</p>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
     <h1>Your AIs</h1>
     <form method="post">
       <button id="newAIButton" type="submit" name="newAI" value="new bot"

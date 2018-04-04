@@ -1,5 +1,5 @@
 <style>
-	#div1, #div2, #div3, #div4, #div5, #div6
+	#div0, #div1, #div2, #div3, #div4, #div5
 	{
 		float: left;
     	width: 100px;
@@ -10,79 +10,18 @@
     }
 </style>
 
-<script TYPE="text/javascript">
-	var pokeElements = new Array(6);
+{% extends "layout.html" %}
+{% block content %}
 
-	function popup(mylink, windowname)
-	{
-	    if (! window.focus)
-	    	return true;
-	    var href;
-	    if (typeof(mylink) == 'string')
-	    	href=mylink;
-	    else
-	    	href=mylink.href;
-	    window.open(href, windowname, 'width=1000, height=800, scrollbars=yes');
-	    return false;
-  	}
-
-	function allowDrop(ev)
-	{
-		ev.preventDefault();
-		ev.dataTransfer.dropEffect= "copy";
-	}
-
-	function drag(ev)
-	{
-		ev.dataTransfer.setData("image", ev.target.id);
-		event.dropEffect = "copy";
-	}
-
-	function drop(ev, type)
-	{
-		ev.preventDefault();
-		var data = ev.dataTransfer.getData("image");
-		ev.target.appendChild(document.getElementById(data).cloneNode(true));
-		if(ev.target.id == "div1")
-		{
-			pokeElements[0] = data;
-		}
-		else if(ev.target.id == "div2")
-		{
-			pokeElements[1] = data;
-		}
-		else if(ev.target.id == "div3")
-		{
-			pokeElements[2] = data;
-		}
-		else if(ev.target.id == "div4")
-		{
-			pokeElements[3] = data;
-		}
-		else if(ev.target.id == "div5")
-		{
-			pokeElements[4] = data;
-		}
-		else if(ev.target.id == "div6")
-		{
-			pokeElements[5] = data;
-		}
-	}
-
-	function save()
-	{
-	    self.close();
-  	}
-</script>
+{% macro pokemonSlot(id) %}
+	<th scope="row"><div id="div{{ id }}" draggable="false" ondrop="drop(event, this)" ondragover="allowDrop(event)"></div>
+		<form method="post"><button id="editButton{{ id }}" type="submit" value="event" name="edit"
+			  onclick="saveAndEdit({{ id }})">Edit</button></form>
+		<input type="button" value="Clear" onclick="setSlotToID({{ id }}, -1)"/>
+	</th>
+{% endmacro %}
 
 <div class="teambuilder_page">
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            {% for message in messages %}
-                <p>{{ message }}</p>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
 	<form>
     	<h1>Team Name:</h1>
     	<input type="text" name="nickname">
@@ -91,32 +30,14 @@
     <h1>Team Builder</h1>
 	<table width="20" align="left">
 		<tr>
-			<th scope="row"><div id="div1" draggable="false" ondrop="drop(event, this)" ondragover="allowDrop(event)"></div>
-				<form method="post"><button id="editButton1" type="submit" value="event" name="edit"
-					  onclick="document.getElementById('editButton1').setAttribute('value', JSON.stringify({edit: 0, team: JSON.stringify(pokeElements)}))">Edit</button></form>
-			</th>
-			<th scope="row"><div id="div2" draggable="false" ondrop="drop(event, this)" ondragover="allowDrop(event)"></div>
-				<form method="post"><button id="editButton2" type="submit" value="event" name="edit"
-					  onclick="document.getElementById('editButton2').setAttribute('value', JSON.stringify({edit: 1, team: JSON.stringify(pokeElements)}))">Edit</button></form>
-			</th>
-			<th scope="row"><div id="div3" draggable="false" ondrop="drop(event, this)" ondragover="allowDrop(event)"></div>
-				<form method="post"><button id="editButton3" type="submit" value="event" name="edit"
-					  onclick="document.getElementById('editButton3').setAttribute('value', JSON.stringify({edit: 2, team: JSON.stringify(pokeElements)}))">Edit</button></form>
-			</th>
+			{{ pokemonSlot(0) }}
+			{{ pokemonSlot(1) }}
+			{{ pokemonSlot(2) }}
 		</tr>
 		<tr>
-			<th scope="row"><div id="div4" draggable="false" ondrop="drop(event, this)" ondragover="allowDrop(event)"></div>
-				<form method="post"><button id="editButton4" type="submit" value="event" name="edit"
-					  onclick="document.getElementById('editButton4').setAttribute('value', JSON.stringify({edit: 3, team: JSON.stringify(pokeElements)}))">Edit</button></form>
-			</th>
-			<th scope="row"><div id="div5" draggable="false" ondrop="drop(event, this)" ondragover="allowDrop(event)"></div>
-				<form method="post"><button id="editButton5" type="submit" value="event" name="edit"
-					  onclick="document.getElementById('editButton5').setAttribute('value', JSON.stringify({edit: 4, team: JSON.stringify(pokeElements)}))">Edit</button></form>
-			</th>
-			<th scope="row"><div id="div6" draggable="false" ondrop="drop(event, this)" ondragover="allowDrop(event)"></div>
-				<form method="post"><button id="editButton6" type="submit" value="event" name="edit"
-					  onclick="document.getElementById('editButton6').setAttribute('value', JSON.stringify({edit: 5, team: JSON.stringify(pokeElements)}))">Edit</button></form>
-			</th>
+			{{ pokemonSlot(3) }}
+			{{ pokemonSlot(4) }}
+			{{ pokemonSlot(5) }}
 		</tr>
 	</table>
 	<div style="height:200px; overflow-y: scroll;">
@@ -329,6 +250,15 @@
 		</table>
 	</div>
 	<form method="post"><button id="submit" type="submit" name="submit" value="null"
-				onclick="document.getElementById('submit').setAttribute('value', JSON.stringify({team: JSON.stringify(pokeElements)}))">Submit</button></form>
+				onclick="save()">Save and Go Back</button></form>
 </div>
 <div class="vl"></div>
+
+<script src="/static/js/teambuilder.js"></script>
+<script>
+	{% for pkid in team %}
+		setSlotToID( {{ loop.index0 }}, {{ pkid }} );
+	{% endfor %}
+</script>
+
+{% endblock %}

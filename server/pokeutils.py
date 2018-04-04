@@ -5,6 +5,7 @@ import json
 import random
 import pokebase as pb
 
+MAX_POKEMON_ID = 151
 TEAM_DIR = '../examples/'
 DEFAULT_LEVEL = 50
 DEFAULT_EV = 0
@@ -37,6 +38,42 @@ def get_team_path(name, team_id):
     name = name.lower()
     name = name.replace(' ','')
     return TEAM_DIR + name + '/' + team_id + '.json'
+
+
+def new_default_pokemon(pkid, pkname):
+    return {
+        "id": pkid,
+        "species": pkname,
+        "nickname": "",
+        "gender": "male",
+        "nature": "bold",
+        "ability": "shed-skin",
+        "item": "-NONE-",
+        "level": DEFAULT_LEVEL,
+        "ivalues": {
+            "hp": 16,
+            "attack": 16,
+            "defense": 16,
+            "special-attack": 16,
+            "special-defense": 16,
+            "speed": 16
+        },
+        "evalues": {
+            "hp": 100,
+            "defense": 100,
+            "special-defense": 100
+        },
+        "moves": [
+            "-NONE-",
+            "-NONE-",
+            "-NONE-",
+            "-NONE-",
+        ]
+    }
+
+
+def display_name(name):
+    return name.replace('-', ' ').title()
 
 
 """Initializes the battle dictionary and returns it.

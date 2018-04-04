@@ -49,33 +49,6 @@ def valid_login(username, password):
     """ Returns true if the username/password combination is a match. """
     return username in usernames and usernames[username] == password
 
-def new_default_pokemon(pkid):
-    pkname = "get_name()"
-    return {
-            "id": pkid,
-            "name": pkname,
-            "species": pkname,
-            "gender": "male",
-            "nature": "bold",
-            "ability": "shed-skin",
-            "item": "none",
-            "level": 2,
-            "ivalues": {
-                "hp": 5,
-                "attack": 5,
-                "defense": 5,
-                "special-attack": 5,
-                "special-defense": 5,
-                "speed": 5
-            },
-            "evalues": {
-                "hp": 20,
-                "defense": 5,
-                "special-defense": 5
-            },
-            "moves": []
-    }
-
 
 """Decorators
 """
@@ -214,6 +187,7 @@ def teambuilder():
         flash('Invalid team to edit.')
         return redirect('account')
     team = load_from_file(team_path.format(session['username'], request.args['team']))
+
     if request.method == 'POST':
         # Get the POSTed data and the slot to edit, if available.
         slot = None
@@ -225,32 +199,39 @@ def teambuilder():
 
         # Get the IDs for the POSTed team.
         new_team = json.loads(data['team'])
+        new_team_names = json.loads(data['teamNames'])
 
         # Check that the team POSTed is of valid length.
-        if len(new_team) != 6:
+        if len(new_team) != 6 or len(new_team_names) != 6:
             flash("An error occurred. The new team's length was invalid.")
-            return render_template('teambuilder.html', team=team['pokemon'])
+            return render_template('teambuilder.html',
+                                   team=[(i['id'] if i is not None else -1) for i in team['pokemon']])
 
         # Loop through each slot, checking for differences in IDs.
         # If differences are found, create a new pokemon and replace the old one (or swap it for None).
         for i in range(6):
-            if new_team[i] is not None:
+            pkid = int(new_team[i])
+            if pkid > pk.MAX_POKEMON_ID:
+                flash('Pokemon ID out of range: {}'.format(new_team[i]))
+                new_team[i] = -1
+            if pkid > 0:
                 if team['pokemon'][i] is None or team['pokemon'][i]['id'] != new_team[i]:
-                    team['pokemon'][i] = new_default_pokemon(new_team[i])
+                    team['pokemon'][i] = pk.new_default_pokemon(new_team[i], new_team_names[i])
             else:
                 team['pokemon'][i] = None
         save_to_file(team, team_path.format(session['username'], request.args['team']))
-        print(slot, team['pokemon'][slot])
 
         if slot is not None:
             if team['pokemon'][slot] is None:
                 flash("That slot is empty.")
-                return render_template('teambuilder.html', team=team['pokemon'])
+                return render_template('teambuilder.html',
+                                       team=[(i['id'] if i is not None else -1) for i in team['pokemon']])
             return redirect(url_for('editor', team=request.args['team'], slot=slot))
         return redirect(url_for('account'))
 
     # Only on method == GET, return template for the teambuilder.
-    return render_template('teambuilder.html', team=team['pokemon'])
+    return render_template('teambuilder.html',
+                           team=[(i['id'] if i is not None else -1) for i in team['pokemon']])
 
 @app.route('/editor/', methods=['GET', 'POST'])
 @require_login
@@ -265,10 +246,61 @@ def editor():
     if slot < 0 or slot >= 6:
         flash('Invalid slot to edit.')
         return redirect(url_for('teambuilder', team=request.args['team']))
+    team_json = load_from_file(team_path.format(session['username'], request.args['team']))
+    pkmn_json = team_json['pokemon'][slot]
+
+    if request.method == 'POST':
+        # Check that all necessary keys are in the post.
+        for key in ['nickname', 'gender', 'nature', 'ability', 'item', 'move0', 'move1', 'move2', 'move3',
+                    'hpIV', 'attackIV', 'defenseIV', 'specialAttackIV', 'specialDefenseIV', 'speedIV',
+                    'hpEV', 'defenseEV', 'specialDefenseEV']:
+            if key not in request.form:
+                flash('Missing key in form. key=' + key)
+                return redirect(url_for('teambuilder', team=request.args['team']))
+
+        # Assign values to the pokemon's json object.
+        pkmn_json['nickname'] = request.form['nickname']
+        pkmn_json['gender'] = request.form['gender']
+        pkmn_json['nature'] = request.form['nature']
+        pkmn_json['ability'] = request.form['ability']  # TODO: HTML for ability (needs implementation)
+        pkmn_json['item'] = request.form['item']        # TODO: HTML for item (needs fixing)
+        pkmn_json['moves'] = [
+            request.form['move0'],
+            request.form['move1'],
+            request.form['move2'],
+            request.form['move3']
+        ]
+        pkmn_json['ivalues'] = {
+            'hp': int(request.form['hpIV']),
+            'attack': int(request.form['attackIV']),
+            'defense': int(request.form['defenseIV']),
+            'special-attack': int(request.form['specialAttackIV']),
+            'special-defense': int(request.form['specialDefenseIV']),
+            'speed': int(request.form['speedIV'])
+        }
+        pkmn_json['evalues'] = {
+            'hp': int(request.form['hpEV']),
+            'defense': int(request.form['defenseEV']),
+            'special-defense': int(request.form['specialDefenseEV'])
+        }
+
+        # TODO: Verify that the pokemon sent is actually possible to be created.
+        if False:
+            flash('Pokemon edited is invalid for at least one reason: {}'.format("<reason returned by verify()>"))
+            return redirect(url_for('teambuilder', team=request.args['team']))
+
+        # Pokemon has been validated, add it to the team and save the team back to file.
+        team_json['pokemon'][slot] = pkmn_json
+        save_to_file(team_json, team_path.format(session['username'], request.args['team']))
+
+        return redirect(url_for('teambuilder', team=request.args['team']))
 
     # Get the pokemon that we're planning on editing.
-    pokemon = load_from_file(team_path.format(session['username'], request.args['team']))['pokemon'][slot]
-    return render_template('pokemonEditor.html', pokemon=pokemon)
+    api_pokemon = pk.pb.pokemon(pkmn_json['species'])
+    api_moves = [i.move.name for i in api_pokemon.moves]
+    moves = [('-NONE-', '-NONE-')] + [(i, pk.display_name(i)) for i in api_moves]
+
+    return render_template('pokemonEditor.html', pokemon=pkmn_json, moves=moves)
 
 @app.route('/account/', methods=['GET', 'POST'])
 @require_login
