@@ -11,12 +11,14 @@ import battle as bt
 
 # Initialization
 
+DEBUG = False
+
 MAX_BOTS = 5
 MAX_TEAMS = 5
 NUM_ROOMS = 10
 
 app = Flask(__name__)
-app.secret_key = "This isn't very secret"
+app.secret_key = os.urandom(12)
 socketio = SocketIO(app)
 
 users_file = 'users.json'
@@ -541,4 +543,4 @@ def on_action(data):
 
 
 # Run the server.
-socketio.run(app, debug=True)
+socketio.run(app, port=80, debug=DEBUG)

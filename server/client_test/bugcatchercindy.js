@@ -1,7 +1,7 @@
 //Temporary Client Javascript file
 $(document).ready(function() {
     var key = "cfbffc7a95ff415f85ceae08c25b0dca";
-    var socket = io.connect('http://127.0.0.1:5000');
+    var socket = io.connect('http://127.0.0.1:80');
 
     socket.on('connect', function () {
         console.log("Connected successfully. Logging in.")
