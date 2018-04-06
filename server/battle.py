@@ -59,6 +59,7 @@ def performTurn(battle_dict, player_choices, teams):
         for team in teams:
             if team['account_name'] == attack['player']:
                 for pokemon in team['pokemon']:
+                    print()
                     if pokemon['poke_id'] == attack['battle_data']['poke_id']:
                         attack['team_data'] = pokemon
                         index = int(attack['action'][-1])

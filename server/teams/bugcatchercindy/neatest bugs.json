@@ -1,0 +1,41 @@
+{
+    "team_name": "neatest bugs",
+    "account_name": "bugcatchercindy",
+    "pokemon": [
+        {
+            "level": 50,
+            "evalues": {
+                "hp": 187,
+                "defense": 255,
+                "special-defense": 255
+            },
+            "poke_id": "d05951427d454086917c69c64870a175",
+            "gender": "male",
+            "moves": [
+                "body-slam",
+                "defense-curl",
+                "flash",
+                "facade"
+            ],
+            "ability": "shed-skin",
+            "nature": "jolly",
+            "species": "bulbasaur",
+            "id": 1,
+            "item": "-NONE-",
+            "nickname": "Mr. Stroganovsky",
+            "ivalues": {
+                "defense": 31,
+                "special-attack": 31,
+                "hp": 31,
+                "special-defense": 31,
+                "attack": 31,
+                "speed": 31
+            }
+        },
+        null,
+        null,
+        null,
+        null,
+        null
+    ]
+}

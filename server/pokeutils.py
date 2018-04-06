@@ -4,6 +4,7 @@ by other modules in Project Porygon.
 import json
 import random
 import pokebase as pb
+import uuid
 
 MAX_POKEMON_ID = 151
 TEAM_DIR = '../examples/'
@@ -30,7 +31,6 @@ def load_data(path_to_JSON):
 
 Parameters:
 name -- the account name of the team owner
-team_id -- the UUID of the team
 """
 def get_team_path(name, team_id):
 
@@ -44,6 +44,7 @@ def new_default_pokemon(pkid, pkname):
     return {
         "id": pkid,
         "species": pkname,
+        "poke_id": uuid.uuid4().hex,
         "nickname": "",
         "gender": "male",
         "nature": "bold",
@@ -100,6 +101,17 @@ def initBattle(team_one, team_two):
     return battle_dict
 
 
+def delete_empty_slots(team):
+    i = 0
+    slot = 0
+    while i < 6:
+        if team['pokemon'][slot] is None:
+            del team['pokemon'][slot]
+        else:
+            slot += 1
+        i += 1
+
+
 """Converts a Pokemon team into battle format and returns the dictionary.
 
 Parameters:
@@ -110,10 +122,10 @@ def formatTeamAsBattle(team):
 
     #  add metadata to dictionary
     player_dict['account_name'] = team['account_name']
+    delete_empty_slots(team)
 
     #  remove spaces (which just show up somehow?)
     player_dict['account_name'] = player_dict['account_name'].replace(' ','')
-    player_dict['team_id'] = team['team_id']
 
     #  default values for the active pokemon
     active_pokemon = {
@@ -148,17 +160,17 @@ def formatTeamAsBattle(team):
     first_poke = poke_list[0]
 
     #  the first pokemon is the default active pokemon
-    active_pokemon['name'] = first_poke['name']
+    active_pokemon['nickname'] = first_poke['nickname']
     active_pokemon['species'] = first_poke['species']
-    active_pokemon['poke_id'] = first_poke['poke_id']
     active_pokemon['gender'] = first_poke['gender']
+    active_pokemon['poke_id'] = first_poke['poke_id']
 
     #  the rest of them are stored as backup pokemon
     for pokemon in poke_list[1:]:
-        backup_pokemon_dict['name'] = pokemon['name']
+        backup_pokemon_dict['nickname'] = pokemon['nickname']
         backup_pokemon_dict['species'] = pokemon['species']
-        backup_pokemon_dict['poke_id'] = pokemon['poke_id']
         backup_pokemon_dict['gender'] = pokemon['gender']
+        backup_pokemon_dict['poke_id'] = pokemon['poke_id']
 
         #  add the dict to the backup_pokemon list
         backup_pokemon.append(backup_pokemon_dict)

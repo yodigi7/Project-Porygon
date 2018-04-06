@@ -15,6 +15,7 @@ $(document).ready(function() {
 
     socket.on('json', function(obj) {
         console.log('Received json: ' + JSON.stringify(obj));
+		
         if('success' in obj) {
             switch(obj.success) {
                 case 'logged in':

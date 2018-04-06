@@ -12,8 +12,10 @@ function setSlotToID(slot, id) {
     if(id != -1) {
         // Set the slot pokemon ID, then set the image for that slot.
         let baseImg = document.getElementById(String(id));
+        console.log(baseImg);
         pokeNames[slot] = baseImg.parentElement.textContent.toLowerCase();
         let img = baseImg.cloneNode(true);
+        img.id = "-1"
         img.draggable = false;
         div.appendChild(img);
     } else {

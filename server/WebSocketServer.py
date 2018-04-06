@@ -135,8 +135,8 @@ def bot_join_room(obj):
 
     # Try to pick a team to use. If team name is invalid, cannot join room.
     team = None
-    for team_obj in persistent()['teams']:
-        if team_obj['name'] == obj['team']:
+    for account_team in persistent()['teams']:
+        if account_team == obj['team']:
             team = load_from_file(team_path.format(session['username'], obj['team']))
 
     # If both the room and team were valid choices, join the room using the team requested.
@@ -489,7 +489,7 @@ def on_action(data):
 
         #Send an updated battleJSON if no end condition has been met
         #If all players have submitted an action
-        if all(player.actionUsed != False for player in r.players):
+        if all(player.actionUsed is not False for player in r.players):
             teams = []
             actions = []
             for player in r.players:

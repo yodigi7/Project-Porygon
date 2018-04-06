@@ -1,20 +1,20 @@
 {
-    "team_name": "coolest bugs",
-    "account_name": "bugcatchersteve",
     "pokemon": [
         null,
         null,
         {
-            "id": 3,
+            "item": "-NONE-",
             "ivalues": {
-                "special-attack": 31,
-                "hp": 31,
                 "attack": 31,
-                "speed": 31,
+                "hp": 31,
                 "defense": 31,
-                "special-defense": 31
+                "special-attack": 31,
+                "special-defense": 31,
+                "speed": 31
             },
-            "ability": "shed-skin",
+            "gender": "male",
+            "species": "venusaur",
+            "poke_id": "82c94eedb6cd4330b4ff8e17d8af7de0",
             "moves": [
                 "take-down",
                 "double-team",
@@ -22,28 +22,29 @@
                 "leech-seed"
             ],
             "nature": "naughty",
-            "species": "venusaur",
-            "nickname": "Girls go to Venus",
-            "item": "-NONE-",
+            "id": 3,
             "evalues": {
-                "defense": 255,
+                "special-defense": 255,
                 "hp": 255,
-                "special-defense": 255
+                "defense": 255
             },
-            "level": 50,
-            "gender": "male"
+            "nickname": "Girls go to Venus",
+            "ability": "shed-skin",
+            "level": 50
         },
         {
-            "id": 7,
+            "item": "-NONE-",
             "ivalues": {
-                "special-attack": 31,
-                "hp": 31,
                 "attack": 31,
-                "speed": 31,
+                "hp": 31,
                 "defense": 31,
-                "special-defense": 31
+                "special-attack": 31,
+                "special-defense": 31,
+                "speed": 31
             },
-            "ability": "shed-skin",
+            "gender": "female",
+            "species": "squirtle",
+            "poke_id": "56a08b2247624c289f86418ef7370486",
             "moves": [
                 "ice-beam",
                 "body-slam",
@@ -51,18 +52,19 @@
                 "bubble-beam"
             ],
             "nature": "lonely",
-            "species": "squirtle",
-            "nickname": "squit squaat",
-            "item": "-NONE-",
+            "id": 7,
             "evalues": {
-                "defense": 255,
+                "special-defense": 255,
                 "hp": 255,
-                "special-defense": 255
+                "defense": 255
             },
-            "level": 50,
-            "gender": "female"
+            "nickname": "squit squaat",
+            "ability": "shed-skin",
+            "level": 50
         },
         null,
         null
-    ]
+    ],
+    "team_name": "coolest bugs",
+    "account_name": "bugcatchersteve"
 }
