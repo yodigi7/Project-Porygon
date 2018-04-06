@@ -244,6 +244,7 @@ def teambuilder():
 @app.route('/editor/', methods=['GET', 'POST'])
 @require_login
 def editor():
+    # Verify that all request.args were provided that are required to operate this page.
     if 'team' not in request.args or request.args['team'] not in persistent()['teams']:
         flash('Invalid team to edit.')
         return redirect('account')
@@ -378,7 +379,7 @@ def account():
 
 @app.route('/signup/', methods=['GET', 'POST'])
 @require_logged_out
-def signup():
+def signup():  # TODO: A link on the website to get to the signup page.
     if request.method == 'POST':
         if user_exists(request.form['username']):
             flash("That username is already in use.", 'error')
@@ -405,7 +406,7 @@ def login():
 
 
 @app.route('/logout/')
-def logout():
+def logout():  # TODO: A link on the website to logout.
     if 'username' in session:
         del session['username']
 
