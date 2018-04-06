@@ -5,9 +5,11 @@ import json
 import random
 import pokebase as pb
 import uuid
+import os
 
 MAX_POKEMON_ID = 151
-TEAM_DIR = '../examples/'
+USER_TEAMS_DIR = "teams/{}/"    # Path to directory containing teams. <username>
+TEAM_PATH = "teams/{}/{}.json"  # Path to a team file. <username> <teamname>
 DEFAULT_LEVEL = 50
 DEFAULT_EV = 0
 POS_NATURE_MOD = 1.1
@@ -17,27 +19,12 @@ POKEMON_STATS = [
 ]
 
 
-"""A function that loads a JSON file as a python dict and returns it.
-
-Parameters:
-path_to_JSON -- the filepath to a JSON
-"""
-def load_data(path_to_JSON):
-    with open(path_to_JSON) as json_data:
-        return json.load(json_data)
-
-
-"""A function that returns the filepath to a team JSON.
-
-Parameters:
-name -- the account name of the team owner
-"""
-def get_team_path(name, team_id):
-
-    #  convert to lowercase and remove spaces
-    name = name.lower()
-    name = name.replace(' ','')
-    return TEAM_DIR + name + '/' + team_id + '.json'
+def new_default_team(username, teamname):
+    return {
+        'team_name': teamname,
+        'account_name': username,
+        'pokemon': [None for _ in range(6)]
+    }
 
 
 def new_default_pokemon(pkid, pkname):
@@ -73,15 +60,29 @@ def new_default_pokemon(pkid, pkname):
     }
 
 
-def display_name(name):
+def display_name_of(name):
     return name.replace('-', ' ').title()
+
+
+def save_to_file(data, filepath):
+    """ Saves JSON from 'data' to a file at 'filepath'. """
+    with open(filepath, 'w') as f:
+        json.dump(data, f, indent=4)
+
+
+def load_from_file(filepath):
+    """ Returns a JSON structure loaded from 'filepath'. """
+    if os.path.isfile(filepath):
+        with open(filepath, 'r') as f:
+            return json.load(f)
+    return {}
 
 
 """Initializes the battle dictionary and returns it.
 
 Parameters:
 team_one, team_two -- dictionaries representing the battling Pokemon teams
-(you get these by using pokeutils.load_data on the team JSON files)
+(you get these by using pokeutils.load_from_file on the team JSON files)
 """
 def initBattle(team_one, team_two):
     battle_dict = {}
