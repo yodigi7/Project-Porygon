@@ -13,8 +13,8 @@ import battle as bt
 # Initialization
 
 host = 'localhost'
-port = 5000
-debug = False
+port = 80
+debug = True
 
 MAX_BOTS = 5
 MAX_TEAMS = 5
@@ -551,6 +551,6 @@ if len(sys.argv) > 1 and sys.argv[1] != '-':
 if len(sys.argv) > 2 and sys.argv[2] != '-':
     port = sys.argv[2]
 if len(sys.argv) > 3:
-    debug = True if sys.argv[3] != 'no-debug' else True
+    debug = True if sys.argv[3] != 'no-debug' else False
 
 socketio.run(app, host=host, port=port, debug=debug)
