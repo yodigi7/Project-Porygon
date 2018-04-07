@@ -8,6 +8,7 @@ import sys
 from Room import Room, Player
 import pokeutils as pk
 import battle as bt
+from passlib.hash import argon2
 
 
 # Initialization
@@ -70,6 +71,12 @@ def load_team(team_name, username=None):
     return pk.load_from_file(pk.TEAM_PATH.format(username, team_name))
 
 
+def save_userpass(username, password):
+    """ Stores a username and a password in the database. """
+    usernames[username] = argon2.hash(password)
+    pk.save_to_file(usernames, users_file)
+
+
 def user_exists(username):
     """ Returns true if the 'username' is an existing one. """
     return username in usernames
@@ -77,7 +84,7 @@ def user_exists(username):
 
 def valid_login(username, password):
     """ Returns true if the username/password combination is a match. """
-    return username in usernames and usernames[username] == password
+    return argon2.verify(password, usernames[username])
 
 
 # Decorators
@@ -389,8 +396,7 @@ def signup():  # TODO: A link on the website to get to the signup page.
         if user_exists(request.form['username']):
             flash("That username is already in use.", 'error')
         else:
-            usernames[request.form['username']] = request.form['password']
-            pk.save_to_file(usernames, users_file)
+            save_userpass(request.form['username'], request.form('password'))
             session['username'] = request.form['username']
             return redirect(url_for('home'))
     return render_template('signup.html')
