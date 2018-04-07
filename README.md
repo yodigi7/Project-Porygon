@@ -1,6 +1,7 @@
 # Project-Porygon
 An open API Pokémon battle simulator primarily for robots.
 
-# Server
-To run the server, simply run server/WebSocketServer.py using your Python interpreter.
-By default, the server listens on port 5000, so you can connect to your own server with your web browser at localhost:5000.
+# Running the Server
+Using python 3.x, run `python server/WebSocketServer.py [HOST] [PORT] [no-debug]`
+For these optional arguments, passing a `-` will use the default value.
+By passing no arguments, all default values will be used.

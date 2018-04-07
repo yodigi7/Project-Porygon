@@ -4,6 +4,7 @@ from functools import wraps
 import os
 import json
 import uuid
+import sys
 from Room import Room, Player
 import pokeutils as pk
 import battle as bt
@@ -11,7 +12,9 @@ import battle as bt
 
 # Initialization
 
-DEBUG = False
+host = 'localhost'
+port = 5000
+debug = False
 
 MAX_BOTS = 5
 MAX_TEAMS = 5
@@ -543,4 +546,11 @@ def on_action(data):
 
 
 # Run the server.
-socketio.run(app, port=80, debug=DEBUG)
+if len(sys.argv) > 1 and sys.argv[1] != '-':
+    host = sys.argv[1]
+if len(sys.argv) > 2 and sys.argv[2] != '-':
+    port = sys.argv[2]
+if len(sys.argv) > 3:
+    debug = True if sys.argv[3] != 'no-debug' else True
+
+socketio.run(app, host=host, port=port, debug=debug)
