@@ -125,7 +125,7 @@ def formatTeamAsBattle(team):
     player_dict['account_name'] = team['account_name']
     delete_empty_slots(team)
 
-    #  remove spaces (which just show up somehow?)
+    #  remove spaces
     player_dict['account_name'] = player_dict['account_name'].replace(' ','')
 
     #  default values for the active pokemon
