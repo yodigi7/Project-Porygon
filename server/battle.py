@@ -56,10 +56,10 @@ def performTurn(battle_dict, player_choices, teams):
         for player in battle_dict['players']:
             if player['account_name'] == attack['player']:
                 attack['battle_data'] = player['active_pokemon']
+                break
         for team in teams:
             if team['account_name'] == attack['player']:
                 for pokemon in team['pokemon']:
-                    print()
                     if pokemon['poke_id'] == attack['battle_data']['poke_id']:
                         attack['team_data'] = pokemon
                         index = int(attack['action'][-1])
@@ -69,10 +69,16 @@ def performTurn(battle_dict, player_choices, teams):
                         if attack['attack_data'].id == 228 and len(switches) > 0:
                             attack['attack_data'].power *= 2
                             pursuit = True
+                        break
+                break
 
         #  calculate the speed with which the attack is performed
         attack['speed'] = pk.calcStats(attack['team_data'])['speed']
         attack['speed'] *= attack['battle_data']['stat_modifiers']['speed']
+
+        #  paralysis modifier
+        if attack['battle_data']['status_condition'] == 'paralysis':
+            attack['speed'] *= 0.5
 
     #  sort attacks by speed, then by priority
     sorted_attacks = sorted(attacks, key=lambda attack: attack['speed'])
@@ -89,13 +95,13 @@ def performTurn(battle_dict, player_choices, teams):
                 if attack['attack_data'].id == 288:
                     battle_dict = perform_attack(battle_dict, teams, attack)
 
-                    #  after each attack is performed, check if anyone fainted
+                    #  after a Pokemon takes damage, check if anyone fainted
                     for player in battle_dict['players']:
                         if player['active_pokemon']['hp_percent'] <= 0:
 
                             #  check if all backup Pokemon are also fainted
                             for backup in player['backup_pokemon']:
-                                if backup['hp_percent'] != 0:
+                                if backup['hp_percent'] > 0:
                                     break
                             else:
                                 battle_dict['loser'] = player['account_name']
@@ -117,13 +123,13 @@ def performTurn(battle_dict, player_choices, teams):
         if attack['performed'] != True:
             battle_dict = perform_attack(battle_dict, teams, attack)
 
-            #  after each attack is performed, check if anyone fainted
+            #  after a Pokemon takes damage, check if anyone fainted
             for player in battle_dict['players']:
                 if player['active_pokemon']['hp_percent'] <= 0:
 
                     #  check if all backup Pokemon are also fainted
                     for backup in player['backup_pokemon']:
-                        if backup['hp_percent'] != 0:
+                        if backup['hp_percent'] > 0:
                             break
                     else:
                         battle_dict['loser'] = player['account_name']
@@ -138,6 +144,45 @@ def performTurn(battle_dict, player_choices, teams):
                 return battle_dict
 
             attack['performed'] = True
+
+    #  perform end-of-turn effects (poison, burn, etc)
+    for player in battle_dict['players']:
+
+        #  burns deal 1/16th of a Pokemon's max HP each turn
+        if player['active_pokemon']['status_condition'] == 'burn':
+            for team in teams:
+                if team['account_name'] == player['account_name']:
+                    for pokemon in team['pokemon']:
+                        if pokemon['poke_id'] == player['active_pokemon']['poke_id']:
+                            max_hp = pk.calcStats(pokemon)['hp']
+                            lost_hp = int(max_hp/16)
+                            lost_hp_pct = int(lost_hp/max_hp)*100
+            player['active_pokemon']['hp_percent'] -= lost_hp_pct
+
+        #  regular poison deals 1/8th of a Pokemon's max HP each turn
+        if player['active_pokemon']['status_condition'] == 'poison':
+            for team in teams:
+                if team['account_name'] == player['account_name']:
+                    for pokemon in team['pokemon']:
+                        if pokemon['poke_id'] == player['active_pokemon']['poke_id']:
+                            max_hp = pk.calcStats(pokemon)['hp']
+                            lost_hp = int(max_hp/8)
+                            lost_hp_pct = int(lost_hp/max_hp)*100
+            player['active_pokemon']['hp_percent'] -= lost_hp_pct
+
+        #  check if the active Pokemon fainted after end-of-turn effects
+        if player['active_pokemon']['hp_percent'] <= 0:
+
+            #  check if all backup Pokemon are also fainted
+            for backup in player['backup_pokemon']:
+                if backup['hp_percent'] > 0:
+                    break
+            else:
+                battle_dict['loser'] = player['account_name']
+                battle_dict['loss_reason'] = 'all Pokemon fainted'
+                return battle_dict
+            battle_dict['must_switch'].append(player)
+
     return battle_dict
 
 
@@ -149,6 +194,11 @@ teams -- a list containing the team data for each player
 attack -- the attack dict as defined in performTurn()
 """
 def perform_attack(battle_dict, teams, attack):
+
+    #  paralysis chance
+    if attack['battle_data']['status_condition'] == 'paralysis':
+        if random.randrange(0,100) < 25:
+            return battle_dict
 
     #  get pokemon indices
     if battle_dict['players'][0]['account_name'] == attack['player']:
@@ -193,6 +243,11 @@ def perform_attack(battle_dict, teams, attack):
     for key, value in raw_stats['def_stats'].items():
         if key != 'hp':
             modded_stats['def_stats'][key] = value*def_poke['stat_modifiers'][key]
+
+    #  apply paralysis speed reduction to the defending Pokemon
+    #  this shouldn't really come up outside of Electro Ball, Gyro Ball, etc.
+    if def_poke['status_condition'] == 'paralysis':
+        modded_stats['def_stats']['speed'] *= 0.5
 
 
     """ Perform the attack and write the results to the battle_dict """
