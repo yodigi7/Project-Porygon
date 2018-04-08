@@ -8,7 +8,7 @@ import sys
 from Room import Room, Player
 import pokeutils as pk
 import battle as bt
-
+import leaderboards as lb
 
 # Initialization
 
@@ -391,6 +391,7 @@ def signup():  # TODO: A link on the website to get to the signup page.
         else:
             usernames[request.form['username']] = request.form['password']
             pk.save_to_file(usernames, users_file)
+            lb.add_user(request.form['username'])
             session['username'] = request.form['username']
             return redirect(url_for('home'))
     return render_template('signup.html')
@@ -527,6 +528,13 @@ def on_action(data):
         # Through the main battle function check if the player lost or won
         end_condition = False
         if r.battle['loser'] != 'none':
+            #Updating Leaderboards
+            for player in r.players:
+                if (player.username == r.battle['loser']):
+                    lb.on_loss(player.username)
+                else:
+                    lb.on_win(player.username)
+
             end_condition = True
 
         calling_room = connection()['room_num']  # the client who called the action function's room
