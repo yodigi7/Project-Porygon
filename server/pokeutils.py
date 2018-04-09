@@ -386,9 +386,17 @@ def calcDamage(combatants, raw_stats, modded_stats, attack, battle_dict):
             *(atk_stats['special-attack']/def_stats['defense']))
             /50)+2)*modifier
     elif atk_dam_type == 'special':
+        # Check to see if the special defense is boosted by sandstorm
+        sand_boost = 1
+        if weather_condition == 'sand':
+            # Check if the defending Pokémon is a rock type
+            for def_type in pb.pokemon(def_poke['species']).types:
+                if def_type.name == 'rock':
+                    # Special defense is boosted by 1.5x for rock types in sandstorm
+                    sand_boost = 1.5
         damage_unrounded = (
             (((((2*atk_level)/5)+2)*atk_power
-            *(atk_stats['special-attack']/def_stats['special-defense']))
+            *(atk_stats['special-attack']/(def_stats['special-defense'] * sand_boost)))
             /50)+2)*modifier
     #  round the damage dealt to a whole number
     damage = int(damage_unrounded)
