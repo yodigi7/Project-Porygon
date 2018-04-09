@@ -276,7 +276,7 @@ def perform_attack(battle_dict, teams, attack):
 
     #  This gets executed if the attack lands
     if 'damage' in atk_category:
-        raw_damage = pk.calcDamage(combatants, raw_stats, modded_stats, attack['attack_data'])
+        raw_damage = pk.calcDamage(combatants, raw_stats, modded_stats, attack['attack_data'], battle_dict)
 
         #  Convert from an HP percentage to an HP amount and back again
         def_hp = int((def_hp_pct/100)*raw_stats['def_stats']['hp'])
