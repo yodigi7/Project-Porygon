@@ -259,8 +259,19 @@ def perform_attack(battle_dict, teams, attack):
     if atk_accuracy is None:
         pass
     else: #  The move may have a chance to miss. Check to see if it lands.
+        # Get the combined accuracy and evasion stage
+        acc_mod_stage = atk_stat_mods['accuracy'] - def_stat_mods['evasion']
+        # The total stage is capped at -6 and +6, so make sure that the combined stage reflects this
+        if acc_mod_stage < -6:
+            acc_mod_stage = -6
+        elif acc_mod_stage > 6:
+            acc_mod_stage
+        # Convert the combined stage to an actual modifier
+        acc_stage_to_mod = {-6: 1/3, -5: 3/8, -4: 3/7, -3: 1/2, -2: 3/5, -1: 3/4, 0: 1, 1: 4/3, 2: 5/3, 3: 2, 4: 7/3, 5: 8/3, 6: 3}
+        acc_mod = acc_stage_to_mod[acc_mod_stage]
+        # Generate a chance to miss
         miss_chance = random.randrange(0, 100)
-        if miss_chance > atk_accuracy:
+        if miss_chance > atk_accuracy * acc_mod:
             return battle_dict # If it misses, return the battle_dict unmodified
 
     #  This gets executed if the attack lands
