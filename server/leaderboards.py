@@ -8,7 +8,7 @@ L = pk.load_from_file(DATA_FILE)
 
 def add_user(username):
     if username not in L:
-        L[username] = {'wins': 0, 'losses': 0}
+        L[username] = {'wins': DEFUALT_WIN, 'losses': DEFAULT_LOSS}
         pk.save_to_file(L, DATA_FILE)
     return True
 
