@@ -253,19 +253,56 @@ def perform_attack(battle_dict, teams, attack):
     """ Perform the attack and write the results to the battle_dict """
     atk_category = attack['attack_data'].meta.category.name
     atk_accuracy = attack['attack_data'].accuracy
+    #  Get the weather condition. This has an impact on accuracy of certain moves.
+    weather_condition = battle_dict['weather']
+    
+    # Conversion table for accuracy stages to modifiers
+    acc_stage_to_mod = {-6: 1/3, -5: 3/8, -4: 3/7, -3: 1/2, -2: 3/5, -1: 3/4, 0: 1, 1: 4/3, 2: 5/3, 3: 2, 4: 7/3, 5: 8/3, 6: 3}
 
     #  Check to see if the attack is a no-miss move, which has an accuracy listed as null in the API
     #  but is treated as None in python code. Skip the accuracy check if the move is a no-miss move.
     if atk_accuracy is None:
         pass
-    else: #  The move may have a chance to miss. Check to see if it lands.
+    # The attacks Thunder (id = 87) and Hurricane (id = 542) has different accuracy based on the weather
+    elif (attack.id == 87 or attack.id == 542) and weather_condition == 'rain':
+        # Thunder and Hurricane do not miss in the rain, so bypass the accuracy calculation
+        pass
+    elif (attack.id == 87 or attack.id == 542) and weather_condition == 'sun':
+        # Thunder and Hurricane have 50% accuracy in the sun, so use a different accuracy calculation
+        # Get the combined accuracy and evasion stage
+        acc_mod_stage = atk_stat_mods['accuracy'] - def_stat_mods['evasion']
+        # The total stage is capped at -6 and +6, so make sure that the combined stage reflects this
+        if acc_mod_stage < -6:
+            acc_mod_stage = -6
+        elif acc_mod_stage > 6:
+            acc_mod_stage
+        # Convert the combined stage to an actual modifier
+        acc_mod = acc_stage_to_mod[acc_mod_stage]
+        # Generate a chance to miss
         miss_chance = random.randrange(0, 100)
-        if miss_chance > atk_accuracy:
+        if miss_chance > 50 * acc_mod:
+            return battle_dict # If it misses, return the battle_dict unmodified
+    # The attack Blizzard (id = 59) does not miss during hail
+    elif attack.id == 59 and weather_condition == 'hail':
+        pass
+    else: #  The move may have a chance to miss. Check to see if it lands.
+        # Get the combined accuracy and evasion stage
+        acc_mod_stage = atk_stat_mods['accuracy'] - def_stat_mods['evasion']
+        # The total stage is capped at -6 and +6, so make sure that the combined stage reflects this
+        if acc_mod_stage < -6:
+            acc_mod_stage = -6
+        elif acc_mod_stage > 6:
+            acc_mod_stage
+        # Convert the combined stage to an actual modifier
+        acc_mod = acc_stage_to_mod[acc_mod_stage]
+        # Generate a chance to miss
+        miss_chance = random.randrange(0, 100)
+        if miss_chance > atk_accuracy * acc_mod:
             return battle_dict # If it misses, return the battle_dict unmodified
 
     #  This gets executed if the attack lands
     if 'damage' in atk_category:
-        raw_damage = pk.calcDamage(combatants, raw_stats, modded_stats, attack['attack_data'])
+        raw_damage = pk.calcDamage(combatants, raw_stats, modded_stats, attack['attack_data'], battle_dict)
 
         #  Convert from an HP percentage to an HP amount and back again
         def_hp = int((def_hp_pct/100)*raw_stats['def_stats']['hp'])

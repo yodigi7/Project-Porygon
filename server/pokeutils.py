@@ -241,8 +241,9 @@ combatants -- a dict containing the current pokemon in battle
 raw_stats -- a dict containing the unmodified stats of each poke
 modded_stats -- a dict containing the modified stats of each poke
 attack -- the raw data for a pokemon attack
+battle_dict -- a dictionary containing a Pokemon battle
 """
-def calcDamage(combatants, raw_stats, modded_stats, attack):
+def calcDamage(combatants, raw_stats, modded_stats, attack, battle_dict):
 
     #  represents team data for each Pokemon (nature, IVs, EVs, etc)
     atk_poke = combatants['atk_poke_private']
@@ -293,6 +294,24 @@ def calcDamage(combatants, raw_stats, modded_stats, attack):
     #  It reduces the power of the move if it is water type and sunny by 0.5x,
     #  And it is 1 otherwise. Until weather is implemented, it will remain 1.
     weather_modifier = 1
+    # Get the weather from the battle_dict
+    weather_condition = battle_dict['weather']
+    # Water attacks are boosted in the rain and reduced in the sun
+    if attack_type == 'water':
+        # If the weather is rain, the attack does 1.5x damage
+        if weather_condition == 'rain':
+            weather_modifier = 1.5
+        # If the weather is sun, the attack does 0.5x damage
+        elif weather_condition == 'sun':
+            weather_modifier = 0.5
+    # Fire attacks are boosted in the sun and reduced in the rain
+    elif attack_type == 'fire':
+        # If the weather is sun, the attack does 1.5x damage
+        if weather_condition = 'sun':
+            weather_modifier = 1.5
+        # If the weather is rain, the attack does 0.5x damage
+        elif weather_condition = 'rain':
+            weather_modifier = 0.5
     
     # Each move has a chance to be a critical hit and deal 1.5x damage.
     # Most moves have a 1 in 24 chance to be a critical hit, but some have higher odds.
@@ -367,9 +386,17 @@ def calcDamage(combatants, raw_stats, modded_stats, attack):
             *(atk_stats['special-attack']/def_stats['defense']))
             /50)+2)*modifier
     elif atk_dam_type == 'special':
+        # Check to see if the special defense is boosted by sandstorm
+        sand_boost = 1
+        if weather_condition == 'sand':
+            # Check if the defending Pokémon is a rock type
+            for def_type in pb.pokemon(def_poke['species']).types:
+                if def_type.name == 'rock':
+                    # Special defense is boosted by 1.5x for rock types in sandstorm
+                    sand_boost = 1.5
         damage_unrounded = (
             (((((2*atk_level)/5)+2)*atk_power
-            *(atk_stats['special-attack']/def_stats['special-defense']))
+            *(atk_stats['special-attack']/(def_stats['special-defense'] * sand_boost)))
             /50)+2)*modifier
     #  round the damage dealt to a whole number
     damage = int(damage_unrounded)
