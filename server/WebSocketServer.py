@@ -396,7 +396,7 @@ def signup():  # TODO: A link on the website to get to the signup page.
         if user_exists(request.form['username']):
             flash("That username is already in use.", 'error')
         else:
-            save_userpass(request.form['username'], request.form('password'))
+            save_userpass(request.form['username'], request.form['password'])
             lb.add_user(request.form['username'])
             session['username'] = request.form['username']
             return redirect(url_for('home'))
@@ -563,7 +563,7 @@ def on_action(data):
 if len(sys.argv) > 1 and sys.argv[1] != '-':
     host = sys.argv[1]
 if len(sys.argv) > 2 and sys.argv[2] != '-':
-    port = sys.argv[2]
+    port = int(sys.argv[2])
 if len(sys.argv) > 3:
     debug = True if sys.argv[3] != 'no-debug' else False
 

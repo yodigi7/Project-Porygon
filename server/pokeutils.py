@@ -307,10 +307,10 @@ def calcDamage(combatants, raw_stats, modded_stats, attack, battle_dict):
     # Fire attacks are boosted in the sun and reduced in the rain
     elif attack_type == 'fire':
         # If the weather is sun, the attack does 1.5x damage
-        if weather_condition = 'sun':
+        if weather_condition == 'sun':
             weather_modifier = 1.5
         # If the weather is rain, the attack does 0.5x damage
-        elif weather_condition = 'rain':
+        elif weather_condition == 'rain':
             weather_modifier = 0.5
     
     # Each move has a chance to be a critical hit and deal 1.5x damage.
