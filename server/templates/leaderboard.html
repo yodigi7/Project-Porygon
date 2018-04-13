@@ -1,7 +1,40 @@
 {% extends "layout.html" %}
 {% block content %}
-   <div class="leaderboard_page">
-     <h1>Leaderboard</h1>
-     <p>This page can show the current status of the leaderboard</p>
-   </div>
+ <style>
+    table {
+        font-family: arial, sans-serif;
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    td, th {
+        border: 1px solid #dddddd;
+        text-align: left;
+        padding: 8px;
+    }
+
+    tr:nth-child(even) {
+        background-color: #dddddd;
+    }
+</style>
+<div class="leaderboard_page">
+    <h1>Leaderboard</h1>
+    <table>
+        <tr>
+            <th>Rank</th>
+            <th>User</th>
+            <th>Wins</th>
+            <th>Losses</th>
+            <th>Win Rate</th>
+        </tr>
+        {% for user in data %}
+        <tr>
+            {% for element in user %}
+                <td>{{ element }} </td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+
 {% endblock %}

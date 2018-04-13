@@ -190,7 +190,12 @@ def home():
 @app.route('/leaderboard/')
 @require_login
 def leaderboard():
-    return render_template('leaderboard.html')
+    L = pk.load_from_file("leaderboardData.json")
+    table = []
+    for username in sorted(L, key=lambda x: lb.rank_formula(x), reverse=True):
+        table.append(
+            (L[username]['rank'], username, L[username]['wins'], L[username]['losses'], lb.rank_formula(username)))
+    return render_template('leaderboard.html', data=table)
 
 
 @app.route('/battle/')

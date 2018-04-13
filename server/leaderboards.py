@@ -28,7 +28,10 @@ def on_loss(username):
 #Wins/(Wins+Losses)
 def rank_formula(username):
     if username in L:
-        return round(L[username]['wins']/(L[username]['wins'] + L[username]['losses']), 2)
+        if (L[username]['wins'] == 0 and L[username]['losses'] == 0):
+            return 0
+        else:
+            return round(L[username]['wins']/(L[username]['wins'] + L[username]['losses']), 2)
 
 #Sorts the json by rank
 def update_ranks():
