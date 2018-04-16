@@ -520,6 +520,39 @@ def on_action(data):
             else:
                 print("Player: {} sent action twice".format(player.username))
 
+    # If the 'must_switch' list isn't empty, the players who
+    # must switch take precedent over anything else
+    for trainer in r.battle['must_switch']:
+        for player in r.players:
+            if trainer == player.username and player.actionUsed is not False:
+                if player.actionUsed['action'][0:6] == 'switch':
+
+                    # format the teams/actions lists for performTurn()
+                    teams = []
+                    actions = []
+                    teams.append(player.team)
+
+                    action_dict = {
+                        'player': player.username,
+                        'action': player.actionUsed['action']
+                    }
+                    actions.append(action_dict)
+
+                    r.battle = bt.performTurn(r.battle, actions, teams)
+                    player.actionUsed = False
+
+                    # Send the updated JSON
+                    emit('json', {'battleState': r.battle}, room=calling_room)
+                else:
+                    r.battle['loser'] = player.username
+                    r.battle['loss_reason'] = 'didn\'t switch when required!'
+                    break
+        if r.battle['loser'] != 'none':
+            break
+
+    # Clear the must_switch list
+    r.battle['must_switch'] = []
+
     # Send an updated battleJSON if no end condition has been met
     # If all players have submitted an action
     if all(player.actionUsed is not False for player in r.players):
