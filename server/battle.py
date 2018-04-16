@@ -32,6 +32,11 @@ teams -- a list containing the team data for each player
 """
 def performTurn(battle_dict, player_choices, teams):
 
+    # initialize toxic variable if not already done (work around)
+    if not performTurn.toxic_multiplier:
+        for team in teams:
+            performTurn.toxic_multiplier[team['account_name']] = 1
+
     #  unpack player choices into attacks and switches
     attacks = []
     switches = []
@@ -169,6 +174,19 @@ def performTurn(battle_dict, player_choices, teams):
                             lost_hp = int(max_hp/8)
                             lost_hp_pct = int(lost_hp/max_hp)*100
             player['active_pokemon']['hp_percent'] -= lost_hp_pct
+
+        # Toxic deals increasing damage per turns and leech seed
+        if player['active_pokemon']['status_condition'] == 'poison':
+            for team in teams:
+                if team['account_name'] == player['account_name']:
+                    for pokemon in team['pokemon']:
+                        if pokemon['poke_id'] == player['active_pokemon']['poke_id']:
+                            currtoxic_multiplier = performTurn.toxic_multiplier[team['account_name']]
+                            max_hp = pk.calcStats(pokemon)['hp']
+                            lost_hp = max(1, int(currtoxic_multiplier*(max_hp/16)))
+                            lost_hp_pct = int(lost_hp/max_hp)*100
+                            # Increment multiplier for next turn
+                            performTurn.toxic_multiplier[team['account_name']] += 1
 
         #  check if the active Pokemon fainted after end-of-turn effects
         if player['active_pokemon']['hp_percent'] <= 0:
@@ -352,6 +370,9 @@ def perform_attack(battle_dict, teams, attack):
     return battle_dict
 
 
+# Initialize static variables for perform turn functions (work around)
+performTurn.toxic_multiplier = 0
+
 """Switches a Pokemon into the active slot for a team.
 
 Parameters:
@@ -391,6 +412,7 @@ def switch(battle_dict, player_name, switch_index):
     active_pokemon['seeded'] = 0
     active_pokemon['infatuated'] = 0
     active_pokemon['trapped'] = 0
+    performTurn.toxic_multiplier[player_name] = 1
     for key, value in active_pokemon['stat_modifiers'].items():
         value = 1
 
